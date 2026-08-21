@@ -5,12 +5,14 @@
 *.o
 *.ko
 *.obj
-*.elf
 
-# Linker output
+# Linker / build output
+*.elf
 *.ilk
 *.map
 *.exp
+*.hex
+*.bin
 
 # Precompiled Headers
 *.gch
@@ -34,7 +36,6 @@
 *.app
 *.i*86
 *.x86_64
-*.hex
 
 # Debug files
 *.dSYM/
@@ -51,5 +52,38 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# debug information files
+# Debug information files
 *.dwo
+
+
+# ==============================
+# Simulink / MATLAB
+# ==============================
+
+*.asv
+*.autosave
+*.slxc
+*.mex*
+
+# Simulink cache / code generation
+slprj/
+*_ert_rtw/
+*_grt_rtw/
+*_rtw/
+codegen/
+
+# MATLAB generated files
+*.log
+*.bak
+
+
+# ==============================
+# STM32CubeIDE
+# ==============================
+
+# Build directories
+Debug/
+Release/
+
+# Eclipse workspace metadata
+.metadata/
