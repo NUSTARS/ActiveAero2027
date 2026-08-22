@@ -64,17 +64,33 @@ dkms.conf
 *.autosave
 *.slxc
 *.mex*
+*.slx.r*
+*.slx.original
+*.slx.orig
+*.mdl.r*
+*.mdl.original
+autosave/
 
 # Simulink cache / code generation
 slprj/
+sccprj/
 *_ert_rtw/
 *_grt_rtw/
 *_rtw/
 codegen/
+*.rtw
+*.tlc
+
+# Simulink Coder / Embedded Coder build artifacts
+*_ert_rtw.mk
+*_grt_rtw.mk
+buildInfo.mat
 
 # MATLAB generated files
 *.log
 *.bak
+*.asv~
+octave-workspace
 
 
 # ==============================
