@@ -1,30 +1,32 @@
 function setupPaths()
-%SETUPPATHS  Add this repo's folders to the MATLAB path so scripts,
-%   models, and data dictionaries all resolve regardless of the current
-%   folder.
+%SETUPPATHS  Add every folder in this repo to the MATLAB path (skipping
+%   generated/cache/build folders), so scripts, models, and data
+%   dictionaries all resolve regardless of the current folder. New
+%   folders (e.g. a future models/control/) are picked up automatically
+%   -- nothing here needs to name them.
 %
 %   Run once per MATLAB session (from anywhere):
 %       run('<repoRoot>/setupPaths.m')
 %   or cd into activeControlSim/ and call setupPaths.
 %
-%   Adds: scripts/, scripts/helpers/, dataDictionaries/, and every
-%   models/<name>/ subfolder -- the last is required because a model's
+%   This is required for models in particular because a model's
 %   DataDictionary property resolves by bare filename via MATLAB's
 %   cwd/path, not a stored path (see README.md).
 
+% Folder name substrings to skip anywhere in the tree: version control,
+% generated Simulink/code-gen artifacts, saved sim results.
+EXCLUDE = {'.git', 'slprj', 'codegen', '.metadata', '_rtw'};
+
 repoRoot = fileparts(mfilename('fullpath'));
 
-addpath(fullfile(repoRoot, 'scripts'));
-addpath(fullfile(repoRoot, 'scripts', 'helpers'));
-addpath(fullfile(repoRoot, 'dataDictionaries'));
+allPaths = strsplit(genpath(repoRoot), pathsep);
+allPaths = allPaths(~cellfun(@isempty, allPaths));
 
-modelsRoot = fullfile(repoRoot, 'models');
-modelDirs = dir(modelsRoot);
-modelDirs = modelDirs([modelDirs.isdir] & ~startsWith({modelDirs.name}, '.'));
-for i = 1:numel(modelDirs)
-    addpath(fullfile(modelsRoot, modelDirs(i).name));
-end
+isExcluded = @(p) any(cellfun(@(pat) contains(p, pat), EXCLUDE));
+keep = ~cellfun(isExcluded, allPaths);
 
-fprintf('activeControlSim paths added.\n');
+addpath(allPaths{keep});
+
+fprintf('activeControlSim paths added (%d folders).\n', sum(keep));
 
 end

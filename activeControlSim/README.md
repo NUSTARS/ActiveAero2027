@@ -9,9 +9,11 @@ locates the repo root from its own file location):
 run('<repoRoot>/setupPaths.m')
 ```
 
-This adds `scripts/`, `scripts/helpers/`, `dataDictionaries/`, and every
-`models/<name>/` folder to the path, so models and scripts run
-regardless of your current folder.
+This recursively adds every folder in the repo to the path (skipping
+version control, generated Simulink/code-gen artifacts, and saved
+results), so models and scripts run regardless of your current folder.
+New folders -- another `models/<name>/`, a new script subfolder -- are
+picked up automatically; nothing needs to be named here.
 
 ## File structure
 
@@ -19,8 +21,9 @@ regardless of your current folder.
   `navigation`), each holding its `.slx` and the `.sldd` linked to it
 - `dataDictionaries/` -- one `define*.m` function per data dictionary,
   each returning that dictionary's param struct
-- `scripts/` -- build/plotting scripts, with generic reusable helpers
-  under `scripts/helpers/`
+- `scripts/` -- build/run/plotting scripts, with generic reusable
+  helpers under `scripts/helpers/`
+- `results/` -- saved sim outputs from `runModel.m` (gitignored)
 
 ## Data dictionary workflow
 
@@ -51,7 +54,9 @@ know or care which model/dictionary it's given).
 returning its param struct, then add a row to `CONFIG`.
 
 **To change a parameter value:** edit the relevant `define*.m`, then
-re-run `buildDataDictionaries.m`.
+re-run `buildDataDictionaries.m`. It skips any dictionary whose `.sldd`
+is already newer than its `define*.m` -- set `forceRebuild = true` in
+the workspace first to rebuild everything regardless.
 
 **Gotcha:** a model's `DataDictionary` property resolves by bare
 filename via MATLAB's current folder/path, not a stored path. It just
@@ -60,23 +65,49 @@ folder; from elsewhere you'll see "unable to find data dictionary" and
 the model won't simulate unless you've run `setupPaths` (see Setup,
 above).
 
-## Plotting workflow
+## Running a sim
 
-Run the sim, then run the plotting script (it's a script, not a
-function -- it reads `out` from the workspace):
+`scripts/runModel.m` rebuilds/links any out-of-date data dictionary in
+`buildDataDictionaries.m`'s `CONFIG` (so parameter edits are always
+picked up), simulates the model, and saves `out` to
+`results/simResults.mat`, overwriting any previous run. It's a script,
+not a function -- it leaves `out` in the workspace:
 
 ```matlab
-out = sim('plant');
-scripts/plotRocketTrajectory.m
+scripts/runModel.m       % defaults to modelName = 'plant'
 ```
 
-It expects `out.simout` as nested bus structs (`eom_bus`,
-`aeroParams_bus`) and opens two fixed-number figures so re-running
-overwrites them instead of piling up new windows:
+To simulate a different model or force a dictionary rebuild, set the
+relevant variable in the workspace first:
+
+```matlab
+modelName = 'plant';
+forceRebuild = true;
+scripts/runModel.m
+```
+
+## Plotting workflow
+
+`scripts/plotRocketTrajectory.m` is a function with three call forms:
+
+```matlab
+plotRocketTrajectory()                     % plot `out` from the workspace
+plotRocketTrajectory('results/simResults.mat')          % plot one saved run
+plotRocketTrajectory('runA.mat', 'runB.mat')             % overlay two saved runs
+```
+
+Each `.mat` file must contain an `out` variable (e.g. `results/simResults.mat`,
+as saved by `runModel.m`). It expects `out.simout` as nested bus structs
+(`eom_bus`, `aeroParams_bus`) and opens two fixed-number figures so
+re-running overwrites them instead of piling up new windows:
 
 - **Figure 101 (States):** position, velocity, tilt & roll, angle of
   attack, body angular rates, raw quaternion
 - **Figure 102 (Trajectory):** 3D flight path with nose/velocity triads
 
-Optional overrides (set in the workspace before running): `numFrames`,
-`bodyScale`, `forwardAxis`.
+When overlaying two runs, each is colored separately and every legend
+entry is tagged with the run's label (its filename, or `workspace`).
+
+Optional name-value overrides, after any file arguments:
+`'numFrames'`, `'bodyScale'`, `'forwardAxis'`, e.g.
+`plotRocketTrajectory('numFrames', 30)`.

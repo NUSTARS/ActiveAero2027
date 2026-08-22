@@ -92,6 +92,9 @@ buildInfo.mat
 *.asv~
 octave-workspace
 
+# activeControlSim: saved sim run outputs
+activeControlSim/results/
+
 
 # ==============================
 # STM32CubeIDE
