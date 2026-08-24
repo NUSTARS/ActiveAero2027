@@ -57,14 +57,22 @@ P.aeroParams.finAngles3_rad = [pi, 0, 0];
 P.aeroParams.finAngles4_rad = [3*pi/2, 0, 0];
 
 
+% fill in later for lever arm:
+% Also, assuming body coords centered on CG (or is it CP?)
 P.sensorParams.imuPosBdy_m = [0, 0, 0]; % [m]
+% noise density for random white noise (not gauss markov)
 accnoiseDensity_microgpsqHz = [75, 75, 75]; % [microg/sqrt(Hz)]
 P.sensorParams.accnoiseDensity_mps2psqHz = accnoiseDensity_microgpsqHz * 9.81e-6; % [m/s^2 / sqrt(Hz)]
+% time constant for gauss markov. longer -> better stability
 P.sensorParams.accTau_s = 200; % [s]
+% uncertainty for white noise in dynamic bias
 accSigmaBias_mg = [0.2, 0.2, 0.2]; % [millig]
 P.sensorParams.accSigmaBias_mps2 = accSigmaBias_mg * 0.00981; % [m/s^2]
+% power spectral density for the gauss markov white noise
 P.sensorParams.accPSD_mps2psqHz = 2 * P.sensorParams.accSigmaBias_mps2 .* ...
     P.sensorParams.accSigmaBias_mps2 / P.sensorParams.accTau_s; % [(m/s^2) / sqrt(Hz)]
+% should probably be set to a 0 mean random value with some std. Not
+% critical and can do later
 accSigmaBiasTurnOn_mg = [0.5, 0.5, 0.5]; % [millig]
 P.sensorParams.accSigmaBiasTurnOn_mps2 = accSigmaBiasTurnOn_mg * 0.00981; % [m/s^2]
 accRate_Hz = 100; % [Hz]
