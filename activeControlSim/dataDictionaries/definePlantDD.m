@@ -115,7 +115,7 @@ P.sensorParams.gyroSigmaBiasTurnOn_rps = [0.0005, 0.0005, 0.0005];
 gyroRate_Hz = 100; % [Hz]
 P.sensorParams.gyroSampleTime_s = 1 / gyroRate_Hz; % [s]
 % g sensitivity of the gyroscope
-gyroG = [[0.1, 0, 0], [0, 0.1, 0], [0, 0, 0.1]]; % [deg / s / g
+gyroG = [0.1 0 0; 0 0.1 0; 0 0 0.1]; % [deg / s / g
 P.sensorParams.gyroG = gyroG * 0.01745 * 9.8065; % [rad / s / (m/s)]
 % not consider g^2 sensitivity at least for now
 
@@ -134,6 +134,17 @@ magNoiseDensity_nTpsqHz = [14, 14, 14]; % [nT / sqrt(Hz)]
 P.sensorParams.magPSDWhite = magNoiseDensity_nTpsqHz .* magNoiseDensity_nTpsqHz;
 magRate_Hz = 100; % [Hz]
 P.sensorParams.magSampleTime_s = 1 / magRate_Hz; % [s]
+
+%%% Barometer %%% 
+baroNoiseDensity_PapsqHz = 0.02; % [Pa /sqrt(Hz)]
+P.sensorParams.baroPSDWhite = baroNoiseDensity_PapsqHz^2;
+P.sensorParams.baroBiasTurnOn_Pa = 40; % [Pa]
+baroBiasSigma_Pa = 6; % [Pa]
+P.sensorParams.baroTau_s = 500; % [s]
+P.sensorParams.baroPSDGM = 2 * baroBiasSigma_Pa^2 / P.sensorParams.baroTau_s;
+baroRate_Hz = 100; % [Hz]
+P.sensorParams.baroSampleTime_s = 1 / baroRate_Hz; % [s]
+% flight regime depended pressure offset derived via CFD ie C(M) * q. Not adding yet
 
 
 end
