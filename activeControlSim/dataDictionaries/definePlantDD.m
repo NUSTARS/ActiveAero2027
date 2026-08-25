@@ -21,6 +21,12 @@ P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
 %% Enviornment
 P.envParams.gravityNed_mps2 = [0, 0, 9.81];   % [m/s^2]
+% assuming these won't change enough to make a significant difference
+% geodetic lon and lat
+P.envParams.lon_deg = -87.6767064830923; % [deg]
+P.envParams.lat_deg = 42.0569355774686; % [deg]
+P.envParams.groundAlt_m = 182; % [m] above ellipsoid surface (sea level)
+P.envParams.date_y = decyear('01-September-2026','dd-mmm-yyyy'); % [y] year + fraction of year
 
 % Wind Simulations
 P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
@@ -58,10 +64,11 @@ P.aeroParams.finAngles4_rad = [3*pi/2, 0, 0];
 
 
 % sensor params 
-
 % fill in later for lever arm:
 % Also, assuming body coords centered on CG (or is it CP?)
 P.sensorParams.imuPosBdy_m = [0, 0, 0]; % [m]
+
+%%% Accelerometer %%%
 % scale factor and coupling matrix measuring the components of the body
 % specific force along other axes. Used to correct that. Setting to perfect
 % scale and no coupling for now
@@ -86,7 +93,7 @@ P.sensorParams.accSigmaBiasTurnOn_mps2 = accSigmaBiasTurnOn_mg * 0.00981; % [m/s
 accRate_Hz = 100; % [Hz]
 P.sensorParams.accSampleTime_s = 1 / accRate_Hz; % [s]
 
-
+%%% Gyroscope %%%
 % scale factor and coupling matrix measuring the components of the body
 gyroScaleCoupling_na = [0 0 0; 0 0 0; 0 0 0]; % [dimensionless]
 P.sensorParams.gyroScaleCoupling_na = eye(3) + gyroScaleCoupling_na;
@@ -112,6 +119,21 @@ gyroG = [[0.1, 0, 0], [0, 0.1, 0], [0, 0, 0.1]]; % [deg / s / g
 P.sensorParams.gyroG = gyroG * 0.01745 * 9.8065; % [rad / s / (m/s)]
 % not consider g^2 sensitivity at least for now
 
+%%% Magnetometer %%%
+% values to be estimated via calibration method called swinging. Not a
+% perfect model rn but can refine later on especially when working with
+% actual sensors. e.g. some conflicting sources on biases and whether the
+% SI matrix should be inverted for meas model or when compensating
+% soft iron scale factor and coupling matrix
+magSI = [0.08 0.05 -0.03; 0.04 -0.07 0.02; -0.03 0.02 0.05]; % [dimensionless]
+P.sensorParams.magSI = eye(3) + magSI;
+% hard iron bias in body. Example. Is this constant? Worth knowing if it
+% might just significantly during flight
+P.sensorParams.magBiasHIBdy_nT = 1000 * [1.2, -0.8, 0.5]; % [nT]
+magNoiseDensity_nTpsqHz = [14, 14, 14]; % [nT / sqrt(Hz)]
+P.sensorParams.magPSDWhite = magNoiseDensity_nTpsqHz .* magNoiseDensity_nTpsqHz;
+magRate_Hz = 100; % [Hz]
+P.sensorParams.magSampleTime_s = 1 / magRate_Hz; % [s]
 
 
 end
