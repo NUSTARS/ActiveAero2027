@@ -57,25 +57,61 @@ P.aeroParams.finAngles3_rad = [pi, 0, 0];
 P.aeroParams.finAngles4_rad = [3*pi/2, 0, 0];
 
 
+% sensor params 
+
 % fill in later for lever arm:
 % Also, assuming body coords centered on CG (or is it CP?)
 P.sensorParams.imuPosBdy_m = [0, 0, 0]; % [m]
+% scale factor and coupling matrix measuring the components of the body
+% specific force along other axes. Used to correct that. Setting to perfect
+% scale and no coupling for now
+accScaleCoupling_na = [0 0 0; 0 0 0; 0 0 0]; % [dimensionless][[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+P.sensorParams.accScaleCoupling_na = eye(3) + accScaleCoupling_na;
 % noise density for random white noise (not gauss markov)
 accnoiseDensity_microgpsqHz = [75, 75, 75]; % [microg/sqrt(Hz)]
-P.sensorParams.accnoiseDensity_mps2psqHz = accnoiseDensity_microgpsqHz * 9.81e-6; % [m/s^2 / sqrt(Hz)]
+accnoiseDensity_mps2psqHz = accnoiseDensity_microgpsqHz * 9.81e-6; % [m/s^2 / sqrt(Hz)]
+P.sensorParams.accPSDWhite = accnoiseDensity_mps2psqHz .* accnoiseDensity_mps2psqHz;
 % time constant for gauss markov. longer -> better stability
 P.sensorParams.accTau_s = 200; % [s]
 % uncertainty for white noise in dynamic bias
 accSigmaBias_mg = [0.2, 0.2, 0.2]; % [millig]
 P.sensorParams.accSigmaBias_mps2 = accSigmaBias_mg * 0.00981; % [m/s^2]
-% power spectral density for the gauss markov white noise
-P.sensorParams.accPSD_mps2psqHz = 2 * P.sensorParams.accSigmaBias_mps2 .* ...
-    P.sensorParams.accSigmaBias_mps2 / P.sensorParams.accTau_s; % [(m/s^2) / sqrt(Hz)]
+% power spectral density for the gauss markov noise
+P.sensorParams.accPSDGM = 2 * P.sensorParams.accSigmaBias_mps2 .* ...
+    P.sensorParams.accSigmaBias_mps2 / P.sensorParams.accTau_s;
 % should probably be set to a 0 mean random value with some std. Not
 % critical and can do later
 accSigmaBiasTurnOn_mg = [0.5, 0.5, 0.5]; % [millig]
 P.sensorParams.accSigmaBiasTurnOn_mps2 = accSigmaBiasTurnOn_mg * 0.00981; % [m/s^2]
 accRate_Hz = 100; % [Hz]
 P.sensorParams.accSampleTime_s = 1 / accRate_Hz; % [s]
+
+
+% scale factor and coupling matrix measuring the components of the body
+gyroScaleCoupling_na = [0 0 0; 0 0 0; 0 0 0]; % [dimensionless]
+P.sensorParams.gyroScaleCoupling_na = eye(3) + gyroScaleCoupling_na;
+% noise density for random white noise (not gauss markov)
+gyroNoiseDensity_degpspsqHz = [0.0035, 0.0035, 0.0035]; % [deg / s / sqrt(Hz)]
+gryoNoiseDensity_radpspsqHz = gyroNoiseDensity_degpspsqHz * 0.01745; % [rad / s / sqrt(Hz)]
+P.sensorParams.gyroPSDWhite = gryoNoiseDensity_radpspsqHz .* gryoNoiseDensity_radpspsqHz;
+% time constant for gauss markov
+P.sensorParams.gyroTau_s = 200; % [s]
+% uncertainty for white noise in dynamic bias aka in-run bias instability
+gyroSigmaBias_degphr = [5, 5, 5]; % [deg / hr]
+P.sensorParams.gyroSigmaBias_rps = gyroSigmaBias_degphr * 4.848e-6; % [rad / s]
+% power spectral density for the gauss markov noise
+P.sensorParams.gyroPSDGM = 2 * P.sensorParams.gyroSigmaBias_rps .* ...
+    P.sensorParams.gyroSigmaBias_rps / P.sensorParams.gyroTau_s;
+% should probably be set to a 0 mean random value with some std. Not
+% critical and can do later
+P.sensorParams.gyroSigmaBiasTurnOn_rps = [0.0005, 0.0005, 0.0005]; 
+gyroRate_Hz = 100; % [Hz]
+P.sensorParams.gyroSampleTime_s = 1 / gyroRate_Hz; % [s]
+% g sensitivity of the gyroscope
+gyroG = [[0.1, 0, 0], [0, 0.1, 0], [0, 0, 0.1]]; % [deg / s / g
+P.sensorParams.gyroG = gyroG * 0.01745 * 9.8065; % [rad / s / (m/s)]
+% not consider g^2 sensitivity at least for now
+
+
 
 end
