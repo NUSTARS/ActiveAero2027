@@ -10,7 +10,7 @@ withFinsPath = 'C:\Users\maxhu\Downloads\atlas-aero-plots.CSV'; % airframe with 
 machSamples    = linspace(0.1, 1, 10);   % Mach numbers to interpolate at
 alphaSamples   = [0 2 4];                % angles of attack (deg) to interpolate at
 controlPoints  = [-4 -2 0 2 4];          % control input angles (deg), must stay ascending
-controlFactor  = 0.1;                    % scales control input's effect on Ca/Cn
+controlFactor  = 0.5;                    % scales control input's effect on Ca/Cn
 
 noFinsData   = readtable(noFinsPath);
 withFinsData = readtable(withFinsPath);
