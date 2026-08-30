@@ -22,6 +22,11 @@ P.icParams.posNed_m    = [0, 0, 0];      % [m]
 %% Enviornment
 P.envParams.gravityNed_mps2 = [0, 0, 9.81];   % [m/s^2]
 
+% Wind Simulations
+P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
+P.windParams.constantNed_mps = [5; 0; 0]; % [m/s]
+
+
 %% Aero Lookup Tables
 load('aeroTables.mat', 'aeroTables')
 P.aeroParams.machBreakpoints_na = aeroTables.machPoints;
