@@ -88,26 +88,27 @@ scripts/runModel.m
 
 ## Plotting workflow
 
-`scripts/plotRocketTrajectory.m` is a function with three call forms:
+`scripts/plotRocketTrajectory.m` is a script -- edit the CONFIG block at
+its top, then run it:
 
 ```matlab
-plotRocketTrajectory()                     % plot `out` from the workspace
-plotRocketTrajectory('results/simResults.mat')          % plot one saved run
-plotRocketTrajectory('runA.mat', 'runB.mat')             % overlay two saved runs
+matFiles = {};                                  % plot `out` from the workspace
+matFiles = {'results/simResults.mat'};          % plot one saved run
+matFiles = {'runA.mat', 'runB.mat'};            % overlay two saved runs
 ```
 
 Each `.mat` file must contain an `out` variable (e.g. `results/simResults.mat`,
 as saved by `runModel.m`). It expects `out.simout` as nested bus structs
-(`eom_bus`, `aeroParams_bus`) and opens two fixed-number figures so
+(`eom_bus`, `aero_bus.body_bus`) and opens two fixed-number figures so
 re-running overwrites them instead of piling up new windows:
 
 - **Figure 101 (States):** position, velocity, tilt & roll, angle of
-  attack, body angular rates, raw quaternion
+  attack, body angular rates, raw quaternion -- each vector component
+  in its own subplot, grouped into the same 2x3 layout the combined
+  plots used to occupy
 - **Figure 102 (Trajectory):** 3D flight path with nose/velocity triads
 
 When overlaying two runs, each is colored separately and every legend
 entry is tagged with the run's label (its filename, or `workspace`).
 
-Optional name-value overrides, after any file arguments:
-`'numFrames'`, `'bodyScale'`, `'forwardAxis'`, e.g.
-`plotRocketTrajectory('numFrames', 30)`.
+Other CONFIG variables: `numFrames`, `bodyScale`, `forwardAxis`.

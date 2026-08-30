@@ -1,24 +1,22 @@
-function plotRocketTrajectory(varargin)
 %PLOTROCKETTRAJECTORY  Plot one or two logged 6DOF runs.
 %
-%   plotRocketTrajectory()                     plot `out` from the base
-%                                               workspace
-%   plotRocketTrajectory(matFile)              plot `out` saved in
-%                                               matFile
-%   plotRocketTrajectory(matFile1, matFile2)   overlay two saved runs
+%   Edit the CONFIG block below, then run the script.
+%     matFiles = {}                    plot `out` already in the workspace
+%     matFiles = {matFile}             plot `out` saved in matFile
+%     matFiles = {matFile1, matFile2}  overlay two saved runs
 %
 %   Each matFile must contain an `out` variable, e.g. as saved by
 %   scripts/runModel.m (results/simResults.mat).
 %
-%   OPTIONS (name-value, after any file args)
-%     'numFrames'    number of attitude/velocity triads drawn along each
-%                    trajectory (default 15)
-%     'bodyScale'    length of the plotted body/velocity vectors, in
-%                    plot units (default: auto, ~5% of the first run's
-%                    trajectory span)
-%     'forwardAxis'  3x1 unit vector, the nose/forward direction
-%                    expressed in BODY axes (default [1;0;0], the
-%                    aerospace-standard X-forward convention)
+%   OPTIONS
+%     numFrames    number of attitude/velocity triads drawn along each
+%                  trajectory (default 5)
+%     bodyScale    length of the plotted body/velocity vectors, in plot
+%                  units (default: auto, ~5% of the first run's
+%                  trajectory span)
+%     forwardAxis  3x1 unit vector, the nose/forward direction expressed
+%                  in BODY axes (default [1;0;0], the aerospace-standard
+%                  X-forward convention)
 %
 %   Each `out` must have `out.simout`, a struct of nested bus structs,
 %   each field a 1x1 timeseries:
@@ -28,11 +26,16 @@ function plotRocketTrajectory(varargin)
 %                          body<-NED)
 %       velBdy_mps   Nx3   body-axis velocity   [m/s]
 %       wBdy_rps     Nx3   body-axis angular rate [p, q, r]   [rad/s]
-%     simout.aeroParams_bus
-%       alpha_rad    Nx1   total angle of attack, as logged by the model
+%     simout.aero_bus.body_bus
+%       aoa_deg      Nx1   total angle of attack, as logged by the model
+%     simout.control_deg  Nx4   commanded fin deflection [fin1..fin4]
+%                          [deg], optional -- older logs without it plot
+%                          as all zeros
 %
 %   OUTPUT
-%     Figure 101: States (position/velocity/tilt&roll/AoA/omega/raw attitude)
+%     Figure 101: States (position/velocity/tilt&roll/AoA/omega/raw attitude),
+%                 each vector component split into its own subplot, grouped
+%                 into the same 2x3 layout the combined plots used to occupy.
 %     Figure 102: Trajectory
 %     Fixed figure numbers (deliberately not 1/2, to stay clear of other
 %     figures) so re-running overwrites the same windows instead of
@@ -41,61 +44,50 @@ function plotRocketTrajectory(varargin)
 %   NOTES
 %     - Position/velocity are NED; "down" is flipped for plotting so
 %       altitude increases upward.
-%     - Total AoA is plotted straight from the logged alpha_rad signal,
+%     - Total AoA is plotted straight from the logged aoa_deg signal,
 %       not recomputed here.
 %     - velBdy_mps is body-axis velocity: at t=0 it equals the 6DOF
 %       block's Vm_0 IC directly, with no rotation applied. It is
 %       rotated into NED here (via q_na) for the state/trajectory plots,
 %       which need NED.
 
-% ------------------------------------------------------- parse arguments
-fileArgs = {};
-i = 1;
-while i <= numel(varargin) && ischar(varargin{i}) ...
-        && endsWith(varargin{i}, '.mat', 'IgnoreCase', true)
-    fileArgs{end+1} = varargin{i}; %#ok<AGROW>
-    i = i + 1;
-end
-if numel(fileArgs) > 2
-    error('plotRocketTrajectory:tooManyFiles', ...
-        'Pass at most two .mat files to overlay.');
-end
-
-optArgs = varargin(i:end);
-if mod(numel(optArgs), 2) ~= 0
-    error('plotRocketTrajectory:badOptions', ...
-        'Options must be name-value pairs.');
-end
-opts = struct('numFrames', 5, 'bodyScale', [], 'forwardAxis', [1;0;0]);
-for k = 1:2:numel(optArgs)
-    opts.(optArgs{k}) = optArgs{k+1};
-end
+% =============================================================== CONFIG
+resultsDir  = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'results');
+matFiles    = {'simResults'};   % {} = use `out` already in the workspace; bare names resolve against resultsDir, .mat optional
+numFrames   = 5;
+bodyScale   = [];
+forwardAxis = [1;0;0];
 
 % ------------------------------------------------------------ load runs
-if isempty(fileArgs)
-    if ~evalin('base', 'exist(''out'', ''var'')')
+if isempty(matFiles)
+    if ~exist('out', 'var')
         error('plotRocketTrajectory:noOut', ...
-            ['No .mat file given and `out` not found in the base ', ...
-             'workspace -- run scripts/runModel.m first.']);
+            ['No .mat file given and `out` not found in the workspace -- ', ...
+             'run scripts/runModel.m first.']);
     end
-    runs = {extractRun_local(evalin('base', 'out'), 'workspace', opts.forwardAxis)};
+    runs = {extractSimRun(out, 'workspace', forwardAxis)};
 else
-    runs = cell(1, numel(fileArgs));
-    for k = 1:numel(fileArgs)
-        S = load(fileArgs{k}, 'out');
+    if numel(matFiles) > 2
+        error('plotRocketTrajectory:tooManyFiles', ...
+            'List at most two .mat files in matFiles to overlay.');
+    end
+    runs = cell(1, numel(matFiles));
+    for k = 1:numel(matFiles)
+        matFilePath = resolveMatFile_local(matFiles{k}, resultsDir);
+        S = load(matFilePath, 'out');
         if ~isfield(S, 'out')
             error('plotRocketTrajectory:noOutInFile', ...
-                '%s does not contain an ''out'' variable.', fileArgs{k});
+                '%s does not contain an ''out'' variable.', matFilePath);
         end
-        [~, label] = fileparts(fileArgs{k});
-        runs{k} = extractRun_local(S.out, label, opts.forwardAxis);
+        [~, label] = fileparts(matFilePath);
+        runs{k} = extractSimRun(S.out, label, forwardAxis);
     end
 end
 
-if isempty(opts.bodyScale)
+if isempty(bodyScale)
     span = max(max(runs{1}.pos_plot) - min(runs{1}.pos_plot));
     if span == 0 || isnan(span), span = 1; end
-    opts.bodyScale = 0.05 * span;
+    bodyScale = 0.05 * span;
 end
 
 runColors = {[0 0.4470 0.7410], [0.8500 0.3250 0.0980]};   % blue, orange, per run
@@ -103,69 +95,79 @@ noseColor = 'r';                                            % fixed across runs
 velColor  = [0 0.6 0];                                       % fixed across runs
 
 % ========================================================= STATES WINDOW
-figure(101); clf(101); set(101,'Name','States','Color','w');
+fig1 = figure(101); clf(fig1); set(fig1,'Name','States','Color','w');
+tOuter = tiledlayout(fig1, 2, 4, 'TileSpacing','compact', 'Padding','compact');
+if numel(runs) > 1
+    % Leave headroom above the grid for the run color-key legend added
+    % below, so it doesn't overlap the group titles.
+    tOuter.OuterPosition = [0, 0, 1, 0.93];
+end
 
-axPos = subplot(2,3,1); hold(axPos,'on'); grid(axPos,'on');
-xlabel(axPos,'Time [s]'); ylabel(axPos,'Position [m]'); title(axPos,'Position');
+posLbl     = {'North','East','Up'};
+omegaLbl   = {'p','q','r'};
+eulerLbl   = {'Roll','Pitch','Yaw'};
+controlLbl = {'Fin1','Fin2','Fin3','Fin4'};
 
-axVel = subplot(2,3,2); hold(axVel,'on'); grid(axVel,'on');
-xlabel(axVel,'Time [s]'); ylabel(axVel,'Velocity [m/s]'); title(axVel,'Velocity');
+% Each group below used to be one subplot with several lines on it
+% (color per run, text label per component). Each component now gets its
+% own subplot instead, via a tiledlayout nested inside the outer tile --
+% that keeps the whole group confined to the same figure real estate the
+% single combined subplot used to occupy.
+axPos = makeGroup_local(tOuter, 1, 3, 'Position', posLbl, 'Position [m]');
+axVel = makeGroup_local(tOuter, 2, 3, 'Velocity', posLbl, 'Velocity [m/s]');
+axTilt = makeGroup_local(tOuter, 3, 2, 'Tilt & Roll', {'Tilt','Roll'}, 'Angle [deg]');
+axControl = makeGroup_local(tOuter, 4, 4, 'Fin Control', controlLbl, 'Deflection [deg]');
 
-axTilt = subplot(2,3,3); hold(axTilt,'on'); grid(axTilt,'on');
-xlabel(axTilt,'Time [s]'); ylabel(axTilt,'Angle [deg]'); title(axTilt,'Tilt & Roll');
-
-axAoa = subplot(2,3,4); hold(axAoa,'on'); grid(axAoa,'on');
+axAoa = nexttile(tOuter, 5); hold(axAoa,'on'); grid(axAoa,'on');
 xlabel(axAoa,'Time [s]'); ylabel(axAoa,'Total AoA [deg]'); title(axAoa,'Angle of Attack');
 
-axOmega = subplot(2,3,5); hold(axOmega,'on'); grid(axOmega,'on');
-xlabel(axOmega,'Time [s]'); ylabel(axOmega,'Angular Rate [deg/s]'); title(axOmega,'Omega (Body)');
+axOmega = makeGroup_local(tOuter, 6, 3, 'Omega (Body)', omegaLbl, 'Angular Rate [deg/s]');
+% Yaw-roll-pitch (Z-X-Y) sequence rather than the aircraft-standard
+% yaw-pitch-roll (321, Z-Y-X): gimbal lock always hits whichever angle
+% is the MIDDLE rotation, and 321 puts pitch there -- which pegs near
+% +/-90deg for a rocket whose nose (roll axis) points vertical. Putting
+% roll in the middle instead avoids this: roll-about-nose stays small
+% for this vehicle (see Tilt & Roll), nowhere near its own singularity.
+% (A literal roll-pitch-yaw/123 ordering still puts pitch in the middle
+% and was checked to hit the same gimbal lock -- reordering which axis
+% is singular, not just which is named first, is what actually matters.)
+axEuler = makeGroup_local(tOuter, 7, 3, 'Euler Angles (yaw-roll-pitch)', eulerLbl, 'Angle [deg]');
 
-axQuat = subplot(2,3,6); hold(axQuat,'on'); grid(axQuat,'on');
-xlabel(axQuat,'Time [s]'); ylabel(axQuat,'Quaternion'); title(axQuat,'Raw Attitude (Quaternion)');
-
-posLbl = {'North','East','Up'};
-omegaLbl = {'p','q','r'};
-quatLbl = {'q0','q1','q2','q3'};
-
-% Color distinguishes runs (see the combined color key below). Within an
-% axes, each component is instead named with a small text label at the
-% end of its own line -- clearer than dash/dot linestyles or a cluster
-% of marker shapes, and it scales fine to 3-4 lines per subplot.
 for k = 1:numel(runs)
     r = runs{k};
     c = runColors{k};
 
     for j = 1:3
-        plotLabeled_local(axPos, r.t, r.pos_plot(:,j), c, posLbl{j});
-        plotLabeled_local(axVel, r.t, r.vel_plot(:,j), c, posLbl{j});
+        plot(axPos(j), r.t, r.pos_plot(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axVel(j), r.t, r.vel_plot(:,j), '-', 'Color', c, 'LineWidth', 1.2);
     end
 
-    plotLabeled_local(axTilt, r.t, r.tilt_deg, c, 'Tilt');
-    plotLabeled_local(axTilt, r.t, r.roll_deg, c, 'Roll');
-
-    plot(axAoa, r.t, rad2deg(r.alpha_rad), '-', 'Color', c, 'LineWidth', 1.5);
-
-    for j = 1:3
-        plotLabeled_local(axOmega, r.t, rad2deg(r.omega_body(:,j)), c, omegaLbl{j});
-    end
+    plot(axTilt(1), r.t, r.tilt_deg, '-', 'Color', c, 'LineWidth', 1.2);
+    plot(axTilt(2), r.t, r.roll_deg, '-', 'Color', c, 'LineWidth', 1.2);
 
     for j = 1:4
-        plotLabeled_local(axQuat, r.t, r.q_na(:,j), c, quatLbl{j});
+        plot(axControl(j), r.t, r.control_deg(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+    end
+
+    plot(axAoa, r.t, r.aoa_deg, '-', 'Color', c, 'LineWidth', 1.5);
+
+    for j = 1:3
+        plot(axOmega(j), r.t, rad2deg(r.omega_body(:,j)), '-', 'Color', c, 'LineWidth', 1.2);
+    end
+
+    eul_deg = quat2eulerZXY_local(r.q_na);
+    for j = 1:3
+        plot(axEuler(j), r.t, eul_deg(:,j), '-', 'Color', c, 'LineWidth', 1.2);
     end
 end
-
-% End labels sit just past the last data point -- widen xlim so they
-% aren't clipped at the axes edge.
-expandXlim_local(axPos); expandXlim_local(axVel); expandXlim_local(axTilt);
-expandXlim_local(axOmega); expandXlim_local(axQuat);
 
 % Combined run color key, shown once for the whole figure rather than
 % repeated per subplot.
 addColorKeyLegend_local(runs, runColors);
 
 % ===================================================== TRAJECTORY WINDOW
-figure(102); clf(102); set(102,'Name','Trajectory','Color','w');
-ax = axes; hold(ax,'on'); grid(ax,'on'); axis(ax,'equal'); view(ax,3);
+fig2 = figure(102); clf(fig2); set(fig2,'Name','Trajectory','Color','w');
+ax = axes(fig2); hold(ax,'on'); grid(ax,'on'); axis(ax,'equal'); view(ax,3);
 xlabel(ax,'North [m]'); ylabel(ax,'East [m]'); zlabel(ax,'Up [m]');
 title(ax,'Trajectory with Attitude / Velocity Triads');
 
@@ -186,15 +188,15 @@ for k = 1:numel(runs)
         'DisplayName', 'End', 'HandleVisibility', onoff_local(showInLegend));
 
     N = size(r.pos_plot, 1);
-    frameIdx = round(linspace(1, N, min(opts.numFrames, N)));
+    frameIdx = round(linspace(1, N, min(numFrames, N)));
     for f = frameIdx
         o = r.pos_plot(f,:);
         quiver3(ax, o(1), o(2), o(3), r.nose_plot(f,1), r.nose_plot(f,2), r.nose_plot(f,3), ...
-            opts.bodyScale, 'Color', noseColor, 'LineWidth', 1.5, 'MaxHeadSize', 0.8, ...
+            bodyScale, 'Color', noseColor, 'LineWidth', 1.5, 'MaxHeadSize', 0.8, ...
             'HandleVisibility', 'off');
         vhat = r.vel_plot(f,:) / max(norm(r.vel_plot(f,:)), eps);
         quiver3(ax, o(1), o(2), o(3), vhat(1), vhat(2), vhat(3), ...
-            opts.bodyScale, 'Color', velColor, 'LineWidth', 1.2, 'MaxHeadSize', 0.8, ...
+            bodyScale, 'Color', velColor, 'LineWidth', 1.2, 'MaxHeadSize', 0.8, ...
             'HandleVisibility', 'off');
     end
 end
@@ -210,6 +212,25 @@ legend(ax, 'Location','best');
 
 addColorKeyLegend_local(runs, runColors);
 
+fprintf("Apogee: %.1fm\n",max(r.pos_plot(:,3)))
+
+% ======================================================================
+function axArr = makeGroup_local(tOuter, tileIdx, n, groupTitle, compLbls, yLbl)
+    % Build a nested 1-column tiledlayout inside outer tile `tileIdx`,
+    % with one subplot per component in `compLbls` -- occupies the exact
+    % footprint the single combined subplot used to occupy.
+    tGroup = tiledlayout(tOuter, n, 1, 'TileSpacing','compact', 'Padding','compact');
+    tGroup.Layout.Tile = tileIdx;
+    title(tGroup, groupTitle);
+    ylabel(tGroup, yLbl);
+    xlabel(tGroup, 'Time [s]');
+
+    axArr = gobjects(1, n);
+    for i = 1:n
+        axArr(i) = nexttile(tGroup);
+        hold(axArr(i), 'on'); grid(axArr(i), 'on');
+        title(axArr(i), compLbls{i}, 'FontWeight','normal', 'FontSize', 8);
+    end
 end
 
 % ======================================================================
@@ -239,189 +260,39 @@ function s = onoff_local(tf)
 end
 
 % ======================================================================
-function plotLabeled_local(ax, t, y, color, label)
-    % A solid line with its component name written directly at its end
-    % (in the same color as the line), instead of a legend entry --
-    % avoids a cluttered legend/marker combination when several
-    % same-color lines share an axes.
-    plot(ax, t, y, '-', 'Color', color, 'LineWidth', 1.2, 'HandleVisibility', 'off');
-    dt = max(t) - min(t);
-    if dt == 0, dt = 1; end
-    text(ax, t(end) + 0.015*dt, y(end), label, 'Color', color, 'FontSize', 8, ...
-        'HorizontalAlignment', 'left', 'VerticalAlignment', 'middle', 'Clipping', 'off');
+function eul_deg = quat2eulerZXY_local(q_na)
+    % Yaw-roll-pitch (Z-X-Y) Euler angles from a scalar-first quaternion
+    % [q0 q1 q2 q3], body<-NED -- consistent with the DCM convention
+    % used elsewhere for tilt/roll (same quaternion-to-DCM formula as
+    % quat2dcm_local in extractSimRun.m, just extracted with this
+    % sequence's formulas). Gimbal lock is always at the MIDDLE
+    % rotation's +/-90deg; putting roll there (rather than pitch, as in
+    % the standard yaw-pitch-roll/321 sequence) keeps this rocket's
+    % near-vertical flight away from the singularity, since roll-about-
+    % nose stays small while pitch would otherwise sit near 90deg. See
+    % the caveat where this is called.
+    q0 = q_na(:,1); q1 = q_na(:,2); q2 = q_na(:,3); q3 = q_na(:,4);
+    roll  = asin(max(-1, min(1, 2*(q2.*q3 + q0.*q1))));
+    pitch = atan2(2*(q0.*q2 - q1.*q3), 1 - 2*(q1.^2 + q2.^2));
+    yaw   = atan2(2*(q0.*q3 - q1.*q2), 1 - 2*(q1.^2 + q3.^2));
+    eul_deg = rad2deg([roll, pitch, yaw]);
 end
 
 % ======================================================================
-function expandXlim_local(ax)
-    % Widen the x-axis so end-of-line text labels (drawn just past the
-    % last data point) aren't clipped at the axes edge.
-    xl = xlim(ax);
-    xlim(ax, [xl(1), xl(2) + 0.12*(xl(2) - xl(1))]);
-end
-
-% ======================================================================
-function r = extractRun_local(out, label, forwardAxis)
-    % Pull one run's data out of a Simulink sim output and derive the
-    % plotted quantities (tilt/roll/nose/velocity in NED, etc.). `out`
-    % may be a Simulink.SimulationOutput object (isstruct is false for
-    % it, but out.simout works via property access) or a plain struct
-    % loaded from a .mat file, so probe with try/catch rather than
-    % isstruct/isfield.
-    try
-        simout = out.simout;
-    catch
-        error('plotRocketTrajectory:noSimout', ...
-            '%s: out.simout not found -- out must be a Simulink sim output.', label);
-    end
-
-    requiredBuses = {'eom_bus','aeroParams_bus'};
-    if ~isstruct(simout) || ~all(isfield(simout, requiredBuses))
-        error('plotRocketTrajectory:badSimout', ...
-            '%s: simout must have fields eom_bus, aeroParams_bus (each a bus struct).', label);
-    end
-
-    eom  = simout.eom_bus;
-    aero = simout.aeroParams_bus;
-
-    requiredEom = {'velBdy_mps','posNed_m','q_na','wBdy_rps'};
-    if ~all(isfield(eom, requiredEom))
-        error('plotRocketTrajectory:badEom', ...
-            '%s: simout.eom_bus must have fields velBdy_mps, posNed_m, q_na, wBdy_rps (each a timeseries).', label);
-    end
-    if ~isfield(aero, 'alpha_rad')
-        error('plotRocketTrajectory:badAero', ...
-            '%s: simout.aeroParams_bus must have field alpha_rad (a timeseries).', label);
-    end
-
-    ts_vel   = eom.velBdy_mps;
-    ts_pos   = eom.posNed_m;
-    ts_q     = eom.q_na;
-    ts_alpha = aero.alpha_rad;
-    ts_omega = eom.wBdy_rps;
-
-    t = ts_vel.Time(:);
-    N = numel(t);
-
-    vel_body   = alignRows_local(ts_vel.Data, N, 3);
-    pos_NED    = alignRows_local(ts_pos.Data, N, 3);
-    q_na       = alignRows_local(ts_q.Data, N, 4);
-    alpha_rad  = alignRows_local(ts_alpha.Data, N, 1);
-    omega_body = alignRows_local(ts_omega.Data, N, 3);
-
-    % Guard against slightly mismatched time vectors across signals (can
-    % happen with variable-step solvers).
-    if numel(ts_pos.Time) ~= N || any(ts_pos.Time(:) ~= t)
-        pos_NED = alignRows_local(resample(ts_pos, t).Data, N, 3);
-    end
-    if numel(ts_q.Time) ~= N || any(ts_q.Time(:) ~= t)
-        q_na = alignRows_local(resample(ts_q, t).Data, N, 4);
-    end
-    if numel(ts_alpha.Time) ~= N || any(ts_alpha.Time(:) ~= t)
-        alpha_rad = alignRows_local(resample(ts_alpha, t).Data, N, 1);
-    end
-    if numel(ts_omega.Time) ~= N || any(ts_omega.Time(:) ~= t)
-        omega_body = alignRows_local(resample(ts_omega, t).Data, N, 3);
-    end
-
-    q_na = q_na ./ vecnorm(q_na, 2, 2);
-
-    % ---------------------------------------------------- derived signals
-    fwd_body = forwardAxis(:);
-
-    world_north = [1;0;0];   % fixed NED reference for "zero roll"
-
-    % Reference body axis for measuring roll: derived from the INITIAL
-    % attitude so that roll always starts at 0deg, rather than picking
-    % some fixed body axis (e.g. body Y) that lands at an arbitrary
-    % offset (e.g. -90deg) depending on the vehicle's initial orientation.
-    R_bn1 = quat2dcm_local(q_na(1,:));
-    R_nb1 = R_bn1';
-    nose1_NED = (R_nb1 * fwd_body)';
-    right1_NED = cross(nose1_NED, world_north');
-    if norm(right1_NED) < 1e-6
-        right1_NED = cross(nose1_NED, [0,1,0]);
-    end
-    right1_NED = right1_NED / norm(right1_NED);
-    up1_NED = cross(right1_NED, nose1_NED);
-    ref_body = R_bn1 * up1_NED';
-    ref_body = ref_body / norm(ref_body);
-
-    roll_deg = zeros(N,1);   % spin about the nose axis, deg
-    nose_NED = zeros(N,3);   % body forward-axis expressed in NED
-    vel_NED  = zeros(N,3);   % body velocity rotated into NED, for plotting
-
-    for k = 1:N
-        R_bn = quat2dcm_local(q_na(k,:));   % body <- NED
-        R_nb = R_bn';                       % body -> NED
-
-        nose_NED(k,:) = (R_nb * fwd_body)';
-        vel_NED(k,:)  = (R_nb * vel_body(k,:)')';
-
-        % Roll about the nose, measured against a local frame built from
-        % a fixed world reference (North) rather than a 321-Euler
-        % sequence -- the latter has a coordinate singularity (gimbal
-        % lock) exactly at 90deg tilt, which a straight-up rocket
-        % tipping over at apogee hits directly, causing a spurious
-        % discontinuity in the roll trace.
-        ref_NED = (R_nb * ref_body)';
-        right_NED = cross(nose_NED(k,:), world_north');
-        if norm(right_NED) < 1e-6   % nose ~parallel to North; fall back
-            right_NED = cross(nose_NED(k,:), [0,1,0]);
+function p = resolveMatFile_local(name, resultsDir)
+    % Accepts a bare run name (no folder, .mat optional) and resolves it
+    % against resultsDir; a path that already exists as given (relative
+    % or absolute, with or without .mat) is used unchanged.
+    candidates = {name, [name, '.mat'], ...
+        fullfile(resultsDir, name), fullfile(resultsDir, [name, '.mat'])};
+    for i = 1:numel(candidates)
+        if isfile(candidates{i})
+            p = candidates{i};
+            return;
         end
-        right_NED = right_NED / norm(right_NED);
-        up_NED_local = cross(right_NED, nose_NED(k,:));
-        roll_deg(k) = rad2deg(atan2(dot(ref_NED, right_NED), dot(ref_NED, up_NED_local)));
     end
-
-    % Tilt from vertical: angle between the nose axis and local up. More
-    % intuitive than separate pitch/yaw for an axisymmetric rocket, where
-    % only "how far off vertical" and "which way it's spinning" matter.
-    up_NED = [0;0;-1];   % unit "up" vector expressed in NED
-    tilt_deg = rad2deg(acos(max(-1, min(1, nose_NED * up_NED))));
-
-    % NED -> plot frame (north, east, up)
-    toPlot = @(v) [v(:,1), v(:,2), -v(:,3)];
-
-    r = struct( ...
-        'label',     label, ...
-        't',         t, ...
-        'pos_plot',  toPlot(pos_NED), ...
-        'vel_plot',  toPlot(vel_NED), ...
-        'nose_plot', toPlot(nose_NED), ...
-        'tilt_deg',  tilt_deg, ...
-        'roll_deg',  roll_deg, ...
-        'alpha_rad', alpha_rad, ...
-        'omega_body', omega_body, ...
-        'q_na',      q_na);
+    error('resolveMatFile_local:notFound', ...
+        'Could not find ''%s'' -- tried it as-is, with .mat appended, and under %s.', ...
+        name, resultsDir);
 end
 
-% ======================================================================
-function out = alignRows_local(data, N, ncols)
-    % squeeze() on a logged timeseries can leave data as Nxncols OR
-    % ncolsxN depending on how the signal was dimensioned in Simulink.
-    % A blind reshape(data,N,ncols) does not transpose -- it just
-    % re-reads memory linearly, silently scrambling rows/columns when
-    % the orientation is wrong. Check shape explicitly instead.
-    data = squeeze(data);
-    if isvector(data)
-        data = data(:)';
-    end
-    if size(data,1) == N && size(data,2) == ncols
-        out = data;
-    elseif size(data,2) == N && size(data,1) == ncols
-        out = data';
-    else
-        error('alignRows_local:shape', ...
-            'Expected data shaped %dx%d or %dx%d, got %s.', ...
-            N, ncols, ncols, N, mat2str(size(data)));
-    end
-end
-
-% ======================================================================
-function R = quat2dcm_local(q)
-    % scalar-first quaternion [q0 q1 q2 q3], body <- NED
-    q0=q(1); q1=q(2); q2=q(3); q3=q(4);
-    R = [1-2*(q2^2+q3^2),   2*(q1*q2+q0*q3),   2*(q1*q3-q0*q2);
-         2*(q1*q2-q0*q3),   1-2*(q1^2+q3^2),   2*(q2*q3+q0*q1);
-         2*(q1*q3+q0*q2),   2*(q2*q3-q0*q1),   1-2*(q1^2+q2^2)];
-end
