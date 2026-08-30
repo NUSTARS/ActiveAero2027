@@ -54,17 +54,18 @@
 %     plotRocketTrajectory.m's windows).
 
 % =============================================================== CONFIG
-if ~exist('matFiles', 'var'),      matFiles      = {};        end   % {} = use `out` already in the workspace
-if ~exist('fps', 'var'),           fps           = 30;        end
-if ~exist('playbackSpeed', 'var'), playbackSpeed = 0.1;       end
-if ~exist('followCam', 'var'),     followCam     = true;      end
-if ~exist('camSpan', 'var'),       camSpan       = [];        end
-if ~exist('trailSeconds', 'var'),  trailSeconds  = 3;         end
-if ~exist('bodyScale', 'var'),     bodyScale     = [];        end
-if ~exist('forwardAxis', 'var'),   forwardAxis   = [1;0;0];   end
-if ~exist('saveVideo', 'var'),     saveVideo     = false;     end
-if ~exist('videoFile', 'var'),     videoFile     = '';        end
-if ~exist('showLive', 'var'),      showLive      = true;      end
+resultsDir    = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'results');
+matFiles      = {};        % {} = use `out` already in the workspace; bare names resolve against resultsDir, .mat optional
+fps           = 10;
+playbackSpeed = 0.25;
+followCam     = true;
+camSpan       = [];
+trailSeconds  = 1;
+bodyScale     = [];
+forwardAxis   = [1;0;0];
+saveVideo     = false;
+videoFile     = fullfile(resultsDir, 'trajectoryAnimation.mp4');
+showLive      = true;
 
 % ------------------------------------------------------------ load runs
 if isempty(matFiles)
@@ -81,18 +82,15 @@ else
     end
     runs = cell(1, numel(matFiles));
     for k = 1:numel(matFiles)
-        S = load(matFiles{k}, 'out');
+        matFilePath = resolveMatFile_local(matFiles{k}, resultsDir);
+        S = load(matFilePath, 'out');
         if ~isfield(S, 'out')
             error('animateRocketTrajectory:noOutInFile', ...
-                '%s does not contain an ''out'' variable.', matFiles{k});
+                '%s does not contain an ''out'' variable.', matFilePath);
         end
-        [~, label] = fileparts(matFiles{k});
+        [~, label] = fileparts(matFilePath);
         runs{k} = extractSimRun(S.out, label, forwardAxis);
     end
-end
-
-if isempty(videoFile)
-    videoFile = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'results', 'trajectoryAnimation.mp4');
 end
 
 runColors = {[0 0.4470 0.7410], [0.8500 0.3250 0.0980]};   % blue, orange, per run
@@ -246,7 +244,7 @@ else
     updateFrameGraphics_local(1, S);
     setappdata(fig, 'animState', S);
 
-    animTimer = timer('ExecutionMode', 'fixedRate', 'Period', max(1/fps, 0.01), ...
+    animTimer = timer('ExecutionMode', 'fixedRate', 'Period', round(max(1/fps, 0.01), 3), ...
         'TimerFcn', @(~,~) onTimerTick_local(fig));
     setappdata(fig, 'animTimer', animTimer);
     set(fig, 'CloseRequestFcn', @(~,~) onFigureClose_local(fig));
@@ -254,6 +252,24 @@ else
     uicontrol(fig, 'Style', 'pushbutton', 'String', 'Play', 'FontSize', 11, ...
         'Units', 'normalized', 'Position', [0.46 0.01 0.08 0.05], ...
         'Callback', @(src,~) onPlayPause_local(fig, src));
+end
+
+% ======================================================================
+function p = resolveMatFile_local(name, resultsDir)
+    % Accepts a bare run name (no folder, .mat optional) and resolves it
+    % against resultsDir; a path that already exists as given (relative
+    % or absolute, with or without .mat) is used unchanged.
+    candidates = {name, [name, '.mat'], ...
+        fullfile(resultsDir, name), fullfile(resultsDir, [name, '.mat'])};
+    for i = 1:numel(candidates)
+        if isfile(candidates{i})
+            p = candidates{i};
+            return;
+        end
+    end
+    error('resolveMatFile_local:notFound', ...
+        'Could not find ''%s'' -- tried it as-is, with .mat appended, and under %s.', ...
+        name, resultsDir);
 end
 
 % ======================================================================

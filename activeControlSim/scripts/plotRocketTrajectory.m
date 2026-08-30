@@ -28,6 +28,9 @@
 %       wBdy_rps     Nx3   body-axis angular rate [p, q, r]   [rad/s]
 %     simout.aero_bus.body_bus
 %       aoa_deg      Nx1   total angle of attack, as logged by the model
+%     simout.control_deg  Nx4   commanded fin deflection [fin1..fin4]
+%                          [deg], optional -- older logs without it plot
+%                          as all zeros
 %
 %   OUTPUT
 %     Figure 101: States (position/velocity/tilt&roll/AoA/omega/raw attitude),
@@ -49,12 +52,11 @@
 %       which need NED.
 
 % =============================================================== CONFIG
-% Edit these directly, or predefine any of them in the workspace before
-% running this script to override the default shown here.
-if ~exist('matFiles', 'var'),    matFiles    = {};        end   % {} = use `out` already in the workspace
-if ~exist('numFrames', 'var'),   numFrames   = 5;         end
-if ~exist('bodyScale', 'var'),   bodyScale   = [];        end
-if ~exist('forwardAxis', 'var'), forwardAxis = [1;0;0];   end
+resultsDir  = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'results');
+matFiles    = {'simResults'};   % {} = use `out` already in the workspace; bare names resolve against resultsDir, .mat optional
+numFrames   = 5;
+bodyScale   = [];
+forwardAxis = [1;0;0];
 
 % ------------------------------------------------------------ load runs
 if isempty(matFiles)
@@ -71,12 +73,13 @@ else
     end
     runs = cell(1, numel(matFiles));
     for k = 1:numel(matFiles)
-        S = load(matFiles{k}, 'out');
+        matFilePath = resolveMatFile_local(matFiles{k}, resultsDir);
+        S = load(matFilePath, 'out');
         if ~isfield(S, 'out')
             error('plotRocketTrajectory:noOutInFile', ...
-                '%s does not contain an ''out'' variable.', matFiles{k});
+                '%s does not contain an ''out'' variable.', matFilePath);
         end
-        [~, label] = fileparts(matFiles{k});
+        [~, label] = fileparts(matFilePath);
         runs{k} = extractSimRun(S.out, label, forwardAxis);
     end
 end
@@ -93,16 +96,17 @@ velColor  = [0 0.6 0];                                       % fixed across runs
 
 % ========================================================= STATES WINDOW
 fig1 = figure(101); clf(fig1); set(fig1,'Name','States','Color','w');
-tOuter = tiledlayout(fig1, 2, 3, 'TileSpacing','compact', 'Padding','compact');
+tOuter = tiledlayout(fig1, 2, 4, 'TileSpacing','compact', 'Padding','compact');
 if numel(runs) > 1
     % Leave headroom above the grid for the run color-key legend added
     % below, so it doesn't overlap the group titles.
     tOuter.OuterPosition = [0, 0, 1, 0.93];
 end
 
-posLbl   = {'North','East','Up'};
-omegaLbl = {'p','q','r'};
-quatLbl  = {'q0','q1','q2','q3'};
+posLbl     = {'North','East','Up'};
+omegaLbl   = {'p','q','r'};
+eulerLbl   = {'Roll','Pitch','Yaw'};
+controlLbl = {'Fin1','Fin2','Fin3','Fin4'};
 
 % Each group below used to be one subplot with several lines on it
 % (color per run, text label per component). Each component now gets its
@@ -112,12 +116,22 @@ quatLbl  = {'q0','q1','q2','q3'};
 axPos = makeGroup_local(tOuter, 1, 3, 'Position', posLbl, 'Position [m]');
 axVel = makeGroup_local(tOuter, 2, 3, 'Velocity', posLbl, 'Velocity [m/s]');
 axTilt = makeGroup_local(tOuter, 3, 2, 'Tilt & Roll', {'Tilt','Roll'}, 'Angle [deg]');
+axControl = makeGroup_local(tOuter, 4, 4, 'Fin Control', controlLbl, 'Deflection [deg]');
 
-axAoa = nexttile(tOuter, 4); hold(axAoa,'on'); grid(axAoa,'on');
+axAoa = nexttile(tOuter, 5); hold(axAoa,'on'); grid(axAoa,'on');
 xlabel(axAoa,'Time [s]'); ylabel(axAoa,'Total AoA [deg]'); title(axAoa,'Angle of Attack');
 
-axOmega = makeGroup_local(tOuter, 5, 3, 'Omega (Body)', omegaLbl, 'Angular Rate [deg/s]');
-axQuat  = makeGroup_local(tOuter, 6, 4, 'Raw Attitude (Quaternion)', quatLbl, 'Quaternion');
+axOmega = makeGroup_local(tOuter, 6, 3, 'Omega (Body)', omegaLbl, 'Angular Rate [deg/s]');
+% Yaw-roll-pitch (Z-X-Y) sequence rather than the aircraft-standard
+% yaw-pitch-roll (321, Z-Y-X): gimbal lock always hits whichever angle
+% is the MIDDLE rotation, and 321 puts pitch there -- which pegs near
+% +/-90deg for a rocket whose nose (roll axis) points vertical. Putting
+% roll in the middle instead avoids this: roll-about-nose stays small
+% for this vehicle (see Tilt & Roll), nowhere near its own singularity.
+% (A literal roll-pitch-yaw/123 ordering still puts pitch in the middle
+% and was checked to hit the same gimbal lock -- reordering which axis
+% is singular, not just which is named first, is what actually matters.)
+axEuler = makeGroup_local(tOuter, 7, 3, 'Euler Angles (yaw-roll-pitch)', eulerLbl, 'Angle [deg]');
 
 for k = 1:numel(runs)
     r = runs{k};
@@ -131,14 +145,19 @@ for k = 1:numel(runs)
     plot(axTilt(1), r.t, r.tilt_deg, '-', 'Color', c, 'LineWidth', 1.2);
     plot(axTilt(2), r.t, r.roll_deg, '-', 'Color', c, 'LineWidth', 1.2);
 
+    for j = 1:4
+        plot(axControl(j), r.t, r.control_deg(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+    end
+
     plot(axAoa, r.t, r.aoa_deg, '-', 'Color', c, 'LineWidth', 1.5);
 
     for j = 1:3
         plot(axOmega(j), r.t, rad2deg(r.omega_body(:,j)), '-', 'Color', c, 'LineWidth', 1.2);
     end
 
-    for j = 1:4
-        plot(axQuat(j), r.t, r.q_na(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+    eul_deg = quat2eulerZXY_local(r.q_na);
+    for j = 1:3
+        plot(axEuler(j), r.t, eul_deg(:,j), '-', 'Color', c, 'LineWidth', 1.2);
     end
 end
 
@@ -193,6 +212,8 @@ legend(ax, 'Location','best');
 
 addColorKeyLegend_local(runs, runColors);
 
+fprintf("Apogee: %.1fm\n",max(r.pos_plot(:,3)))
+
 % ======================================================================
 function axArr = makeGroup_local(tOuter, tileIdx, n, groupTitle, compLbls, yLbl)
     % Build a nested 1-column tiledlayout inside outer tile `tileIdx`,
@@ -236,5 +257,42 @@ end
 % ======================================================================
 function s = onoff_local(tf)
     if tf, s = 'on'; else, s = 'off'; end
+end
+
+% ======================================================================
+function eul_deg = quat2eulerZXY_local(q_na)
+    % Yaw-roll-pitch (Z-X-Y) Euler angles from a scalar-first quaternion
+    % [q0 q1 q2 q3], body<-NED -- consistent with the DCM convention
+    % used elsewhere for tilt/roll (same quaternion-to-DCM formula as
+    % quat2dcm_local in extractSimRun.m, just extracted with this
+    % sequence's formulas). Gimbal lock is always at the MIDDLE
+    % rotation's +/-90deg; putting roll there (rather than pitch, as in
+    % the standard yaw-pitch-roll/321 sequence) keeps this rocket's
+    % near-vertical flight away from the singularity, since roll-about-
+    % nose stays small while pitch would otherwise sit near 90deg. See
+    % the caveat where this is called.
+    q0 = q_na(:,1); q1 = q_na(:,2); q2 = q_na(:,3); q3 = q_na(:,4);
+    roll  = asin(max(-1, min(1, 2*(q2.*q3 + q0.*q1))));
+    pitch = atan2(2*(q0.*q2 - q1.*q3), 1 - 2*(q1.^2 + q2.^2));
+    yaw   = atan2(2*(q0.*q3 - q1.*q2), 1 - 2*(q1.^2 + q3.^2));
+    eul_deg = rad2deg([roll, pitch, yaw]);
+end
+
+% ======================================================================
+function p = resolveMatFile_local(name, resultsDir)
+    % Accepts a bare run name (no folder, .mat optional) and resolves it
+    % against resultsDir; a path that already exists as given (relative
+    % or absolute, with or without .mat) is used unchanged.
+    candidates = {name, [name, '.mat'], ...
+        fullfile(resultsDir, name), fullfile(resultsDir, [name, '.mat'])};
+    for i = 1:numel(candidates)
+        if isfile(candidates{i})
+            p = candidates{i};
+            return;
+        end
+    end
+    error('resolveMatFile_local:notFound', ...
+        'Could not find ''%s'' -- tried it as-is, with .mat appended, and under %s.', ...
+        name, resultsDir);
 end
 

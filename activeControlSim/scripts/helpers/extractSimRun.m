@@ -19,13 +19,18 @@ function r = extractSimRun(out, label, forwardAxis)
 %                    simout.aero_bus.body_bus
 %                      aoa_deg      Nx1   total angle of attack, as
 %                                         logged by the model
+%                    simout.control_deg   Nx4   commanded fin deflection
+%                                         [fin1 fin2 fin3 fin4], optional
+%                                         -- older logs without it read
+%                                         back as all zeros
 %     label        run label, used in error messages and for run legends
 %     forwardAxis  3x1 unit vector, the nose/forward direction expressed
 %                  in BODY axes (e.g. [1;0;0])
 %
 %   Returns a struct r with fields:
 %     label, t, pos_plot, vel_plot, nose_plot (all in plot frame: north,
-%     east, up), tilt_deg, roll_deg, aoa_deg, omega_body (rad/s), q_na
+%     east, up), tilt_deg, roll_deg, aoa_deg, omega_body (rad/s), q_na,
+%     control_deg (Nx4, zeros if not logged)
 %
 %   NOTES
 %     - Position/velocity are NED; "down" is flipped in pos_plot/vel_plot
@@ -89,6 +94,24 @@ if numel(ts_aoa.Time) ~= N || any(ts_aoa.Time(:) ~= t)
 end
 if numel(ts_omega.Time) ~= N || any(ts_omega.Time(:) ~= t)
     omega_body = alignRows_local(resample(ts_omega, t).Data, N, 3);
+end
+
+if isfield(simout, 'control_deg')
+    ts_control = simout.control_deg;
+    if numel(ts_control.Time) <= 1
+        % A signal that never changes over the run (e.g. fins held at a
+        % constant value with feedback off) gets logged by Simulink as a
+        % single sample rather than one per timestep -- hold that value
+        % across every frame instead of erroring.
+        control_deg = repmat(reshape(ts_control.Data, 1, []), N, 1);
+    else
+        control_deg = alignRows_local(ts_control.Data, N, 4);
+        if numel(ts_control.Time) ~= N || any(ts_control.Time(:) ~= t)
+            control_deg = alignRows_local(resample(ts_control, t).Data, N, 4);
+        end
+    end
+else
+    control_deg = zeros(N, 4);
 end
 
 q_na = q_na ./ vecnorm(q_na, 2, 2);
@@ -159,7 +182,8 @@ r = struct( ...
     'roll_deg',  roll_deg, ...
     'aoa_deg',   aoa_deg, ...
     'omega_body', omega_body, ...
-    'q_na',      q_na);
+    'q_na',      q_na, ...
+    'control_deg', control_deg);
 end
 
 % ==========================================================================

@@ -10,7 +10,7 @@ withFinsPath = 'C:\Users\maxhu\Downloads\atlas-aero-plots.CSV'; % airframe with 
 machSamples    = linspace(0.1, 1, 10);   % Mach numbers to interpolate at
 alphaSamples   = [0 2 4];                % angles of attack (deg) to interpolate at
 controlPoints  = [-4 -2 0 2 4];          % control input angles (deg), must stay ascending
-controlFactor  = 0.5;                    % scales control input's effect on Ca/Cn
+controlFactor  = 0.2;                    % scales control input's effect on Ca/Cn
 
 noFinsData   = readtable(noFinsPath);
 withFinsData = readtable(withFinsPath);
@@ -22,6 +22,7 @@ negControl = controlPoints(controlPoints < 0);
 
 % --- Base airframe coefficients (no fins), at the alpha/Mach sample grid ---
 CpBase = interpGrid(noFinsData.Alpha, noFinsData.Mach, noFinsData.CP, alphaSamples, machSamples);
+CpFull = interpGrid(withFinsData.Alpha, withFinsData.Mach, withFinsData.CP, alphaSamples, machSamples);
 
 % --- Fin contribution to Ca/Cn at zero control input ---
 [CaFin, CnFin, CaBase, CnBase] = findFinForce(alphaSamples, machSamples, noFinsData, withFinsData);
@@ -55,6 +56,9 @@ aeroTables.CaBase         = CaBase;
 aeroTables.CnBase         = CnBase;
 aeroTables.CnFinControl   = CnFinControl;
 aeroTables.CaFinControl   = CaFinControl;
+aeroTables.CnFull   = CnFin + CnBase;
+aeroTables.CaFull   = CaFin + CaBase;
+aeroTables.CpFull   = CpFull;
 
 save('activecontrolSim/dataDictionaries/aeroTables.mat', "aeroTables")
 
