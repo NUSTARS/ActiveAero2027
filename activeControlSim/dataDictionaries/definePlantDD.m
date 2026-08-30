@@ -17,6 +17,10 @@ P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
 P.envParams.gravityNed_mps2 = [0, 0, 9.81];   % [m/s^2]
 
+% Wind Simulations
+P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
+P.windParams.constantNed_mps = [5; 0; 0]; % [m/s]
+
 P.aeroParams.cnBreakpoints_na    = -1:0.1:1;
 P.aeroParams.cnTable_na          = sin(-1:0.1:1)*10;
 P.aeroParams.cdBreakpoints_na    = -1:0.1:1;

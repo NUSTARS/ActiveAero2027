@@ -18,7 +18,7 @@
 %   to results/simResults.mat, overwriting any previous run.
 
 if ~exist('modelName','var'), modelName = 'plant'; end
-if ~exist('forceRebuild','var'), forceRebuild = false; end
+if ~exist('forceRebuild','var'), forceRebuild = true; end
 
 repoRoot = fileparts(fileparts(mfilename('fullpath')));
 run(fullfile(repoRoot, 'setupPaths.m'));
