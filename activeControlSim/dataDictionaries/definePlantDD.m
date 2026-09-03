@@ -57,4 +57,17 @@ P.aeroParams.finAngles3_rad = [pi, 0, 0];
 P.aeroParams.finAngles4_rad = [3*pi/2, 0, 0];
 
 
+P.sensorParams.imuPosBdy_m = [0, 0, 0]; % [m]
+accnoiseDensity_microgpsqHz = [75, 75, 75]; % [microg/sqrt(Hz)]
+P.sensorParams.accnoiseDensity_mps2psqHz = accnoiseDensity_microgpsqHz * 9.81e-6; % [m/s^2 / sqrt(Hz)]
+P.sensorParams.accTau_s = 200; % [s]
+accSigmaBias_mg = [0.2, 0.2, 0.2]; % [millig]
+P.sensorParams.accSigmaBias_mps2 = accSigmaBias_mg * 0.00981; % [m/s^2]
+P.sensorParams.accPSD_mps2psqHz = 2 * P.sensorParams.accSigmaBias_mps2 .* ...
+    P.sensorParams.accSigmaBias_mps2 / P.sensorParams.accTau_s; % [(m/s^2) / sqrt(Hz)]
+accSigmaBiasTurnOn_mg = [0.5, 0.5, 0.5]; % [millig]
+P.sensorParams.accSigmaBiasTurnOn_mps2 = accSigmaBiasTurnOn_mg * 0.00981; % [m/s^2]
+accRate_Hz = 100; % [Hz]
+P.sensorParams.accSampleTime_s = 1 / accRate_Hz; % [s]
+
 end
