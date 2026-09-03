@@ -3,14 +3,14 @@
 % for interpolated use in flight simulation.
 % ------------------------------------------------------------------
 
-noFinsPath   = 'C:\Users\maxhu\Downloads\atlas-nofins.CSV';   % airframe without fins
-withFinsPath = 'C:\Users\maxhu\Downloads\atlas-aero-plots.CSV'; % airframe with fins
+noFinsPath   = 'C:\Users\maxhu\Downloads\atlas-nofins-ras.CSV';   % airframe without fins
+withFinsPath = 'C:\Users\maxhu\Downloads\atlas-fins-ras.CSV'; % airframe with fins
 
 % --- Grid sample points for output tables ---
 machSamples    = linspace(0.1, 1, 10);   % Mach numbers to interpolate at
 alphaSamples   = [0 2 4];                % angles of attack (deg) to interpolate at
 controlPoints  = [-4 -2 0 2 4];          % control input angles (deg), must stay ascending
-controlFactor  = 0.2;                    % scales control input's effect on Ca/Cn
+controlFactor  = 0.05;                    % scales control input's effect on Ca/Cn
 
 noFinsData   = readtable(noFinsPath);
 withFinsData = readtable(withFinsPath);
@@ -74,8 +74,8 @@ function [CaFin, CnFin, CaBase, CnBase] = findFinForce(alphaSamples, machSamples
     CaFull = interpGrid(withFinsData.Alpha, withFinsData.Mach, withFinsData.CAPower_Off, alphaSamples, machSamples);
     CaFin = (CaFull - CaBase) / 2;   % divide by 2: two fins assumed to contribute equally
 
-    CnBase = interpGrid(noFinsData.Alpha, noFinsData.Mach, noFinsData.CN, alphaSamples, machSamples);
-    CnFull = interpGrid(withFinsData.Alpha, withFinsData.Mach, withFinsData.CN, alphaSamples, machSamples);
+    CnBase = interpGrid(noFinsData.Alpha, noFinsData.Mach, noFinsData.CNPower_Off, alphaSamples, machSamples);
+    CnFull = interpGrid(withFinsData.Alpha, withFinsData.Mach, withFinsData.CNPower_Off, alphaSamples, machSamples);
     CnFin = (CnFull - CnBase) / 2;
 end
 

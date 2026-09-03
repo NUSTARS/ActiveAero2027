@@ -14,7 +14,7 @@ P.vehicleParams.cg_m = 71.33*in2m;                          % [m]
 P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
 
 %% ICs
-P.icParams.velBdy_mps  = [300, 10, 0];   % [m/s]
+P.icParams.velBdy_mps  = [300, 0, 0];   % [m/s]
 P.icParams.eul_rad     = [0, pi/2, 0];   % [rad]
 P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
