@@ -14,9 +14,14 @@ P.vehicleParams.cg_m = 71.33*in2m;                          % [m]
 P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
 
 %% ICs
-P.icParams.velBdy_mps  = [300, 0, 0];   % [m/s]
+% P.icParams.velBdy_mps  = [300, 0, 0];   % [m/s]
+% P.icParams.eul_rad     = [0, pi/2, 0];   % [rad]
+% P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
+% P.icParams.posNed_m    = [0, 0, 0];      % [m]
+
+P.icParams.velBdy_mps  = [300, 5, 3];   % [m/s]
 P.icParams.eul_rad     = [0, pi/2, 0];   % [rad]
-P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
+P.icParams.rateBdy_rps = [0.05, 0.09, 0.01];      % [rad/s]
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
 %% Enviornment
@@ -114,7 +119,8 @@ P.sensorParams.gyroSigmaBiasTurnOn_rps = [0.0005, 0.0005, 0.0005];
 gyroRate_Hz = 100; % [Hz]
 P.sensorParams.gyroSampleTime_s = 1 / gyroRate_Hz; % [s]
 % g sensitivity of the gyroscope
-gyroG = [0.1 0 0; 0 0.1 0; 0 0 0.1]; % [deg / s / g
+% gyroG = [0.1 0 0; 0 0.1 0; 0 0 0.1]; % [deg / s / g]
+gyroG = [0.0 0 0; 0 0.0 0; 0 0 0.0]; % [deg / s / g
 P.sensorParams.gyroG = gyroG * 0.01745 * 9.8065; % [rad / s / (m/s)]
 % not consider g^2 sensitivity at least for now
 

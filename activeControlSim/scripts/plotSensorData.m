@@ -213,29 +213,12 @@ function r = extractRun_local(out, label)
     magMeas  = alignRows_local(resampleIfNeeded_local(ts_magMeas, t).Data, N, 3);
     baroMeas = alignRows_local(resampleIfNeeded_local(ts_baro, t).Data, N, 1);
 
-    % Truth signals are optional -- older/partial logs may not have them.
-    accTrue = []; wTrue = []; pressureTrue = [];
-    hasTruthAcc = false; hasTruthGyro = false; hasTruthBaro = false;
-
-    if isfield(simout, 'eom_bus')
-        eom = simout.eom_bus;
-        if isfield(eom, 'accBdy_mps2')
-            accTrue = alignRows_local(resampleIfNeeded_local(eom.accBdy_mps2, t, 'linear').Data, N, 3);
-            hasTruthAcc = true;
-        end
-        if isfield(eom, 'wBdy_rps')
-            wTrue = alignRows_local(resampleIfNeeded_local(eom.wBdy_rps, t, 'linear').Data, N, 3);
-            hasTruthGyro = true;
-        end
-    end
-    if isfield(simout, 'enviornment_bus')
-        env = simout.enviornment_bus;
-        if isfield(env, 'pressure_Pa')
-            pressureTrue = alignRows_local(resampleIfNeeded_local(env.pressure_Pa, t, 'linear').Data, N, 1);
-            hasTruthBaro = true;
-        end
-    end
-
+    accTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.fBdyTrue_mps2, t, 'linear').Data, N, 3);
+    wTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.wBdyTrue_rps, t, 'linear').Data, N, 3);
+    pressureTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.baroTrue_Pa, t, 'linear').Data, N, 1);
+    hasTruthAcc = true;
+    hasTruthGyro = true;
+    hasTruthBaro = true;
     r = struct( ...
         'label',        label, ...
         't',            t, ...
