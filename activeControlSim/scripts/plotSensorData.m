@@ -232,6 +232,7 @@ function r = extractRun_local(out, label)
     magMeas  = alignRows_local(resampleIfNeeded_local(ts_magMeas, t).Data, N, 3);
     baroMeas = alignRows_local(resampleIfNeeded_local(ts_baro, t).Data, N, 1);
 
+<<<<<<< HEAD
     % Truth signals are optional -- older/partial logs may not have them.
     accTrue = []; wTrue = []; pressureTrue = [];
     hasTruthAcc = false; hasTruthGyro = false; hasTruthBaro = false;
@@ -277,6 +278,14 @@ function r = extractRun_local(out, label)
         end
     end
 
+=======
+    accTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.fBdyTrue_mps2, t, 'linear').Data, N, 3);
+    wTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.wBdyTrue_rps, t, 'linear').Data, N, 3);
+    pressureTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.baroTrue_Pa, t, 'linear').Data, N, 1);
+    hasTruthAcc = true;
+    hasTruthGyro = true;
+    hasTruthBaro = true;
+>>>>>>> 5e677d1 (fixed sensor problems)
     r = struct( ...
         'label',        label, ...
         't',            t, ...
