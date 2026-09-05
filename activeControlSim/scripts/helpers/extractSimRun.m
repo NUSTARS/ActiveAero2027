@@ -55,7 +55,7 @@ end
 
 eom  = simout.eom_bus;
 
-requiredEom = {'velBdy_mps','posNed_m','q_na','wBdy_rps'};
+requiredEom = {'velBdy_mps','posNed_m','q_na','wBdy_rps', 'wDotBdy_rps2', 'accBdy_mps2'};
 if ~all(isfield(eom, requiredEom))
     error('extractSimRun:badEom', ...
         '%s: simout.eom_bus must have fields velBdy_mps, posNed_m, q_na, wBdy_rps (each a timeseries).', label);
