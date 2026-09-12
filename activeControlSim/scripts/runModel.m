@@ -17,7 +17,7 @@
 %   always picked up before simulating), runs the model, and saves `out`
 %   to results/simResults.mat, overwriting any previous run.
 
-if ~exist('modelName','var'), modelName = 'plant'; end
+if ~exist('modelName','var'), modelName = 'activeControlSim'; end
 if ~exist('forceRebuild','var'), forceRebuild = true; end
 
 repoRoot = fileparts(fileparts(mfilename('fullpath')));

@@ -9,20 +9,30 @@ function r = extractSimRun(out, label, forwardAxis)
 %     out          a Simulink.SimulationOutput (or a plain struct loaded
 %                  from a .mat file) with out.simout as nested bus
 %                  structs:
-%                    simout.eom_bus
+%                    simout.plant_bus.eom_bus
 %                      posNed_m     Nx3   position [north, east, down] [m]
 %                      q_na         Nx4   quaternion [q0 q1 q2 q3]
 %                                         (scalar-first, body<-NED)
 %                      velBdy_mps   Nx3   body-axis velocity   [m/s]
 %                      wBdy_rps     Nx3   body-axis angular rate
 %                                         [p, q, r]   [rad/s]
-%                    simout.aero_bus.body_bus
+%                    simout.plant_bus.aero_bus.body_bus
 %                      aoa_deg      Nx1   total angle of attack, as
 %                                         logged by the model
-%                    simout.control_deg   Nx4   commanded fin deflection
-%                                         [fin1 fin2 fin3 fin4], optional
-%                                         -- older logs without it read
-%                                         back as all zeros
+%                    simout.controller_bus   optional -- older logs
+%                                         without it read back as zeros
+%                                         (see below for defaults)
+%                      control_deg  Nx4   commanded fin deflection
+%                                         [fin1 fin2 fin3 fin4] [deg]
+%                      outerLoop_bus.{pitch,yaw,roll}OuterLoop_bus
+%                        rateCmd_rps    Nx1 commanded body rate [rad/s]
+%                        rateLimited_b  Nx1 rate limiter active [bool]
+%                        saturated_b    Nx1 saturation active   [bool]
+%                      innerLoop_bus.{pitch,yaw,roll}InnerLoop_bus
+%                        control_deg      Nx1 per-axis fin command [deg]
+%                        controlMoment_Nm Nx1 commanded moment    [N*m]
+%                        rateLimted_b     Nx1 rate limiter active [bool]
+%                        saturated_b      Nx1 saturation active   [bool]
 %     label        run label, used in error messages and for run legends
 %     forwardAxis  3x1 unit vector, the nose/forward direction expressed
 %                  in BODY axes (e.g. [1;0;0])
@@ -30,7 +40,12 @@ function r = extractSimRun(out, label, forwardAxis)
 %   Returns a struct r with fields:
 %     label, t, pos_plot, vel_plot, nose_plot (all in plot frame: north,
 %     east, up), tilt_deg, roll_deg, aoa_deg, omega_body (rad/s), q_na,
-%     control_deg (Nx4, zeros if not logged)
+%     control_deg (Nx4, zeros if not logged),
+%     outerRateCmd_rps, outerRateLimited_b, outerSaturated_b (Nx3,
+%     columns [pitch yaw roll], zeros if not logged),
+%     innerControl_deg, innerMoment_Nm, innerRateLimited_b,
+%     innerSaturated_b (Nx3, columns [pitch yaw roll], zeros if not
+%     logged)
 %
 %   NOTES
 %     - Position/velocity are NED; "down" is flipped in pos_plot/vel_plot
@@ -47,24 +62,30 @@ catch
         '%s: out.simout not found -- out must be a Simulink sim output.', label);
 end
 
-requiredBuses = {'eom_bus','aero_bus'};
-if ~isstruct(simout) || ~all(isfield(simout, requiredBuses))
+if ~isstruct(simout) || ~isfield(simout, 'plant_bus')
     error('extractSimRun:badSimout', ...
-        '%s: simout must have fields eom_bus, aero_bus (each a bus struct).', label);
+        '%s: simout must have field plant_bus (a bus struct).', label);
+end
+plant = simout.plant_bus;
+
+requiredBuses = {'eom_bus','aero_bus'};
+if ~all(isfield(plant, requiredBuses))
+    error('extractSimRun:badPlant', ...
+        '%s: simout.plant_bus must have fields eom_bus, aero_bus (each a bus struct).', label);
 end
 
-eom  = simout.eom_bus;
+eom  = plant.eom_bus;
 
 requiredEom = {'velBdy_mps','posNed_m','q_na','wBdy_rps'};
 if ~all(isfield(eom, requiredEom))
     error('extractSimRun:badEom', ...
-        '%s: simout.eom_bus must have fields velBdy_mps, posNed_m, q_na, wBdy_rps (each a timeseries).', label);
+        '%s: simout.plant_bus.eom_bus must have fields velBdy_mps, posNed_m, q_na, wBdy_rps (each a timeseries).', label);
 end
-if ~isfield(simout.aero_bus, 'body_bus') || ~isfield(simout.aero_bus.body_bus, 'aoa_deg')
+if ~isfield(plant.aero_bus, 'body_bus') || ~isfield(plant.aero_bus.body_bus, 'aoa_deg')
     error('extractSimRun:badAero', ...
-        '%s: simout.aero_bus.body_bus must have field aoa_deg (a timeseries).', label);
+        '%s: simout.plant_bus.aero_bus.body_bus must have field aoa_deg (a timeseries).', label);
 end
-aero = simout.aero_bus.body_bus;
+aero = plant.aero_bus.body_bus;
 
 ts_vel   = eom.velBdy_mps;
 ts_pos   = eom.posNed_m;
@@ -96,22 +117,33 @@ if numel(ts_omega.Time) ~= N || any(ts_omega.Time(:) ~= t)
     omega_body = alignRows_local(resample(ts_omega, t).Data, N, 3);
 end
 
-if isfield(simout, 'control_deg')
-    ts_control = simout.control_deg;
-    if numel(ts_control.Time) <= 1
-        % A signal that never changes over the run (e.g. fins held at a
-        % constant value with feedback off) gets logged by Simulink as a
-        % single sample rather than one per timestep -- hold that value
-        % across every frame instead of erroring.
-        control_deg = repmat(reshape(ts_control.Data, 1, []), N, 1);
-    else
-        control_deg = alignRows_local(ts_control.Data, N, 4);
-        if numel(ts_control.Time) ~= N || any(ts_control.Time(:) ~= t)
-            control_deg = alignRows_local(resample(ts_control, t).Data, N, 4);
-        end
-    end
+if isfield(simout, 'controller_bus') && isfield(simout.controller_bus, 'control_deg')
+    control_deg = extractHeld_local(simout.controller_bus.control_deg, t, N, 4);
 else
     control_deg = zeros(N, 4);
+end
+
+if isfield(simout, 'controller_bus')
+    ctrl = simout.controller_bus;
+    outer = ctrl.outerLoop_bus;
+    inner = ctrl.innerLoop_bus;
+
+    outerRateCmd_rps   = extractAxis3_local(outer, 'rateCmd_rps',   t, N);
+    outerRateLimited_b = extractAxis3_local(outer, 'rateLimited_b', t, N);
+    outerSaturated_b   = extractAxis3_local(outer, 'saturated_b',   t, N);
+
+    innerControl_deg   = extractAxis3_local(inner, 'control_deg',      t, N);
+    innerMoment_Nm      = extractAxis3_local(inner, 'controlMoment_Nm', t, N);
+    innerRateLimited_b  = extractAxis3_local(inner, 'rateLimted_b',     t, N);
+    innerSaturated_b    = extractAxis3_local(inner, 'saturated_b',      t, N);
+else
+    outerRateCmd_rps   = zeros(N, 3);
+    outerRateLimited_b = zeros(N, 3);
+    outerSaturated_b   = zeros(N, 3);
+    innerControl_deg   = zeros(N, 3);
+    innerMoment_Nm      = zeros(N, 3);
+    innerRateLimited_b  = zeros(N, 3);
+    innerSaturated_b    = zeros(N, 3);
 end
 
 q_na = q_na ./ vecnorm(q_na, 2, 2);
@@ -183,7 +215,14 @@ r = struct( ...
     'aoa_deg',   aoa_deg, ...
     'omega_body', omega_body, ...
     'q_na',      q_na, ...
-    'control_deg', control_deg);
+    'control_deg', control_deg, ...
+    'outerRateCmd_rps',   outerRateCmd_rps, ...
+    'outerRateLimited_b', outerRateLimited_b, ...
+    'outerSaturated_b',   outerSaturated_b, ...
+    'innerControl_deg',   innerControl_deg, ...
+    'innerMoment_Nm',     innerMoment_Nm, ...
+    'innerRateLimited_b', innerRateLimited_b, ...
+    'innerSaturated_b',   innerSaturated_b);
 end
 
 % ==========================================================================
@@ -205,6 +244,38 @@ function out = alignRows_local(data, N, ncols)
         error('alignRows_local:shape', ...
             'Expected data shaped %dx%d or %dx%d, got %s.', ...
             N, ncols, ncols, N, mat2str(size(data)));
+    end
+end
+
+% ==========================================================================
+function out3 = extractAxis3_local(loopBus, fieldName, t, N)
+    % Pull `fieldName` (a scalar-per-sample timeseries) out of the
+    % pitch/yaw/roll sub-buses of an outerLoop_bus or innerLoop_bus and
+    % horzcat into an Nx3 [pitch yaw roll] matrix.
+    axisBuses = {'pitchOuterLoop_bus','yawOuterLoop_bus','rollOuterLoop_bus'};
+    if ~isfield(loopBus, axisBuses{1})
+        axisBuses = {'pitchInnerLoop_bus','yawInnerLoop_bus','rollInnerLoop_bus'};
+    end
+    out3 = zeros(N, 3);
+    for j = 1:3
+        out3(:,j) = extractHeld_local(loopBus.(axisBuses{j}).(fieldName), t, N, 1);
+    end
+end
+
+% ==========================================================================
+function data = extractHeld_local(ts, t, N, ncols)
+    % Align a logged timeseries onto time vector t (resampling if its own
+    % time vector doesn't match), holding its value across every frame if
+    % it was logged as a single unchanging sample (e.g. a flag that never
+    % flips, or fins held constant with feedback off) rather than one per
+    % timestep.
+    if numel(ts.Time) <= 1
+        data = repmat(reshape(ts.Data, 1, []), N, 1);
+        return;
+    end
+    data = alignRows_local(ts.Data, N, ncols);
+    if numel(ts.Time) ~= N || any(ts.Time(:) ~= t)
+        data = alignRows_local(resample(ts, t).Data, N, ncols);
     end
 end
 

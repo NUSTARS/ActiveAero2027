@@ -20,23 +20,33 @@
 %
 %   Each `out` must have `out.simout`, a struct of nested bus structs,
 %   each field a 1x1 timeseries:
-%     simout.eom_bus
+%     simout.plant_bus.eom_bus
 %       posNed_m     Nx3   position [north, east, down] [m]
 %       q_na         Nx4   quaternion [q0 q1 q2 q3] (scalar-first,
 %                          body<-NED)
 %       velBdy_mps   Nx3   body-axis velocity   [m/s]
 %       wBdy_rps     Nx3   body-axis angular rate [p, q, r]   [rad/s]
-%     simout.aero_bus.body_bus
+%     simout.plant_bus.aero_bus.body_bus
 %       aoa_deg      Nx1   total angle of attack, as logged by the model
-%     simout.control_deg  Nx4   commanded fin deflection [fin1..fin4]
-%                          [deg], optional -- older logs without it plot
-%                          as all zeros
+%     simout.controller_bus  optional -- older logs without it plot as
+%                          all zeros
+%       control_deg  Nx4   commanded fin deflection [fin1..fin4] [deg]
+%       outerLoop_bus.{pitch,yaw,roll}OuterLoop_bus
+%         rateCmd_rps, rateLimited_b, saturated_b
+%       innerLoop_bus.{pitch,yaw,roll}InnerLoop_bus
+%         control_deg, controlMoment_Nm, rateLimted_b, saturated_b
 %
 %   OUTPUT
-%     Figure 101: States (position/velocity/tilt&roll/AoA/omega/raw attitude),
+%     Figure 101: States (position/velocity/tilt&roll/AoA/omega/quaternions),
 %                 each vector component split into its own subplot, grouped
-%                 into the same 2x3 layout the combined plots used to occupy.
+%                 into a 2x3 layout.
 %     Figure 102: Trajectory
+%     Figure 104: Controller Evaluation -- one column per axis (Pitch/
+%                 Yaw/Roll), one row per quantity (Euler angle, outer-
+%                 loop output, outer-loop rate-limit/saturation flags,
+%                 inner-loop moment, inner-loop output, inner-loop
+%                 flags), plus a full-width Fin Control row at the
+%                 bottom (fin deflection doesn't decompose per axis).
 %     Fixed figure numbers (deliberately not 1/2, to stay clear of other
 %     figures) so re-running overwrites the same windows instead of
 %     piling up new ones.
@@ -96,17 +106,16 @@ velColor  = [0 0.6 0];                                       % fixed across runs
 
 % ========================================================= STATES WINDOW
 fig1 = figure(101); clf(fig1); set(fig1,'Name','States','Color','w');
-tOuter = tiledlayout(fig1, 2, 4, 'TileSpacing','compact', 'Padding','compact');
+tOuter = tiledlayout(fig1, 2, 3, 'TileSpacing','compact', 'Padding','compact');
 if numel(runs) > 1
     % Leave headroom above the grid for the run color-key legend added
     % below, so it doesn't overlap the group titles.
     tOuter.OuterPosition = [0, 0, 1, 0.93];
 end
 
-posLbl     = {'North','East','Up'};
-omegaLbl   = {'p','q','r'};
-eulerLbl   = {'Roll','Pitch','Yaw'};
-controlLbl = {'Fin1','Fin2','Fin3','Fin4'};
+posLbl   = {'North','East','Up'};
+omegaLbl = {'p','q','r'};
+quatLbl  = {'q0','q1','q2','q3'};
 
 % Each group below used to be one subplot with several lines on it
 % (color per run, text label per component). Each component now gets its
@@ -116,22 +125,16 @@ controlLbl = {'Fin1','Fin2','Fin3','Fin4'};
 axPos = makeGroup_local(tOuter, 1, 3, 'Position', posLbl, 'Position [m]');
 axVel = makeGroup_local(tOuter, 2, 3, 'Velocity', posLbl, 'Velocity [m/s]');
 axTilt = makeGroup_local(tOuter, 3, 2, 'Tilt & Roll', {'Tilt','Roll'}, 'Angle [deg]');
-axControl = makeGroup_local(tOuter, 4, 4, 'Fin Control', controlLbl, 'Deflection [deg]');
 
-axAoa = nexttile(tOuter, 5); hold(axAoa,'on'); grid(axAoa,'on');
+axAoa = nexttile(tOuter, 4); hold(axAoa,'on'); grid(axAoa,'on');
 xlabel(axAoa,'Time [s]'); ylabel(axAoa,'Total AoA [deg]'); title(axAoa,'Angle of Attack');
 
-axOmega = makeGroup_local(tOuter, 6, 3, 'Omega (Body)', omegaLbl, 'Angular Rate [deg/s]');
-% Yaw-roll-pitch (Z-X-Y) sequence rather than the aircraft-standard
-% yaw-pitch-roll (321, Z-Y-X): gimbal lock always hits whichever angle
-% is the MIDDLE rotation, and 321 puts pitch there -- which pegs near
-% +/-90deg for a rocket whose nose (roll axis) points vertical. Putting
-% roll in the middle instead avoids this: roll-about-nose stays small
-% for this vehicle (see Tilt & Roll), nowhere near its own singularity.
-% (A literal roll-pitch-yaw/123 ordering still puts pitch in the middle
-% and was checked to hit the same gimbal lock -- reordering which axis
-% is singular, not just which is named first, is what actually matters.)
-axEuler = makeGroup_local(tOuter, 7, 3, 'Euler Angles (yaw-roll-pitch)', eulerLbl, 'Angle [deg]');
+axOmega = makeGroup_local(tOuter, 5, 3, 'Omega (Body)', omegaLbl, 'Angular Rate [deg/s]');
+% Raw quaternion components -- avoids the Euler-angle gimbal-lock
+% singularity entirely (see the Controller Evaluation figure for the
+% yaw-roll-pitch Euler angles, kept there since they're a more intuitive
+% read of commanded/actual attitude for controller tuning).
+axQuat = makeGroup_local(tOuter, 6, 4, 'Quaternion (body<-NED)', quatLbl, 'Component [-]');
 
 for k = 1:numel(runs)
     r = runs{k};
@@ -145,19 +148,14 @@ for k = 1:numel(runs)
     plot(axTilt(1), r.t, r.tilt_deg, '-', 'Color', c, 'LineWidth', 1.2);
     plot(axTilt(2), r.t, r.roll_deg, '-', 'Color', c, 'LineWidth', 1.2);
 
-    for j = 1:4
-        plot(axControl(j), r.t, r.control_deg(:,j), '-', 'Color', c, 'LineWidth', 1.2);
-    end
-
     plot(axAoa, r.t, r.aoa_deg, '-', 'Color', c, 'LineWidth', 1.5);
 
     for j = 1:3
         plot(axOmega(j), r.t, rad2deg(r.omega_body(:,j)), '-', 'Color', c, 'LineWidth', 1.2);
     end
 
-    eul_deg = quat2eulerZXY_local(r.q_na);
-    for j = 1:3
-        plot(axEuler(j), r.t, eul_deg(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+    for j = 1:4
+        plot(axQuat(j), r.t, r.q_na(:,j), '-', 'Color', c, 'LineWidth', 1.2);
     end
 end
 
@@ -214,6 +212,111 @@ addColorKeyLegend_local(runs, runColors);
 
 fprintf("Apogee: %.1fm\n",max(r.pos_plot(:,3)))
 
+% ============================================= CONTROLLER EVALUATION WINDOW
+% One column per axis (Pitch/Yaw/Roll), one row per quantity -- lets you
+% read straight down a column to see how one axis's loop is behaving.
+% Fin deflection doesn't decompose into single axes (each fin mixes
+% contributions from all three), so it gets its own full-width row at
+% the bottom instead of a column.
+fig3 = figure(104); clf(fig3); set(fig3,'Name','Controller Evaluation','Color','w');
+tCtrl = tiledlayout(fig3, 7, 3, 'TileSpacing','compact', 'Padding','compact');
+if numel(runs) > 1
+    tCtrl.OuterPosition = [0, 0, 1, 0.93];
+end
+
+axisLbl3 = {'Pitch','Yaw','Roll'};   % column order; matches the [pitch yaw roll]
+                                      % column convention of outerLoop/innerLoop
+                                      % fields returned by extractSimRun
+
+% eul_deg from quat2eulerZXY_local is [roll pitch yaw]; map each Pitch/Yaw/Roll
+% column to its matching Euler component.
+eulerColOf = [2, 3, 1];
+
+rowYLbl = {{'Euler','[deg]'}, {'OL Output','[deg/s]'}, {'OL Limiting','[0/1]'}, ...
+    {'IL Moment','[N*m]'}, {'IL Output','[deg]'}, {'IL Limiting','[0/1]'}};
+
+axEuler     = gobjects(1,3);
+axOuterCmd  = gobjects(1,3);
+axOuterFlag = gobjects(1,3);
+axInnerMom  = gobjects(1,3);
+axInnerDeg  = gobjects(1,3);
+axInnerFlag = gobjects(1,3);
+
+for j = 1:3
+    axEuler(j) = nexttile(tCtrl); hold(axEuler(j),'on'); grid(axEuler(j),'on');
+    title(axEuler(j), axisLbl3{j});
+    if j == 1, ylabel(axEuler(j), rowYLbl{1}, 'FontSize', 8); end
+end
+for j = 1:3
+    axOuterCmd(j) = nexttile(tCtrl); hold(axOuterCmd(j),'on'); grid(axOuterCmd(j),'on');
+    if j == 1, ylabel(axOuterCmd(j), rowYLbl{2}, 'FontSize', 8); end
+end
+for j = 1:3
+    axOuterFlag(j) = nexttile(tCtrl); hold(axOuterFlag(j),'on'); grid(axOuterFlag(j),'on');
+    ylim(axOuterFlag(j), [-0.1, 1.1]);
+    if j == 1, ylabel(axOuterFlag(j), rowYLbl{3}, 'FontSize', 8); end
+end
+for j = 1:3
+    axInnerMom(j) = nexttile(tCtrl); hold(axInnerMom(j),'on'); grid(axInnerMom(j),'on');
+    if j == 1, ylabel(axInnerMom(j), rowYLbl{4}, 'FontSize', 8); end
+end
+for j = 1:3
+    axInnerDeg(j) = nexttile(tCtrl); hold(axInnerDeg(j),'on'); grid(axInnerDeg(j),'on');
+    if j == 1, ylabel(axInnerDeg(j), rowYLbl{5}, 'FontSize', 8); end
+end
+for j = 1:3
+    axInnerFlag(j) = nexttile(tCtrl); hold(axInnerFlag(j),'on'); grid(axInnerFlag(j),'on');
+    ylim(axInnerFlag(j), [-0.1, 1.1]);
+    xlabel(axInnerFlag(j), 'Time [s]');
+    if j == 1, ylabel(axInnerFlag(j), rowYLbl{6}, 'FontSize', 8); end
+end
+
+% Fin deflection doesn't decompose into the Pitch/Yaw/Roll columns above
+% (each fin mixes contributions from all three axes), so it gets its own
+% nested 1x4 tiledlayout spanning the full row instead of lining up with
+% the 3-column grid -- one subplot per fin.
+tFin = tiledlayout(tCtrl, 1, 4, 'TileSpacing','compact', 'Padding','compact');
+tFin.Layout.Tile = 19;   % row 7, col 1 of the outer 7x3 grid
+tFin.Layout.TileSpan = [1, 3];
+title(tFin, 'Fin Control');
+ylabel(tFin, 'Fin Deflection [deg]');
+xlabel(tFin, 'Time [s]');
+
+finLbl = {'Fin1','Fin2','Fin3','Fin4'};
+axFin = gobjects(1,4);
+for f = 1:4
+    axFin(f) = nexttile(tFin); hold(axFin(f),'on'); grid(axFin(f),'on');
+    title(axFin(f), finLbl{f}, 'FontWeight','normal', 'FontSize', 8);
+end
+
+for k = 1:numel(runs)
+    r = runs{k};
+    c = runColors{k};
+
+    eul_deg = quat2eulerZXY_local(r.q_na);
+    for j = 1:3
+        plot(axEuler(j), r.t, eul_deg(:,eulerColOf(j)), '-', 'Color', c, 'LineWidth', 1.2);
+
+        plot(axOuterCmd(j), r.t, rad2deg(r.outerRateCmd_rps(:,j)), '-', 'Color', c, 'LineWidth', 1.2);
+        plotFlags_local(axOuterFlag(j), r.t, r.outerRateLimited_b(:,j), r.outerSaturated_b(:,j), c);
+
+        plot(axInnerMom(j), r.t, r.innerMoment_Nm(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axInnerDeg(j), r.t, r.innerControl_deg(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+        plotFlags_local(axInnerFlag(j), r.t, r.innerRateLimited_b(:,j), r.innerSaturated_b(:,j), c);
+    end
+
+    for f = 1:4
+        plot(axFin(f), r.t, r.control_deg(:,f), '-', 'Color', c, 'LineWidth', 1.2);
+    end
+end
+
+% Flag line style (solid = rate limited, dashed = saturated) is shared
+% across runs/axes, so explain it once rather than per subplot.
+legend(axOuterFlag(1), {'Rate Limited','Saturated'}, 'Location','best');
+legend(axInnerFlag(1), {'Rate Limited','Saturated'}, 'Location','best');
+
+addColorKeyLegend_local(runs, runColors);
+
 % ======================================================================
 function axArr = makeGroup_local(tOuter, tileIdx, n, groupTitle, compLbls, yLbl)
     % Build a nested 1-column tiledlayout inside outer tile `tileIdx`,
@@ -252,6 +355,18 @@ function addColorKeyLegend_local(runs, runColors)
     end
     lgdKey = legend(axKey, hKey, keyLabels, 'Orientation', 'horizontal', 'Box', 'off');
     lgdKey.Position(1:2) = [0.5 - lgdKey.Position(3)/2, 0.965];
+end
+
+% ======================================================================
+function plotFlags_local(ax, t, rateLimited_b, saturated_b, c)
+    % Plot a rate-limit/saturation flag pair into ax: solid for rate
+    % limited, dashed for saturated, both in the run's color, with
+    % 'stairs' since these are boolean step signals rather than
+    % continuous ones. Legend text is added once by the caller, not here
+    % (avoids repeating it per axis/run).
+    stairs(ax, t, double(rateLimited_b), '-', 'Color', c, 'LineWidth', 1.2);
+    stairs(ax, t, double(saturated_b), '--', 'Color', c, 'LineWidth', 1.2);
+    ylim(ax, [-0.1, 1.1]);
 end
 
 % ======================================================================

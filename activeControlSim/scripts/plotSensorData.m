@@ -16,15 +16,15 @@ function plotSensorData(varargin)
 %       wBdyMeas_rps     Nx3   measured angular rate (gyro)            [rad/s]
 %       magBdyMeas_nT    Nx3   measured magnetic field (magnetometer)  [nT]
 %       baroMeas_Pa      Nx1   measured pressure (barometer)           [Pa]
-%     simout.eom_bus
+%     simout.plant_bus.eom_bus
 %       accBdy_mps2      Nx3   true body-axis acceleration             [m/s^2]
 %       wBdy_rps         Nx3   true body-axis angular rate             [rad/s]
-%     simout.enviornment_bus
+%     simout.plant_bus.enviroment_bus
 %       pressure_Pa      Nx1   true ambient pressure                   [Pa]
 %
-%   Truth signals (eom_bus / enviornment_bus) are optional -- if a run's
-%   `out` doesn't have them, only the measured sensor traces are drawn
-%   for that run.
+%   Truth signals (plant_bus.eom_bus / plant_bus.enviroment_bus) are
+%   optional -- if a run's `out` doesn't have them, only the measured
+%   sensor traces are drawn for that run.
 %
 %   OUTPUT
 %     Figure 103: Sensors (accelerometer/gyro/magnetometer/barometer)
@@ -217,22 +217,25 @@ function r = extractRun_local(out, label)
     accTrue = []; wTrue = []; pressureTrue = [];
     hasTruthAcc = false; hasTruthGyro = false; hasTruthBaro = false;
 
-    if isfield(simout, 'eom_bus')
-        eom = simout.eom_bus;
-        if isfield(eom, 'accBdy_mps2')
-            accTrue = alignRows_local(resampleIfNeeded_local(eom.accBdy_mps2, t, 'linear').Data, N, 3);
-            hasTruthAcc = true;
+    if isfield(simout, 'plant_bus')
+        plant = simout.plant_bus;
+        if isfield(plant, 'eom_bus')
+            eom = plant.eom_bus;
+            if isfield(eom, 'accBdy_mps2')
+                accTrue = alignRows_local(resampleIfNeeded_local(eom.accBdy_mps2, t, 'linear').Data, N, 3);
+                hasTruthAcc = true;
+            end
+            if isfield(eom, 'wBdy_rps')
+                wTrue = alignRows_local(resampleIfNeeded_local(eom.wBdy_rps, t, 'linear').Data, N, 3);
+                hasTruthGyro = true;
+            end
         end
-        if isfield(eom, 'wBdy_rps')
-            wTrue = alignRows_local(resampleIfNeeded_local(eom.wBdy_rps, t, 'linear').Data, N, 3);
-            hasTruthGyro = true;
-        end
-    end
-    if isfield(simout, 'enviornment_bus')
-        env = simout.enviornment_bus;
-        if isfield(env, 'pressure_Pa')
-            pressureTrue = alignRows_local(resampleIfNeeded_local(env.pressure_Pa, t, 'linear').Data, N, 1);
-            hasTruthBaro = true;
+        if isfield(plant, 'enviroment_bus')
+            env = plant.enviroment_bus;
+            if isfield(env, 'pressure_Pa')
+                pressureTrue = alignRows_local(resampleIfNeeded_local(env.pressure_Pa, t, 'linear').Data, N, 1);
+                hasTruthBaro = true;
+            end
         end
     end
 
