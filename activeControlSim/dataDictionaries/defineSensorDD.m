@@ -1,7 +1,4 @@
 function S = defineSensorDD()
-%DEFINESENSORDD  Assemble the sensor model's parameters into one
-%   struct, grouped by field. No Simulink calls here -- just data.
-%
 
 % sensor params
 % fill in later for lever arm:
@@ -28,10 +25,15 @@ S.sensorParams.accPSDGM = 2 * S.sensorParams.accSigmaBias_mps2 .* ...
     S.sensorParams.accSigmaBias_mps2 / S.sensorParams.accTau_s;
 % should probably be set to a 0 mean random value with some std. Not
 % critical and can do later
-accSigmaBiasTurnOn_mg = [0.5, 0.5, 0.5]; % [millig]
-S.sensorParams.accSigmaBiasTurnOn_mps2 = accSigmaBiasTurnOn_mg * 0.00981; % [m/s^2]
+accSigmaBiasTurnOn_mg = [2.0, 2.0, 2.0]; % [millig]
+accSigmaBiasTurnOn_mps2 = accSigmaBiasTurnOn_mg * 0.00981; % [m/s^2]
+S.sensorParams.accTurnOnBias_mps2 = accSigmaBiasTurnOn_mps2 * randn(1, 1);
 accRate_Hz = 100; % [Hz]
 S.sensorParams.accSampleTime_s = 1 / accRate_Hz; % [s]
+% temperature dependent drift
+% not modeling yet, maybe could maybe could not
+% T0 = 20; % [C]
+
 
 %%% Gyroscope %%%
 % scale factor and coupling matrix measuring the components of the body
@@ -57,6 +59,9 @@ S.sensorParams.gyroSampleTime_s = 1 / gyroRate_Hz; % [s]
 % g sensitivity of the gyroscope
 gyroG = [0.1 0 0; 0 0.1 0; 0 0 0.1]; % [deg / s / g
 S.sensorParams.gyroG = gyroG * 0.01745 * 9.8065; % [rad / s / (m/s)]
+% turn on bias
+gyroSigmaBiasTurnOn_rps = [0.008, 0.008, 0.008]; % [rad / s]
+S.sensorParams.gyroTurnOnBias_rps = gyroSigmaBiasTurnOn_rps * randn(1, 1);
 % not consider g^2 sensitivity at least for now
 
 %%% Magnetometer %%%
@@ -85,5 +90,6 @@ S.sensorParams.baroPSDGM = 2 * baroBiasSigma_Pa^2 / S.sensorParams.baroTau_s;
 baroRate_Hz = 100; % [Hz]
 S.sensorParams.baroSampleTime_s = 1 / baroRate_Hz; % [s]
 % flight regime depended pressure offset derived via CFD ie C(M) * q. Not adding yet
+
 
 end
