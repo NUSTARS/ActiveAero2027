@@ -15,13 +15,13 @@ C.innerLoopParams.loRateLimitPitchYaw_dps = -180; % [deg/s] min fin deflection r
 C.innerLoopParams.upLimitPitchYaw_deg     = 45;   % [deg] max fin deflection angle
 C.innerLoopParams.loLimitPitchYaw_deg     = -45;  % [deg] min fin deflection angle
 
-C.innerLoopParams.upRateLimitRoll_dps = 180;  % [deg/s] max fin deflection rate
-C.innerLoopParams.loRateLimitRoll_dps = -180; % [deg/s] min fin deflection rate
+C.innerLoopParams.upRateLimitRoll_dps = 90;  % [deg/s] max fin deflection rate
+C.innerLoopParams.loRateLimitRoll_dps = -90; % [deg/s] min fin deflection rate
 C.innerLoopParams.upLimitRoll_deg     = 5;   % [deg] max fin deflection angle
 C.innerLoopParams.loLimitRoll_deg     = -5;  % [deg] min fin deflection angle
 
 C.innerLoopParams.fbkGainBreakpoints_Pa = [0 5e3 1e5];
-C.innerLoopParams.fbkGainPitchYawP_na = 500*[1.2 0.6 0.4];
+C.innerLoopParams.fbkGainPitchYawP_na = 800*[1.2 0.6 0.4];
 C.innerLoopParams.fbkGainPitchYawI_na = 15000*[1.2 0.6 0.4];
 C.innerLoopParams.fbkGainPitchYawD_na = 0*[1.2 0.6 0.5];
 C.innerLoopParams.fbkGainPitchYawN_na = [10 10 10];
@@ -38,7 +38,7 @@ C.outerLoopParams.upRateLimitPitchYawRate_rps2 = 0.5;    % [rad/s^2] max pitch/y
 C.outerLoopParams.loRateLimitPitchYawRate_rps2 = -0.5;   % [rad/s^2] min pitch/yaw rate-command slew rate
 C.outerLoopParams.upLimitPitchYawRate_rps      = 0.1;    % [rad/s] max commanded pitch/yaw rate
 C.outerLoopParams.loLimitPitchYawRate_rps      = -0.1;   % [rad/s] min commanded pitch/yaw rate
-C.outerLoopParams.pitchYawGains                = [3, 1, 0, 100]; % [P, I, D, N] pitch/yaw outer-loop PID gains
+C.outerLoopParams.pitchYawGains                = [6, 0.5, 0, 100]; % [P, I, D, N] pitch/yaw outer-loop PID gains
 
 C.outerLoopParams.upRateLimitRollRate_rps2 = 5;    % [rad/s^2] max roll rate-command slew rate
 C.outerLoopParams.loRateLimitRollRate_rps2 = -5;   % [rad/s^2] min roll rate-command slew rate
