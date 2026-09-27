@@ -19,6 +19,9 @@ function r = extractSimRun(out, label, forwardAxis)
 %                    simout.plant_bus.aero_bus.body_bus
 %                      aoa_deg      Nx1   total angle of attack, as
 %                                         logged by the model
+%                    simout.navigation_bus   optional
+%                      {phi,theta,psi}Est_rad  Nx1 estimated 3-2-1 Euler
+%                                         angles [rad]
 %                    simout.controller_bus   optional -- older logs
 %                                         without it read back as zeros
 %                                         (see below for defaults)
@@ -40,6 +43,8 @@ function r = extractSimRun(out, label, forwardAxis)
 %   Returns a struct r with fields:
 %     label, t, pos_plot, vel_plot, nose_plot (all in plot frame: north,
 %     east, up), tilt_deg, roll_deg, aoa_deg, omega_body (rad/s), q_na,
+%     eulEst_rad (Nx3 nav-estimated [phi theta psi], 3-2-1, NaN if not
+%     logged),
 %     control_deg (Nx4, zeros if not logged),
 %     outerRateCmd_rps, outerRateLimited_b, outerSaturated_b (Nx3,
 %     columns [pitch yaw roll], zeros if not logged),
@@ -146,6 +151,17 @@ else
     innerSaturated_b    = zeros(N, 3);
 end
 
+% Navigation estimate of the Euler angles -- what the controller actually
+% tracks against. NaN (plots as nothing) for older logs without it.
+if isfield(simout, 'navigation_bus')
+    nav = simout.navigation_bus;
+    eulEst_rad = [extractHeld_local(nav.phiEst_rad,   t, N, 1), ...
+                  extractHeld_local(nav.thetaEst_rad, t, N, 1), ...
+                  extractHeld_local(nav.psiEst_rad,   t, N, 1)];
+else
+    eulEst_rad = nan(N, 3);
+end
+
 q_na = q_na ./ vecnorm(q_na, 2, 2);
 
 % ---------------------------------------------------------- derived signals
@@ -215,6 +231,7 @@ r = struct( ...
     'aoa_deg',   aoa_deg, ...
     'omega_body', omega_body, ...
     'q_na',      q_na, ...
+    'eulEst_rad', eulEst_rad, ...
     'control_deg', control_deg, ...
     'outerRateCmd_rps',   outerRateCmd_rps, ...
     'outerRateLimited_b', outerRateLimited_b, ...
