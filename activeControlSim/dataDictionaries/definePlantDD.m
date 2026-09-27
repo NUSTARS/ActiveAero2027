@@ -17,6 +17,7 @@ P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
 P.icParams.velBdy_mps  = [300, 0, 0];   % [m/s]
 P.icParams.eul_rad     = [0, pi/2-0.2, 0.2];   % [rad]
 P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
+
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
 %% Enviornment
@@ -61,5 +62,6 @@ P.aeroParams.finAngles1_rad = [0, 0, 0];
 P.aeroParams.finAngles2_rad = [pi/2, 0, 0];
 P.aeroParams.finAngles3_rad = [pi, 0, 0];
 P.aeroParams.finAngles4_rad = [3*pi/2, 0, 0];
+
 
 end

@@ -13,11 +13,19 @@ function exportSimDataCsv(varargin)
 %   Each matFile must contain an `out` variable, e.g. as saved by
 %   scripts/runModel.m (results/simResults.mat).
 %
+<<<<<<< HEAD
 %   Time base is the first available field of simout.plant_bus.eom_bus
 %   (checked in the order posNed_m, velBdy_mps, q_na, wBdy_rps,
 %   accBdy_mps2) -- i.e. the trajectory integrator's own samples. Every
 %   other signal (plant_bus.enviroment_bus, sensor_bus) is resampled onto
 %   that time base: truth/state signals with linear interpolation, sensor
+=======
+%   Time base is the first available field of simout.eom_bus (checked in
+%   the order posNed_m, velBdy_mps, q_na, wBdy_rps, accBdy_mps2) -- i.e.
+%   the trajectory integrator's own samples. Every other signal
+%   (aeroParams_bus, enviornment_bus, sensor_bus) is resampled onto that
+%   time base: truth/state signals with linear interpolation, sensor
+>>>>>>> 2f52f69 (redo merging on new branch)
 %   measurements with zero-order hold (a real sensor holds its last
 %   reading between updates, since sensors sample at their own
 %   independent rates -- see plotSensorData.m). A bus or field that
@@ -26,12 +34,22 @@ function exportSimDataCsv(varargin)
 %
 %   COLUMNS (all in the buses' native units)
 %     t_s
+<<<<<<< HEAD
 %     posNedN_m, posNedE_m, posNedD_m        (plant_bus.eom_bus.posNed_m)   truth
 %     q0, q1, q2, q3                         (plant_bus.eom_bus.q_na)       truth
 %     velBdyU_mps, velBdyV_mps, velBdyW_mps  (plant_bus.eom_bus.velBdy_mps) truth
 %     wBdyP_rps, wBdyQ_rps, wBdyR_rps        (plant_bus.eom_bus.wBdy_rps)   truth
 %     accBdyX_mps2, accBdyY_mps2, accBdyZ_mps2 (plant_bus.eom_bus.accBdy_mps2) truth
 %     pressureTrue_Pa                        (plant_bus.enviroment_bus.pressure_Pa) truth
+=======
+%     posNedN_m, posNedE_m, posNedD_m        (eom_bus.posNed_m)          truth
+%     q0, q1, q2, q3                         (eom_bus.q_na)              truth
+%     velBdyU_mps, velBdyV_mps, velBdyW_mps  (eom_bus.velBdy_mps)        truth
+%     wBdyP_rps, wBdyQ_rps, wBdyR_rps        (eom_bus.wBdy_rps)          truth
+%     accBdyX_mps2, accBdyY_mps2, accBdyZ_mps2 (eom_bus.accBdy_mps2)     truth
+%     alpha_rad                              (aeroParams_bus.alpha_rad)  truth
+%     pressureTrue_Pa                        (enviornment_bus.pressure_Pa) truth
+>>>>>>> 2f52f69 (redo merging on new branch)
 %     fMeasX_mps2, fMeasY_mps2, fMeasZ_mps2  (sensor_bus.fBdyMeas_mps2)  sensor
 %     wMeasP_rps, wMeasQ_rps, wMeasR_rps     (sensor_bus.wBdyMeas_rps)   sensor
 %     magMeasX_nT, magMeasY_nT, magMeasZ_nT  (sensor_bus.magBdyMeas_nT)  sensor
@@ -85,11 +103,19 @@ catch
         'out.simout not found -- out must be a Simulink sim output.');
 end
 
+<<<<<<< HEAD
 if ~isstruct(simout) || ~isfield(simout, 'plant_bus') || ~isfield(simout.plant_bus, 'eom_bus')
     error('exportSimDataCsv:noEom', ...
         'simout.plant_bus.eom_bus not found -- need at least the trajectory truth bus.');
 end
 eom = simout.plant_bus.eom_bus;
+=======
+if ~isstruct(simout) || ~isfield(simout, 'eom_bus')
+    error('exportSimDataCsv:noEom', ...
+        'simout.eom_bus not found -- need at least the trajectory truth bus.');
+end
+eom = simout.eom_bus;
+>>>>>>> 2f52f69 (redo merging on new branch)
 
 % -------------------------------------------------------- pick time base
 baseFieldOrder = {'posNed_m','velBdy_mps','q_na','wBdy_rps','accBdy_mps2'};
@@ -122,8 +148,18 @@ T = addCols_local(T, t, N, getField_local(eom, 'wBdy_rps'), ...
 T = addCols_local(T, t, N, getField_local(eom, 'accBdy_mps2'), ...
     {'accBdyX_mps2','accBdyY_mps2','accBdyZ_mps2'}, 'linear');
 
+<<<<<<< HEAD
 if isfield(simout.plant_bus, 'enviroment_bus')
     T = addCols_local(T, t, N, getField_local(simout.plant_bus.enviroment_bus, 'pressure_Pa'), ...
+=======
+if isfield(simout, 'aeroParams_bus')
+    T = addCols_local(T, t, N, getField_local(simout.aeroParams_bus, 'alpha_rad'), ...
+        {'alpha_rad'}, 'linear');
+end
+
+if isfield(simout, 'enviornment_bus')
+    T = addCols_local(T, t, N, getField_local(simout.enviornment_bus, 'pressure_Pa'), ...
+>>>>>>> 2f52f69 (redo merging on new branch)
         {'pressureTrue_Pa'}, 'linear');
 end
 
