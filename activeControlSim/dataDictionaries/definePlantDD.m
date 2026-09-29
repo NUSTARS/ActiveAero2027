@@ -15,10 +15,14 @@ P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
 
 %% ICs
 P.icParams.velBdy_mps  = [300, 0, 0];   % [m/s]
-P.icParams.eul_rad     = [0, pi/2-0.2, 0.2];   % [rad]
 P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
-
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
+
+eulIC_rad     = [0, 0.1, 0.1];   % [rad], in the rotated frame (not bdy or NED)
+quatIC_na = eul2quat(eulIC_rad, "ZYX");
+quatRotIC_na = quatmultiply(quatIC_na, [0.7071, 0, 0.7071, 0]);
+P.icParams.eul_rad = quat2eul(quatRotIC_na, "ZYX");  % [rad], rotated-frame Euler angles
+
 
 %% Enviornment
 P.envParams.gravityNed_mps2 = [0, 0, 9.81];   % [m/s^2]
@@ -30,7 +34,7 @@ P.envParams.groundAlt_m = 182; % [m] above ellipsoid surface (sea level)
 P.envParams.date_y = decyear('01-September-2026','dd-mmm-yyyy'); % [y] year + fraction of year
 
 % Wind Simulations
-P.windParams.type       = 1;          % 0 = constant, 1 = stochastic
+P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
 P.windParams.constantNed_mps = [0; 0; 0]; % [m/s]
 
 

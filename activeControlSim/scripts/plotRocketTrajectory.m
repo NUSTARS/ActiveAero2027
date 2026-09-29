@@ -130,8 +130,8 @@ xlabel(axAoa,'Time [s]'); ylabel(axAoa,'Total AoA [deg]'); title(axAoa,'Angle of
 
 axOmega = makeGroup_local(tOuter, 5, 3, 'Omega (Body)', omegaLbl, 'Angular Rate [deg/s]');
 % Raw quaternion components -- avoids the Euler-angle gimbal-lock
-% singularity entirely (see the Controller Evaluation figure for the
-% 3-2-1 Euler angles the controller tracks, estimated vs actual).
+% singularity entirely (see the Controller Evaluation figure for 3-2-1
+% Euler angles in the launch frame, estimated vs actual).
 axQuat = makeGroup_local(tOuter, 6, 4, 'Quaternion (body<-NED)', quatLbl, 'Component [-]');
 
 for k = 1:numel(runs)
@@ -149,11 +149,15 @@ for k = 1:numel(runs)
     plot(axAoa, r.t, r.aoa_deg, '-', 'Color', c, 'LineWidth', 1.5);
 
     for j = 1:3
+        % Solid = true value, dashed = nav estimate (what the controller sees).
         plot(axOmega(j), r.t, rad2deg(r.omega_body(:,j)), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axOmega(j), r.t, rad2deg(r.omegaEst_rps(:,j)), '--', 'Color', c, 'LineWidth', 1.2);
     end
 
     for j = 1:4
+        % Solid = true value, dashed = nav estimate.
         plot(axQuat(j), r.t, r.q_na(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axQuat(j), r.t, r.qEst_na(:,j), '--', 'Color', c, 'LineWidth', 1.2);
     end
 end
 
@@ -227,6 +231,11 @@ axisLbl3 = {'Pitch','Yaw','Roll'};   % column order; matches the [pitch yaw roll
 % roll-first; map each Pitch/Yaw/Roll column to its matching component.
 eulerColOf = [2, 3, 1];
 
+% Euler angles are measured against a launch frame L = [Up, East, North]
+% instead of NED, so a vertical rocket reads (0,0,0) and the 3-2-1 gimbal
+% lock moves to nose-horizontal. q_Ln is L <- NED; q_bL = conj(q_Ln) (x) q_na.
+q_Ln = [sqrt(2)/2, 0, sqrt(2)/2, 0];
+
 rowYLbl = {{'Euler','[deg]'}, {'Angular Rate','[deg/s]'}, ...
     {'Moment','[N*m]'}, {'deflection','[deg]'}, {'Limiting'}};
 
@@ -276,11 +285,18 @@ for k = 1:numel(runs)
     r = runs{k};
     c = runColors{k};
 
-    eul_deg = quat2euler321_local(r.q_na);
+    % Nav estimate as a quaternion: logged directly when available, else
+    % rebuilt from the nav's NED Euler angles (older logs / dummyNav).
+    qEst = r.qEst_na;
+    if all(isnan(qEst(:)))
+        qEst = euler3212quat_local(r.eulEst_rad);
+    end
+    eul_deg    = quat2euler321_local(quatmult_local(quatconj_local(q_Ln), r.q_na));
+    eulEst_deg = quat2euler321_local(quatmult_local(quatconj_local(q_Ln), qEst));
     for j = 1:3
-        % Solid = true value, dashed = what the controller sees/commands.
+        % Solid = true value, dashed = nav estimate, both in the launch frame.
         plot(axEuler(j), r.t, eul_deg(:,eulerColOf(j)), '-', 'Color', c, 'LineWidth', 1.2);
-        plot(axEuler(j), r.t, rad2deg(r.eulEst_rad(:,eulerColOf(j))), '--', 'Color', c, 'LineWidth', 1.2);
+        plot(axEuler(j), r.t, eulEst_deg(:,eulerColOf(j)), '--', 'Color', c, 'LineWidth', 1.2);
 
         plot(axOuterCmd(j), r.t, rad2deg(r.omega_body(:,eulerColOf(j))), '-', 'Color', c, 'LineWidth', 1.2);
         plot(axOuterCmd(j), r.t, rad2deg(r.outerRateCmd_rps(:,j)), '--', 'Color', c, 'LineWidth', 1.2);
@@ -359,18 +375,46 @@ function s = onoff_local(tf)
 end
 
 % ======================================================================
-function eul_deg = quat2euler321_local(q_na)
+function eul_deg = quat2euler321_local(q)
     % Yaw-pitch-roll (3-2-1) Euler angles [phi theta psi] from a scalar-
-    % first quaternion [q0 q1 q2 q3], body<-NED -- the same sequence the
-    % navigation estimate (and so the controller) uses, so the true and
-    % estimated traces overlay directly. Note this sequence gimbal-locks
-    % at theta = +/-90deg, which near-vertical flight sits close to, so
-    % phi/psi can swing and wrap there.
-    q0 = q_na(:,1); q1 = q_na(:,2); q2 = q_na(:,3); q3 = q_na(:,4);
+    % first quaternion [q0 q1 q2 q3], body<-reference frame. Gimbal-locks
+    % at theta = +/-90deg -- in NED that is near-vertical flight, which is
+    % why the caller prerotates into the launch frame first.
+    q0 = q(:,1); q1 = q(:,2); q2 = q(:,3); q3 = q(:,4);
     roll  = atan2(2*(q0.*q1 + q2.*q3), 1 - 2*(q1.^2 + q2.^2));
     pitch = asin(max(-1, min(1, 2*(q0.*q2 - q3.*q1))));
     yaw   = atan2(2*(q0.*q3 + q1.*q2), 1 - 2*(q2.^2 + q3.^2));
     eul_deg = rad2deg([roll, pitch, yaw]);
+end
+
+% ======================================================================
+function q = euler3212quat_local(eul_rad)
+    % Inverse of quat2euler321_local: [phi theta psi] (rad) -> scalar-first
+    % quaternion, body<-reference. Matches Aerospace Toolbox angle2quat(psi,theta,phi).
+    h = eul_rad / 2;
+    cf = cos(h(:,1)); sf = sin(h(:,1));
+    ct = cos(h(:,2)); st = sin(h(:,2));
+    cp = cos(h(:,3)); sp = sin(h(:,3));
+    q = [cf.*ct.*cp + sf.*st.*sp, ...
+         sf.*ct.*cp - cf.*st.*sp, ...
+         cf.*st.*cp + sf.*ct.*sp, ...
+         cf.*ct.*sp - sf.*st.*cp];
+end
+
+% ======================================================================
+function q = quatmult_local(a, b)
+    % Hamilton product a (x) b, scalar-first, row-wise; either input may be
+    % a single 1x4 row applied to every row of the other. Same as
+    % Aerospace Toolbox quatmultiply.
+    n = max(size(a,1), size(b,1));
+    a = repmat(a, n/size(a,1), 1); b = repmat(b, n/size(b,1), 1);
+    q = [a(:,1).*b(:,1) - sum(a(:,2:4).*b(:,2:4), 2), ...
+         a(:,1).*b(:,2:4) + b(:,1).*a(:,2:4) + cross(a(:,2:4), b(:,2:4), 2)];
+end
+
+% ======================================================================
+function q = quatconj_local(q)
+    q(:,2:4) = -q(:,2:4);
 end
 
 % ======================================================================

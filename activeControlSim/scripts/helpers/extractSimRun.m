@@ -44,7 +44,9 @@ function r = extractSimRun(out, label, forwardAxis)
 %     label, t, pos_plot, vel_plot, nose_plot (all in plot frame: north,
 %     east, up), tilt_deg, roll_deg, aoa_deg, omega_body (rad/s), q_na,
 %     eulEst_rad (Nx3 nav-estimated [phi theta psi], 3-2-1, NaN if not
-%     logged),
+%     logged), omegaEst_rps (Nx3 nav-estimated body rates [p q r], NaN
+%     if not logged), qEst_na (Nx4 nav-estimated quaternion, sign-matched
+%     to q_na, NaN if not logged),
 %     control_deg (Nx4, zeros if not logged),
 %     outerRateCmd_rps, outerRateLimited_b, outerSaturated_b (Nx3,
 %     columns [pitch yaw roll], zeros if not logged),
@@ -158,11 +160,25 @@ if isfield(simout, 'navigation_bus')
     eulEst_rad = [extractHeld_local(nav.phiEst_rad,   t, N, 1), ...
                   extractHeld_local(nav.thetaEst_rad, t, N, 1), ...
                   extractHeld_local(nav.psiEst_rad,   t, N, 1)];
+    omegaEst_rps = [extractHeld_local(nav.pEst_rps, t, N, 1), ...
+                    extractHeld_local(nav.qEst_rps, t, N, 1), ...
+                    extractHeld_local(nav.rEst_rps, t, N, 1)];
 else
-    eulEst_rad = nan(N, 3);
+    eulEst_rad   = nan(N, 3);
+    omegaEst_rps = nan(N, 3);
+end
+if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'q_na')
+    qEst_na = extractHeld_local(simout.navigation_bus.q_na, t, N, 4);
+else
+    qEst_na = nan(N, 4);
 end
 
 q_na = q_na ./ vecnorm(q_na, 2, 2);
+
+% q and -q are the same attitude; flip the estimate onto the truth's
+% hemisphere so the overlaid traces don't jump by sign alone.
+flipSign = sum(qEst_na .* q_na, 2) < 0;
+qEst_na(flipSign,:) = -qEst_na(flipSign,:);
 
 % ---------------------------------------------------------- derived signals
 fwd_body = forwardAxis(:);
@@ -232,6 +248,8 @@ r = struct( ...
     'omega_body', omega_body, ...
     'q_na',      q_na, ...
     'eulEst_rad', eulEst_rad, ...
+    'omegaEst_rps', omegaEst_rps, ...
+    'qEst_na',   qEst_na, ...
     'control_deg', control_deg, ...
     'outerRateCmd_rps',   outerRateCmd_rps, ...
     'outerRateLimited_b', outerRateLimited_b, ...

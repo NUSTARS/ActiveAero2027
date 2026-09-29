@@ -5,8 +5,8 @@ function C = defineControllerDD()
 
 %% Guidance (attitude commands)
 C.guidanceParams.phiCmd_rad   = 0; % [rad] commanded roll angle
-C.guidanceParams.thetaCmd_rad = pi/2-0.1; % [rad] commanded pitch angle
-C.guidanceParams.psiCmd_rad   = 0.1; % [rad] commanded yaw angle
+C.guidanceParams.thetaCmd_rad = 0; % [rad] commanded pitch angle
+C.guidanceParams.psiCmd_rad   = 0; % [rad] commanded yaw angle
 
 %% Inner Loop (rate-loop PID output -> fin deflection limits)
 % Note: rollInnerLoop currently reuses these same PitchYaw-named limits.
@@ -21,12 +21,12 @@ C.innerLoopParams.upLimitRoll_deg     = 5;   % [deg] max fin deflection angle
 C.innerLoopParams.loLimitRoll_deg     = -5;  % [deg] min fin deflection angle
 
 C.innerLoopParams.fbkGainBreakpoints_Pa = [0 5e3 1e5];
-C.innerLoopParams.fbkGainPitchYawP_na = 800*[1.2 0.6 0.4];
-C.innerLoopParams.fbkGainPitchYawI_na = 15000*[1.2 0.6 0.4];
+C.innerLoopParams.fbkGainPitchYawP_na = 8000*[1.2 0.6 0.4];
+C.innerLoopParams.fbkGainPitchYawI_na = 50000*[1.2 0.6 0.4];
 C.innerLoopParams.fbkGainPitchYawD_na = 0*[1.2 0.6 0.5];
 C.innerLoopParams.fbkGainPitchYawN_na = [10 10 10];
-C.innerLoopParams.fbkGainRollP_na = 8*[1 0.5 0.3];
-C.innerLoopParams.fbkGainRollI_na = 4*[1 0.5 0.3];
+C.innerLoopParams.fbkGainRollP_na = 12*[1 0.5 0.3];
+C.innerLoopParams.fbkGainRollI_na = 6*[1 0.5 0.3];
 C.innerLoopParams.fbkGainRollD_na = [0 0 0];
 C.innerLoopParams.fbkGainRollN_na = [1 1 1];
 
@@ -38,7 +38,7 @@ C.outerLoopParams.upRateLimitPitchYawRate_rps2 = 0.5;    % [rad/s^2] max pitch/y
 C.outerLoopParams.loRateLimitPitchYawRate_rps2 = -0.5;   % [rad/s^2] min pitch/yaw rate-command slew rate
 C.outerLoopParams.upLimitPitchYawRate_rps      = 0.1;    % [rad/s] max commanded pitch/yaw rate
 C.outerLoopParams.loLimitPitchYawRate_rps      = -0.1;   % [rad/s] min commanded pitch/yaw rate
-C.outerLoopParams.pitchYawGains                = [6, 0.5, 0, 100]; % [P, I, D, N] pitch/yaw outer-loop PID gains
+C.outerLoopParams.pitchYawGains                = [2, 0.5, 0, 1]; % [P, I, D, N] pitch/yaw outer-loop PID gains
 
 C.outerLoopParams.upRateLimitRollRate_rps2 = 5;    % [rad/s^2] max roll rate-command slew rate
 C.outerLoopParams.loRateLimitRollRate_rps2 = -5;   % [rad/s^2] min roll rate-command slew rate
