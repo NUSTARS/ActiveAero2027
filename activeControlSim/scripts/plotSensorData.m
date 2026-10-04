@@ -16,7 +16,7 @@ function plotSensorData(varargin)
 %       wBdyMeas_rps     Nx3   measured angular rate (gyro)            [rad/s]
 %       magBdyMeas_nT    Nx3   measured magnetic field (magnetometer)  [nT]
 %       baroMeas_Pa      Nx1   measured pressure (barometer)           [Pa]
-<<<<<<< HEAD
+%
 %     simout.plant_bus.eom_bus
 %       accBdy_mps2      Nx3   true body-axis acceleration             [m/s^2]
 %       wBdy_rps         Nx3   true body-axis angular rate             [rad/s]
@@ -29,23 +29,7 @@ function plotSensorData(varargin)
 %
 %   OUTPUT
 %     Figure 103: Sensors (accelerometer/gyro/magnetometer/barometer)
-=======
-%     simout.eom_bus
-%       accBdy_mps2      Nx3   true body-axis acceleration             [m/s^2]
-%       wBdy_rps         Nx3   true body-axis angular rate             [rad/s]
-%     simout.enviornment_bus
-%       pressure_Pa      Nx1   true ambient pressure                   [Pa]
-%
-%   Truth signals (eom_bus / enviornment_bus) are optional -- if a run's
-%   `out` doesn't have them, only the measured sensor traces are drawn
-%   for that run.
-%
-%   OUTPUT
-%     Figure 104: Sensors (accelerometer/gyro/magnetometer/barometer)
->>>>>>> 2f52f69 (redo merging on new branch)
-%     Fixed figure number (deliberately not 1/2, to stay clear of other
-%     figures) so re-running overwrites the same window instead of
-%     piling up new ones.
+
 
 % ------------------------------------------------------- parse arguments
 fileArgs = {};
@@ -95,11 +79,7 @@ measStyles  = {'-', '-.'};
 truthStyles = {'--', ':'};
 
 % ======================================================== SENSORS WINDOW
-<<<<<<< HEAD
 figure(103); clf(103); set(103,'Name','Sensors','Color','w');
-=======
-figure(104); clf(104); set(104,'Name','Sensors','Color','w');
->>>>>>> 2f52f69 (redo merging on new branch)
 
 axAcc  = subplot(2,2,1); hold(axAcc,'on');  grid(axAcc,'on');
 xlabel(axAcc,'Time [s]');  ylabel(axAcc,'Specific Force [m/s^2]'); title(axAcc,'Accelerometer');
@@ -114,6 +94,7 @@ axBaro = subplot(2,2,4); hold(axBaro,'on'); grid(axBaro,'on');
 xlabel(axBaro,'Time [s]'); ylabel(axBaro,'Pressure [Pa]'); title(axBaro,'Barometer');
 
 axisLbl = {'X','Y','Z'};
+rateLbl = {'P','Q','R'};  % body rates about X/Y/Z
 multiRun = numel(runs) > 1;
 
 for k = 1:numel(runs)
@@ -125,7 +106,7 @@ for k = 1:numel(runs)
         axisColors, axisLbl, mStyle, tStyle, r.label, multiRun);
 
     plotAxes3_local(axGyro, r.t, r.wMeas, r.hasTruthGyro, r.wTrue, ...
-        axisColors, axisLbl, mStyle, tStyle, r.label, multiRun);
+        axisColors, rateLbl, mStyle, tStyle, r.label, multiRun);
 
     plotAxes3_local(axMag, r.t, r.magMeas, false, [], ...
         axisColors, axisLbl, mStyle, tStyle, r.label, multiRun);
@@ -232,12 +213,10 @@ function r = extractRun_local(out, label)
     magMeas  = alignRows_local(resampleIfNeeded_local(ts_magMeas, t).Data, N, 3);
     baroMeas = alignRows_local(resampleIfNeeded_local(ts_baro, t).Data, N, 1);
 
-<<<<<<< HEAD
     % Truth signals are optional -- older/partial logs may not have them.
     accTrue = []; wTrue = []; pressureTrue = [];
     hasTruthAcc = false; hasTruthGyro = false; hasTruthBaro = false;
 
-<<<<<<< HEAD
     if isfield(simout, 'plant_bus')
         plant = simout.plant_bus;
         if isfield(plant, 'eom_bus')
@@ -257,35 +236,28 @@ function r = extractRun_local(out, label)
                 pressureTrue = alignRows_local(resampleIfNeeded_local(env.pressure_Pa, t, 'linear').Data, N, 1);
                 hasTruthBaro = true;
             end
-=======
-    if isfield(simout, 'eom_bus')
-        eom = simout.eom_bus;
-        if isfield(eom, 'accBdy_mps2')
-            accTrue = alignRows_local(resampleIfNeeded_local(eom.accBdy_mps2, t, 'linear').Data, N, 3);
-            hasTruthAcc = true;
-        end
-        if isfield(eom, 'wBdy_rps')
-            wTrue = alignRows_local(resampleIfNeeded_local(eom.wBdy_rps, t, 'linear').Data, N, 3);
-            hasTruthGyro = true;
-        end
-    end
-    if isfield(simout, 'enviornment_bus')
-        env = simout.enviornment_bus;
-        if isfield(env, 'pressure_Pa')
-            pressureTrue = alignRows_local(resampleIfNeeded_local(env.pressure_Pa, t, 'linear').Data, N, 1);
-            hasTruthBaro = true;
->>>>>>> 2f52f69 (redo merging on new branch)
         end
     end
 
-=======
-    accTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.fBdyTrue_mps2, t, 'linear').Data, N, 3);
-    wTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.wBdyTrue_rps, t, 'linear').Data, N, 3);
-    pressureTrue = alignRows_local(resampleIfNeeded_local(sensors.truth.baroTrue_Pa, t, 'linear').Data, N, 1);
-    hasTruthAcc = true;
-    hasTruthGyro = true;
-    hasTruthBaro = true;
->>>>>>> 5e677d1 (fixed sensor problems)
+    % Sensor-side truth (sensor_bus.truth), when logged, is the better
+    % reference: e.g. fBdyTrue_mps2 is true specific force, which is what
+    % the accelerometer measures, unlike accBdy_mps2 (no gravity removed).
+    % Each field is optional, so it overrides the plant truth per signal.
+    if isfield(sensors, 'truth')
+        tr = sensors.truth;
+        if isfield(tr, 'fBdyTrue_mps2')
+            accTrue = alignRows_local(resampleIfNeeded_local(tr.fBdyTrue_mps2, t, 'linear').Data, N, 3);
+            hasTruthAcc = true;
+        end
+        if isfield(tr, 'wBdyTrue_rps')
+            wTrue = alignRows_local(resampleIfNeeded_local(tr.wBdyTrue_rps, t, 'linear').Data, N, 3);
+            hasTruthGyro = true;
+        end
+        if isfield(tr, 'baroTrue_Pa')
+            pressureTrue = alignRows_local(resampleIfNeeded_local(tr.baroTrue_Pa, t, 'linear').Data, N, 1);
+            hasTruthBaro = true;
+        end
+    end
     r = struct( ...
         'label',        label, ...
         't',            t, ...

@@ -57,8 +57,8 @@ S.sensorParams.gyroSigmaBiasTurnOn_rps = [0.009, 0.009, 0.009];
 gyroRate_Hz = 100; % [Hz]
 S.sensorParams.gyroSampleTime_s = 1 / gyroRate_Hz; % [s]
 % g sensitivity of the gyroscope
-gyroG = [0.1 0 0; 0 0.1 0; 0 0 0.1]; % [deg / s / g
-S.sensorParams.gyroG = gyroG * 0.01745 * 9.8065; % [rad / s / (m/s)]
+gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05]; % [deg / s / g]
+S.sensorParams.gyroG = gyroG * 0.01745 / 9.8065; % [rad / s / (m/s)]
 % turn on bias
 gyroSigmaBiasTurnOn_rps = [0.009, 0.009, 0.009]; % [rad / s]
 S.sensorParams.gyroTurnOnBias_rps = gyroSigmaBiasTurnOn_rps * randn(1, 1);
