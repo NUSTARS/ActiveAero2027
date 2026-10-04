@@ -28,6 +28,9 @@
 %       wBdy_rps     Nx3   body-axis angular rate [p, q, r]   [rad/s]
 %     simout.plant_bus.aero_bus.body_bus
 %       aoa_deg      Nx1   total angle of attack, as logged by the model
+%     simout.navigation_bus  optional -- nav estimates (attitude, rates,
+%                          body accel, NED position/velocity) and
+%                          flightMode_enum
 %     simout.controller_bus  optional -- older logs without it plot as
 %                          all zeros
 %       control_deg  Nx4   commanded fin deflection [fin1..fin4] [deg]
@@ -46,10 +49,13 @@
 %                 loop output, inner-loop moment, inner-loop output,
 %                 outer- and inner-loop rate-limit/saturation flags in
 %                 one row).
-%     Figure 105: Navigation Evaluation -- Pitch/Yaw/Roll columns of
-%                 launch-frame Euler angles and body rates, then x/y/z
-%                 body acceleration (nav estimate vs actual), with the
-%                 nav flight mode along the bottom.
+%     Figure 105: Attitude Navigation Evaluation -- Pitch/Yaw/Roll
+%                 columns of launch-frame Euler angles and body rates,
+%                 then x/y/z body acceleration (nav estimate vs actual),
+%                 with the nav flight mode along the bottom.
+%     Figure 106: PVT Navigation Evaluation -- North/East/Up columns of
+%                 position, then velocity (nav estimate vs actual), with
+%                 the nav flight mode along the bottom.
 %     Fixed figure numbers (deliberately not 1/2, to stay clear of other
 %     figures) so re-running overwrites the same windows instead of
 %     piling up new ones.
@@ -325,12 +331,12 @@ legend(axOuterCmd(1), {'Actual','Cmd'}, 'Location','best');
 
 addColorKeyLegend_local(runs, runColors);
 
-% ============================================= NAVIGATION EVALUATION WINDOW
+% ==================================== ATTITUDE NAVIGATION EVALUATION WINDOW
 % Same Pitch/Yaw/Roll columns as the Controller window: nav estimate vs
 % truth for attitude and body rate, then body-axis acceleration (x/y/z
 % columns, since it has no pitch/yaw/roll mapping), with the flight mode
 % across the bottom.
-fig4 = figure(105); clf(fig4); set(fig4,'Name','Navigation Evaluation','Color','w');
+fig4 = figure(105); clf(fig4); set(fig4,'Name','Attitude Navigation Evaluation','Color','w');
 tNav = tiledlayout(fig4, 4, 3, 'TileSpacing','compact', 'Padding','compact');
 if numel(runs) > 1
     tNav.OuterPosition = [0, 0, 1, 0.93];
@@ -383,6 +389,54 @@ end
 
 legend(axNavEul(1), {'Actual','Nav'}, 'Location','best');
 linkaxes([axNavEul, axNavRate, axNavAcc, axMode], 'x');
+
+addColorKeyLegend_local(runs, runColors);
+
+% ========================================= PVT NAVIGATION EVALUATION WINDOW
+% Same layout as the Attitude Navigation window, but North/East/Up
+% columns of position and velocity (nav estimate vs truth, plot frame),
+% with the flight mode across the bottom.
+fig5 = figure(106); clf(fig5); set(fig5,'Name','PVT Navigation Evaluation','Color','w');
+tPvt = tiledlayout(fig5, 3, 3, 'TileSpacing','compact', 'Padding','compact');
+if numel(runs) > 1
+    tPvt.OuterPosition = [0, 0, 1, 0.93];
+end
+
+pvtLbl3 = {'North','East','Up'};
+
+axNavPos = gobjects(1,3);
+axNavVel = gobjects(1,3);
+for j = 1:3
+    axNavPos(j) = nexttile(tPvt); hold(axNavPos(j),'on'); grid(axNavPos(j),'on');
+    title(axNavPos(j), pvtLbl3{j});
+    if j == 1, ylabel(axNavPos(j), {'Position','[m]'}, 'FontSize', 8); end
+end
+for j = 1:3
+    axNavVel(j) = nexttile(tPvt); hold(axNavVel(j),'on'); grid(axNavVel(j),'on');
+    title(axNavVel(j), pvtLbl3{j}, 'FontWeight','normal', 'FontSize', 8);
+    if j == 1, ylabel(axNavVel(j), {'Velocity','[m/s]'}, 'FontSize', 8); end
+end
+axPvtMode = nexttile(tPvt, [1 3]); hold(axPvtMode,'on'); grid(axPvtMode,'on');
+yticks(axPvtMode, modeVals); yticklabels(axPvtMode, modeNames);
+ylim(axPvtMode, [min(modeVals) - 0.5, max(modeVals) + 0.5]);
+ylabel(axPvtMode, 'Flight Mode', 'FontSize', 8); xlabel(axPvtMode, 'Time [s]');
+
+for k = 1:numel(runs)
+    r = runs{k};
+    c = runColors{k};
+    for j = 1:3
+        % Solid = true value, dashed = nav estimate.
+        plot(axNavPos(j), r.t, r.pos_plot(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axNavPos(j), r.t, r.posEst_plot(:,j), '--', 'Color', c, 'LineWidth', 1.2);
+
+        plot(axNavVel(j), r.t, r.vel_plot(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axNavVel(j), r.t, r.velEst_plot(:,j), '--', 'Color', c, 'LineWidth', 1.2);
+    end
+    stairs(axPvtMode, r.t, r.flightMode_int, '-', 'Color', c, 'LineWidth', 1.5);
+end
+
+legend(axNavPos(1), {'Actual','Nav'}, 'Location','best');
+linkaxes([axNavPos, axNavVel, axPvtMode], 'x');
 
 addColorKeyLegend_local(runs, runColors);
 

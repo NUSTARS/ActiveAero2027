@@ -24,6 +24,8 @@ function r = extractSimRun(out, label, forwardAxis)
 %                                         angles [rad]
 %                      {p,q,r}Est_rps     Nx1 estimated body rates [rad/s]
 %                      {x,y,z}AccEst_mps2 Nx1 estimated body accel [m/s^2]
+%                      {x,y,z}PosEst_m    Nx1 estimated NED position [m]
+%                      {x,y,z}VelEst_mps  Nx1 estimated NED velocity [m/s]
 %                      qEst_na            Nx4 estimated quaternion
 %                      flightMode_enum    Nx1 flightMode enum
 %                    simout.controller_bus   optional -- older logs
@@ -52,7 +54,9 @@ function r = extractSimRun(out, label, forwardAxis)
 %     if not logged), qEst_na (Nx4 nav-estimated quaternion, sign-matched
 %     to q_na, NaN if not logged), acc_body (Nx3 true body-axis
 %     acceleration [m/s^2]), accEst_mps2 (Nx3 nav-estimated body-axis
-%     acceleration, NaN if not logged), flightMode_int (Nx1 nav flight mode as
+%     acceleration, NaN if not logged), posEst_plot / velEst_plot (Nx3
+%     nav-estimated position [m] / velocity [m/s], plot frame like
+%     pos_plot/vel_plot, NaN if not logged), flightMode_int (Nx1 nav flight mode as
 %     its flightMode enum integer value, NaN if not logged),
 %     control_deg (Nx4, zeros if not logged),
 %     outerRateCmd_rps, outerRateLimited_b, outerSaturated_b (Nx3,
@@ -197,6 +201,23 @@ else
     accEst_mps2 = nan(N, 3);
 end
 
+% Position/velocity estimate from the nav bus, NED like posNed_m (NaN if
+% not logged).
+posEst_NED = nan(N, 3);
+velEst_NED = nan(N, 3);
+if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'xPosEst_m')
+    nav = simout.navigation_bus;
+    posEst_NED = [extractHeld_local(nav.xPosEst_m, t, N, 1), ...
+                  extractHeld_local(nav.yPosEst_m, t, N, 1), ...
+                  extractHeld_local(nav.zPosEst_m, t, N, 1)];
+end
+if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'xVelEst_mps')
+    nav = simout.navigation_bus;
+    velEst_NED = [extractHeld_local(nav.xVelEst_mps, t, N, 1), ...
+                  extractHeld_local(nav.yVelEst_mps, t, N, 1), ...
+                  extractHeld_local(nav.zVelEst_mps, t, N, 1)];
+end
+
 % Flight mode from the nav state machine, as its integer value (see
 % models/navigation/flightMode.m). NaN if not logged.
 if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'flightMode_enum')
@@ -289,6 +310,8 @@ r = struct( ...
     'qEst_na',   qEst_na, ...
     'acc_body',  acc_body, ...
     'accEst_mps2', accEst_mps2, ...
+    'posEst_plot', toPlot(posEst_NED), ...
+    'velEst_plot', toPlot(velEst_NED), ...
     'flightMode_int', flightMode_int, ...
     'control_deg', control_deg, ...
     'outerRateCmd_rps',   outerRateCmd_rps, ...
