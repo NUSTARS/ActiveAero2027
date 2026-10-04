@@ -46,6 +46,10 @@
 %                 loop output, inner-loop moment, inner-loop output,
 %                 outer- and inner-loop rate-limit/saturation flags in
 %                 one row).
+%     Figure 105: Navigation Evaluation -- Pitch/Yaw/Roll columns of
+%                 launch-frame Euler angles and body rates, then x/y/z
+%                 body acceleration (nav estimate vs actual), with the
+%                 nav flight mode along the bottom.
 %     Fixed figure numbers (deliberately not 1/2, to stay clear of other
 %     figures) so re-running overwrites the same windows instead of
 %     piling up new ones.
@@ -214,13 +218,21 @@ addColorKeyLegend_local(runs, runColors);
 
 fprintf("Apogee: %.1fm\n",max(r.pos_plot(:,3)))
 
-% ============================================= CONTROLLER EVALUATION WINDOW
-% One column per axis (Pitch/Yaw/Roll), one row per quantity -- lets you
-% read straight down a column to see how one axis's loop is behaving.
-fig3 = figure(104); clf(fig3); set(fig3,'Name','Controller Evaluation','Color','w');
-tCtrl = tiledlayout(fig3, 5, 3, 'TileSpacing','compact', 'Padding','compact');
-if numel(runs) > 1
-    tCtrl.OuterPosition = [0, 0, 1, 0.93];
+% ================================================ LAUNCH-FRAME EULER ANGLES
+% Shared by the Controller and Navigation Evaluation windows. Euler angles
+% are measured against a launch frame L = [Up, East, North] instead of
+% NED, so a vertical rocket reads (0,0,0) and the 3-2-1 gimbal lock moves
+% to nose-horizontal. q_Ln is L <- NED; q_bL = conj(q_Ln) (x) q_na.
+q_Ln = [sqrt(2)/2, 0, sqrt(2)/2, 0];
+for k = 1:numel(runs)
+    % Nav estimate as a quaternion: logged directly when available, else
+    % rebuilt from the nav's NED Euler angles (older logs / dummyNav).
+    qEst = runs{k}.qEst_na;
+    if all(isnan(qEst(:)))
+        qEst = euler3212quat_local(runs{k}.eulEst_rad);
+    end
+    runs{k}.eulL_deg    = quat2euler321_local(quatmult_local(quatconj_local(q_Ln), runs{k}.q_na));
+    runs{k}.eulLEst_deg = quat2euler321_local(quatmult_local(quatconj_local(q_Ln), qEst));
 end
 
 axisLbl3 = {'Pitch','Yaw','Roll'};   % column order; matches the [pitch yaw roll]
@@ -231,10 +243,14 @@ axisLbl3 = {'Pitch','Yaw','Roll'};   % column order; matches the [pitch yaw roll
 % roll-first; map each Pitch/Yaw/Roll column to its matching component.
 eulerColOf = [2, 3, 1];
 
-% Euler angles are measured against a launch frame L = [Up, East, North]
-% instead of NED, so a vertical rocket reads (0,0,0) and the 3-2-1 gimbal
-% lock moves to nose-horizontal. q_Ln is L <- NED; q_bL = conj(q_Ln) (x) q_na.
-q_Ln = [sqrt(2)/2, 0, sqrt(2)/2, 0];
+% ============================================= CONTROLLER EVALUATION WINDOW
+% One column per axis (Pitch/Yaw/Roll), one row per quantity -- lets you
+% read straight down a column to see how one axis's loop is behaving.
+fig3 = figure(104); clf(fig3); set(fig3,'Name','Controller Evaluation','Color','w');
+tCtrl = tiledlayout(fig3, 5, 3, 'TileSpacing','compact', 'Padding','compact');
+if numel(runs) > 1
+    tCtrl.OuterPosition = [0, 0, 1, 0.93];
+end
 
 rowYLbl = {{'Euler','[deg]'}, {'Angular Rate','[deg/s]'}, ...
     {'Moment','[N*m]'}, {'deflection','[deg]'}, {'Limiting'}};
@@ -285,18 +301,10 @@ for k = 1:numel(runs)
     r = runs{k};
     c = runColors{k};
 
-    % Nav estimate as a quaternion: logged directly when available, else
-    % rebuilt from the nav's NED Euler angles (older logs / dummyNav).
-    qEst = r.qEst_na;
-    if all(isnan(qEst(:)))
-        qEst = euler3212quat_local(r.eulEst_rad);
-    end
-    eul_deg    = quat2euler321_local(quatmult_local(quatconj_local(q_Ln), r.q_na));
-    eulEst_deg = quat2euler321_local(quatmult_local(quatconj_local(q_Ln), qEst));
     for j = 1:3
         % Solid = true value, dashed = nav estimate, both in the launch frame.
-        plot(axEuler(j), r.t, eul_deg(:,eulerColOf(j)), '-', 'Color', c, 'LineWidth', 1.2);
-        plot(axEuler(j), r.t, eulEst_deg(:,eulerColOf(j)), '--', 'Color', c, 'LineWidth', 1.2);
+        plot(axEuler(j), r.t, r.eulL_deg(:,eulerColOf(j)), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axEuler(j), r.t, r.eulLEst_deg(:,eulerColOf(j)), '--', 'Color', c, 'LineWidth', 1.2);
 
         plot(axOuterCmd(j), r.t, rad2deg(r.omega_body(:,eulerColOf(j))), '-', 'Color', c, 'LineWidth', 1.2);
         plot(axOuterCmd(j), r.t, rad2deg(r.outerRateCmd_rps(:,j)), '--', 'Color', c, 'LineWidth', 1.2);
@@ -314,6 +322,67 @@ end
 % than per subplot.
 legend(axEuler(1), {'Actual','Nav'}, 'Location','best');
 legend(axOuterCmd(1), {'Actual','Cmd'}, 'Location','best');
+
+addColorKeyLegend_local(runs, runColors);
+
+% ============================================= NAVIGATION EVALUATION WINDOW
+% Same Pitch/Yaw/Roll columns as the Controller window: nav estimate vs
+% truth for attitude and body rate, then body-axis acceleration (x/y/z
+% columns, since it has no pitch/yaw/roll mapping), with the flight mode
+% across the bottom.
+fig4 = figure(105); clf(fig4); set(fig4,'Name','Navigation Evaluation','Color','w');
+tNav = tiledlayout(fig4, 4, 3, 'TileSpacing','compact', 'Padding','compact');
+if numel(runs) > 1
+    tNav.OuterPosition = [0, 0, 1, 0.93];
+end
+
+rateLbl3 = {'q','r','p'};   % body rate matching each Pitch/Yaw/Roll column
+
+axNavEul  = gobjects(1,3);
+axNavRate = gobjects(1,3);
+for j = 1:3
+    axNavEul(j) = nexttile(tNav); hold(axNavEul(j),'on'); grid(axNavEul(j),'on');
+    title(axNavEul(j), axisLbl3{j});
+    if j == 1, ylabel(axNavEul(j), {'Euler','[deg]'}, 'FontSize', 8); end
+end
+for j = 1:3
+    axNavRate(j) = nexttile(tNav); hold(axNavRate(j),'on'); grid(axNavRate(j),'on');
+    title(axNavRate(j), rateLbl3{j}, 'FontWeight','normal', 'FontSize', 8);
+    if j == 1, ylabel(axNavRate(j), {'Angular Rate','[deg/s]'}, 'FontSize', 8); end
+end
+accLbl3  = {'x','y','z'};
+axNavAcc = gobjects(1,3);
+for j = 1:3
+    axNavAcc(j) = nexttile(tNav); hold(axNavAcc(j),'on'); grid(axNavAcc(j),'on');
+    title(axNavAcc(j), accLbl3{j}, 'FontWeight','normal', 'FontSize', 8);
+    if j == 1, ylabel(axNavAcc(j), {'Acceleration','[m/s^2]'}, 'FontSize', 8); end
+end
+axMode = nexttile(tNav, [1 3]); hold(axMode,'on'); grid(axMode,'on');
+[modeEnums, modeNames] = enumeration('flightMode');
+modeVals = double(modeEnums);
+yticks(axMode, modeVals); yticklabels(axMode, modeNames);
+ylim(axMode, [min(modeVals) - 0.5, max(modeVals) + 0.5]);
+ylabel(axMode, 'Flight Mode', 'FontSize', 8); xlabel(axMode, 'Time [s]');
+
+for k = 1:numel(runs)
+    r = runs{k};
+    c = runColors{k};
+    for j = 1:3
+        % Solid = true value, dashed = nav estimate.
+        plot(axNavEul(j), r.t, r.eulL_deg(:,eulerColOf(j)), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axNavEul(j), r.t, r.eulLEst_deg(:,eulerColOf(j)), '--', 'Color', c, 'LineWidth', 1.2);
+
+        plot(axNavRate(j), r.t, rad2deg(r.omega_body(:,eulerColOf(j))), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axNavRate(j), r.t, rad2deg(r.omegaEst_rps(:,eulerColOf(j))), '--', 'Color', c, 'LineWidth', 1.2);
+
+        plot(axNavAcc(j), r.t, r.acc_body(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axNavAcc(j), r.t, r.accEst_mps2(:,j), '--', 'Color', c, 'LineWidth', 1.2);
+    end
+    stairs(axMode, r.t, r.flightMode_int, '-', 'Color', c, 'LineWidth', 1.5);
+end
+
+legend(axNavEul(1), {'Actual','Nav'}, 'Location','best');
+linkaxes([axNavEul, axNavRate, axNavAcc, axMode], 'x');
 
 addColorKeyLegend_local(runs, runColors);
 

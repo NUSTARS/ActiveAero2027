@@ -22,6 +22,10 @@ function r = extractSimRun(out, label, forwardAxis)
 %                    simout.navigation_bus   optional
 %                      {phi,theta,psi}Est_rad  Nx1 estimated 3-2-1 Euler
 %                                         angles [rad]
+%                      {p,q,r}Est_rps     Nx1 estimated body rates [rad/s]
+%                      {x,y,z}AccEst_mps2 Nx1 estimated body accel [m/s^2]
+%                      qEst_na            Nx4 estimated quaternion
+%                      flightMode_enum    Nx1 flightMode enum
 %                    simout.controller_bus   optional -- older logs
 %                                         without it read back as zeros
 %                                         (see below for defaults)
@@ -46,7 +50,10 @@ function r = extractSimRun(out, label, forwardAxis)
 %     eulEst_rad (Nx3 nav-estimated [phi theta psi], 3-2-1, NaN if not
 %     logged), omegaEst_rps (Nx3 nav-estimated body rates [p q r], NaN
 %     if not logged), qEst_na (Nx4 nav-estimated quaternion, sign-matched
-%     to q_na, NaN if not logged),
+%     to q_na, NaN if not logged), acc_body (Nx3 true body-axis
+%     acceleration [m/s^2]), accEst_mps2 (Nx3 nav-estimated body-axis
+%     acceleration, NaN if not logged), flightMode_int (Nx1 nav flight mode as
+%     its flightMode enum integer value, NaN if not logged),
 %     control_deg (Nx4, zeros if not logged),
 %     outerRateCmd_rps, outerRateLimited_b, outerSaturated_b (Nx3,
 %     columns [pitch yaw roll], zeros if not logged),
@@ -167,10 +174,40 @@ else
     eulEst_rad   = nan(N, 3);
     omegaEst_rps = nan(N, 3);
 end
-if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'q_na')
-    qEst_na = extractHeld_local(simout.navigation_bus.q_na, t, N, 4);
+% The nav bus names its quaternion qEst_na; older logs used q_na.
+qEst_na = nan(N, 4);
+if isfield(simout, 'navigation_bus')
+    for qField = {'qEst_na', 'q_na'}
+        if isfield(simout.navigation_bus, qField{1})
+            qEst_na = extractHeld_local(simout.navigation_bus.(qField{1}), t, N, 4);
+            break;
+        end
+    end
+end
+
+% Body-axis acceleration: truth from the EOM, estimate from the nav bus
+% (NaN if not logged).
+acc_body = extractHeld_local(eom.accBdy_mps2, t, N, 3);
+if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'xAccEst_mps2')
+    nav = simout.navigation_bus;
+    accEst_mps2 = [extractHeld_local(nav.xAccEst_mps2, t, N, 1), ...
+                   extractHeld_local(nav.yAccEst_mps2, t, N, 1), ...
+                   extractHeld_local(nav.zAccEst_mps2, t, N, 1)];
 else
-    qEst_na = nan(N, 4);
+    accEst_mps2 = nan(N, 3);
+end
+
+% Flight mode from the nav state machine, as its integer value (see
+% models/navigation/flightMode.m). NaN if not logged.
+if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'flightMode_enum')
+    ts_mode = simout.navigation_bus.flightMode_enum;
+    % Enum data can't be resampled directly; convert to double and
+    % zero-order hold it onto t, since it's a discrete state.
+    ts_mode = timeseries(double(squeeze(ts_mode.Data)), ts_mode.Time);
+    ts_mode = setinterpmethod(ts_mode, 'zoh');
+    flightMode_int = extractHeld_local(ts_mode, t, N, 1);
+else
+    flightMode_int = nan(N, 1);
 end
 
 q_na = q_na ./ vecnorm(q_na, 2, 2);
@@ -250,6 +287,9 @@ r = struct( ...
     'eulEst_rad', eulEst_rad, ...
     'omegaEst_rps', omegaEst_rps, ...
     'qEst_na',   qEst_na, ...
+    'acc_body',  acc_body, ...
+    'accEst_mps2', accEst_mps2, ...
+    'flightMode_int', flightMode_int, ...
     'control_deg', control_deg, ...
     'outerRateCmd_rps',   outerRateCmd_rps, ...
     'outerRateLimited_b', outerRateLimited_b, ...

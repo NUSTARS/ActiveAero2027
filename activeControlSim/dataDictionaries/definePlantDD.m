@@ -14,7 +14,7 @@ P.vehicleParams.cg_m = 71.33*in2m;                          % [m]
 P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
 
 %% ICs
-P.icParams.velBdy_mps  = [300, 0, 0];   % [m/s]
+P.icParams.velBdy_mps  = [0.001, 0, 0];   % [m/s]
 P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
@@ -35,7 +35,7 @@ P.envParams.date_y = decyear('01-September-2026','dd-mmm-yyyy'); % [y] year + fr
 
 % Wind Simulations
 P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
-P.windParams.constantNed_mps = [0; 0; 0]; % [m/s]
+P.windParams.constantNed_mps = [10; 0; 0]; % [m/s]
 
 
 %% Aero Lookup Tables

@@ -1,4 +1,4 @@
-function S = defineSensorDD()
+function S = defineSimDD()
 
 % sensor params
 % fill in later for lever arm:
@@ -40,27 +40,27 @@ S.sensorParams.accSampleTime_s = 1 / accRate_Hz; % [s]
 gyroScaleCoupling_na = [0 0 0; 0 0 0; 0 0 0]; % [dimensionless]
 S.sensorParams.gyroScaleCoupling_na = eye(3) + gyroScaleCoupling_na;
 % noise density for random white noise (not gauss markov)
-gyroNoiseDensity_degpspsqHz = [0.00035, 0.00035, 0.00035]; % [deg / s / sqrt(Hz)]
+gyroNoiseDensity_degpspsqHz = [0.0035, 0.0035, 0.0035]; % [deg / s / sqrt(Hz)]
 gryoNoiseDensity_radpspsqHz = gyroNoiseDensity_degpspsqHz * 0.01745; % [rad / s / sqrt(Hz)]
 S.sensorParams.gyroPSDWhite = gryoNoiseDensity_radpspsqHz .* gryoNoiseDensity_radpspsqHz;
 % time constant for gauss markov
 S.sensorParams.gyroTau_s = 2000; % [s]
 % uncertainty for white noise in dynamic bias aka in-run bias instability
-gyroSigmaBias_degphr = [100, 100, 100]; % [deg / hr]
+gyroSigmaBias_degphr = [10000, 10000, 10000]; % [deg / hr]
 S.sensorParams.gyroSigmaBias_rps = gyroSigmaBias_degphr * 4.848e-6; % [rad / s]
 % power spectral density for the gauss markov noise
 S.sensorParams.gyroPSDGM = 2 * S.sensorParams.gyroSigmaBias_rps .* ...
     S.sensorParams.gyroSigmaBias_rps / S.sensorParams.gyroTau_s;
 % should probably be set to a 0 mean random value with some std. Not
 % critical and can do later
-S.sensorParams.gyroSigmaBiasTurnOn_rps = [0.009, 0.009, 0.009];
+S.sensorParams.gyroSigmaBiasTurnOn_rps = 0*[0.0005, 0.0005, 0.0005];
 gyroRate_Hz = 100; % [Hz]
 S.sensorParams.gyroSampleTime_s = 1 / gyroRate_Hz; % [s]
 % g sensitivity of the gyroscope
 gyroG = [0.1 0 0; 0 0.1 0; 0 0 0.1]; % [deg / s / g
 S.sensorParams.gyroG = gyroG * 0.01745 * 9.8065; % [rad / s / (m/s)]
 % turn on bias
-gyroSigmaBiasTurnOn_rps = [0.009, 0.009, 0.009]; % [rad / s]
+gyroSigmaBiasTurnOn_rps = 0*[0.008, 0.008, 0.008]; % [rad / s]
 S.sensorParams.gyroTurnOnBias_rps = gyroSigmaBiasTurnOn_rps * randn(1, 1);
 % not consider g^2 sensitivity at least for now
 
