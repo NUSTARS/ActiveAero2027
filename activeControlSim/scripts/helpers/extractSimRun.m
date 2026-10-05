@@ -28,6 +28,13 @@ function r = extractSimRun(out, label, forwardAxis)
 %                      {x,y,z}VelEst_mps  Nx1 estimated NED velocity [m/s]
 %                      qEst_na            Nx4 estimated quaternion
 %                      flightMode_enum    Nx1 flightMode enum
+%                      accelBias_mps2     Nx3 estimated accel bias [m/s^2]
+%                      gyroBias_rps       Nx3 estimated gyro bias  [rad/s]
+%                    simout.sensor_bus.truth_bus   optional -- found by
+%                                         leaf name anywhere under it,
+%                                         so sub-bus names don't matter
+%                      accBiasTrue        Nx3 true accel bias [m/s^2]
+%                      gyroBias           Nx3 true gyro bias  [rad/s]
 %                    simout.controller_bus   optional -- older logs
 %                                         without it read back as zeros
 %                                         (see below for defaults)
@@ -56,7 +63,10 @@ function r = extractSimRun(out, label, forwardAxis)
 %     acceleration [m/s^2]), accEst_mps2 (Nx3 nav-estimated body-axis
 %     acceleration, NaN if not logged), posEst_plot / velEst_plot (Nx3
 %     nav-estimated position [m] / velocity [m/s], plot frame like
-%     pos_plot/vel_plot, NaN if not logged), flightMode_int (Nx1 nav flight mode as
+%     pos_plot/vel_plot, NaN if not logged), accelBiasEst_mps2 /
+%     gyroBiasEst_rps (Nx3 nav-estimated sensor biases, NaN if not
+%     logged), accelBiasTrue_mps2 / gyroBiasTrue_rps (Nx3 true sensor
+%     biases from sensor_bus.truth_bus, NaN if not logged), flightMode_int (Nx1 nav flight mode as
 %     its flightMode enum integer value, NaN if not logged),
 %     control_deg (Nx4, zeros if not logged),
 %     outerRateCmd_rps, outerRateLimited_b, outerSaturated_b (Nx3,
@@ -218,6 +228,32 @@ if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'xVelEst_
                   extractHeld_local(nav.zVelEst_mps, t, N, 1)];
 end
 
+% Sensor biases: estimate from the nav bus, truth from the sensor model's
+% truth_bus (NaN if not logged).
+accelBiasEst_mps2 = nan(N, 3);
+gyroBiasEst_rps   = nan(N, 3);
+if isfield(simout, 'navigation_bus')
+    nav = simout.navigation_bus;
+    if isfield(nav, 'accelBias_mps2')
+        accelBiasEst_mps2 = extractHeld_local(nav.accelBias_mps2, t, N, 3);
+    end
+    if isfield(nav, 'gyroBias_rps')
+        gyroBiasEst_rps = extractHeld_local(nav.gyroBias_rps, t, N, 3);
+    end
+end
+accelBiasTrue_mps2 = nan(N, 3);
+gyroBiasTrue_rps   = nan(N, 3);
+if isfield(simout, 'sensor_bus') && isfield(simout.sensor_bus, 'truth_bus')
+    ts_accBias = findLeaf_local(simout.sensor_bus.truth_bus, 'accBiasTrue');
+    if ~isempty(ts_accBias)
+        accelBiasTrue_mps2 = extractHeld_local(ts_accBias, t, N, 3);
+    end
+    ts_gyroBias = findLeaf_local(simout.sensor_bus.truth_bus, 'gyroBias');
+    if ~isempty(ts_gyroBias)
+        gyroBiasTrue_rps = extractHeld_local(ts_gyroBias, t, N, 3);
+    end
+end
+
 % Flight mode from the nav state machine, as its integer value (see
 % models/navigation/flightMode.m). NaN if not logged.
 if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'flightMode_enum')
@@ -312,6 +348,10 @@ r = struct( ...
     'accEst_mps2', accEst_mps2, ...
     'posEst_plot', toPlot(posEst_NED), ...
     'velEst_plot', toPlot(velEst_NED), ...
+    'accelBiasEst_mps2',  accelBiasEst_mps2, ...
+    'gyroBiasEst_rps',    gyroBiasEst_rps, ...
+    'accelBiasTrue_mps2', accelBiasTrue_mps2, ...
+    'gyroBiasTrue_rps',   gyroBiasTrue_rps, ...
     'flightMode_int', flightMode_int, ...
     'control_deg', control_deg, ...
     'outerRateCmd_rps',   outerRateCmd_rps, ...
@@ -374,6 +414,29 @@ function data = extractHeld_local(ts, t, N, ncols)
     data = alignRows_local(ts.Data, N, ncols);
     if numel(ts.Time) ~= N || any(ts.Time(:) ~= t)
         data = alignRows_local(resample(ts, t).Data, N, ncols);
+    end
+end
+
+% ==========================================================================
+function ts = findLeaf_local(bus, name)
+    % Depth-first search of a nested bus struct for a field called name.
+    % truth_bus's sub-buses come from unnamed lines, so they log under
+    % default names (signal1, signal2, ...) that may change; matching the
+    % leaf name keeps this independent of them. [] if not found.
+    ts = [];
+    if ~isstruct(bus)
+        return;
+    end
+    if isfield(bus, name)
+        ts = bus.(name);
+        return;
+    end
+    fn = fieldnames(bus);
+    for k = 1:numel(fn)
+        ts = findLeaf_local(bus.(fn{k}), name);
+        if ~isempty(ts)
+            return;
+        end
     end
 end
 

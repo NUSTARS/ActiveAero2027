@@ -31,6 +31,8 @@
 %     simout.navigation_bus  optional -- nav estimates (attitude, rates,
 %                          body accel, NED position/velocity) and
 %                          flightMode_enum
+%     simout.sensor_bus.truth_bus  optional -- true accBiasTrue /
+%                          gyroBias, for the bias estimate comparison
 %     simout.controller_bus  optional -- older logs without it plot as
 %                          all zeros
 %       control_deg  Nx4   commanded fin deflection [fin1..fin4] [deg]
@@ -56,6 +58,10 @@
 %     Figure 106: PVT Navigation Evaluation -- North/East/Up columns of
 %                 position, then velocity (nav estimate vs actual), with
 %                 the nav flight mode along the bottom.
+%     Figure 107: Bias Estimation Evaluation -- x/y/z columns of
+%                 accelerometer bias, then gyro bias (nav estimate vs
+%                 true bias from sensor_bus.truth_bus), with the nav
+%                 flight mode along the bottom.
 %     Fixed figure numbers (deliberately not 1/2, to stay clear of other
 %     figures) so re-running overwrites the same windows instead of
 %     piling up new ones.
@@ -437,6 +443,54 @@ end
 
 legend(axNavPos(1), {'Actual','Nav'}, 'Location','best');
 linkaxes([axNavPos, axNavVel, axPvtMode], 'x');
+
+addColorKeyLegend_local(runs, runColors);
+
+% ======================================== BIAS ESTIMATION EVALUATION WINDOW
+% Same layout again: x/y/z columns of accelerometer bias, then gyro bias
+% (nav estimate vs the sensor model's true bias), with the flight mode
+% across the bottom.
+fig6 = figure(107); clf(fig6); set(fig6,'Name','Bias Estimation Evaluation','Color','w');
+tBias = tiledlayout(fig6, 3, 3, 'TileSpacing','compact', 'Padding','compact');
+if numel(runs) > 1
+    tBias.OuterPosition = [0, 0, 1, 0.93];
+end
+
+biasLbl3 = {'x','y','z'};
+
+axAccBias  = gobjects(1,3);
+axGyroBias = gobjects(1,3);
+for j = 1:3
+    axAccBias(j) = nexttile(tBias); hold(axAccBias(j),'on'); grid(axAccBias(j),'on');
+    title(axAccBias(j), biasLbl3{j});
+    if j == 1, ylabel(axAccBias(j), {'Accel Bias','[m/s^2]'}, 'FontSize', 8); end
+end
+for j = 1:3
+    axGyroBias(j) = nexttile(tBias); hold(axGyroBias(j),'on'); grid(axGyroBias(j),'on');
+    title(axGyroBias(j), biasLbl3{j}, 'FontWeight','normal', 'FontSize', 8);
+    if j == 1, ylabel(axGyroBias(j), {'Gyro Bias','[deg/s]'}, 'FontSize', 8); end
+end
+axBiasMode = nexttile(tBias, [1 3]); hold(axBiasMode,'on'); grid(axBiasMode,'on');
+yticks(axBiasMode, modeVals); yticklabels(axBiasMode, modeNames);
+ylim(axBiasMode, [min(modeVals) - 0.5, max(modeVals) + 0.5]);
+ylabel(axBiasMode, 'Flight Mode', 'FontSize', 8); xlabel(axBiasMode, 'Time [s]');
+
+for k = 1:numel(runs)
+    r = runs{k};
+    c = runColors{k};
+    for j = 1:3
+        % Solid = true value, dashed = nav estimate.
+        plot(axAccBias(j), r.t, r.accelBiasTrue_mps2(:,j), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axAccBias(j), r.t, r.accelBiasEst_mps2(:,j), '--', 'Color', c, 'LineWidth', 1.2);
+
+        plot(axGyroBias(j), r.t, rad2deg(r.gyroBiasTrue_rps(:,j)), '-', 'Color', c, 'LineWidth', 1.2);
+        plot(axGyroBias(j), r.t, rad2deg(r.gyroBiasEst_rps(:,j)), '--', 'Color', c, 'LineWidth', 1.2);
+    end
+    stairs(axBiasMode, r.t, r.flightMode_int, '-', 'Color', c, 'LineWidth', 1.5);
+end
+
+legend(axAccBias(1), {'Actual','Nav'}, 'Location','best');
+linkaxes([axAccBias, axGyroBias, axBiasMode], 'x');
 
 addColorKeyLegend_local(runs, runColors);
 
