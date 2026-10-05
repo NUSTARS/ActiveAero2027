@@ -97,7 +97,7 @@ eom  = plant.eom_bus;
 requiredEom = {'velBdy_mps','posNed_m','q_na','wBdy_rps', 'wDotBdy_rps2', 'accBdy_mps2'};
 if ~all(isfield(eom, requiredEom))
     error('extractSimRun:badEom', ...
-        '%s: simout.plant_bus.eom_bus must have fields velBdy_mps, posNed_m, q_na, wBdy_rps (each a timeseries).', label);
+        '%s: simout.plant_bus.eom_bus must have fields velBdy_mps, posNed_m, q_na, wBdy_rps (each a timeseriesp).', label);
 end
 if ~isfield(plant.aero_bus, 'body_bus') || ~isfield(plant.aero_bus.body_bus, 'aoa_deg')
     error('extractSimRun:badAero', ...

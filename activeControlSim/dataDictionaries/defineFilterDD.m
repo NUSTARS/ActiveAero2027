@@ -1,4 +1,4 @@
-function F = defineFilterDD()
+plfunction F = defineFilterDD()
 
 
 % % same as in plant
