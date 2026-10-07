@@ -2,10 +2,10 @@ function N = defineNavDD()
 %DEFINENAVDD  Assemble the nav model's parameters into one
 %   struct, grouped by field. No Simulink calls here -- just data.
 %
-
+P = definePlantDD();
 N.navControl.useNav_b = true;
 N.navControl.useKalman_b = false;
-N.navControl.dt_s = 1/100;
+N.navControl.dt_s = P.simParams.dt_s;
 N.navControl.q0_na = [0.7071, 0, 0.7071, 0];
 N.navControl.eulerCalcPreRotation = [0.7071, 0, -0.7071, 0];
 N.navControl.eulerCalcPreRotationInv = quatinv(N.navControl.eulerCalcPreRotation);
