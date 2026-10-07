@@ -13,8 +13,8 @@ N.navControl.eulerCalcPreRotation = [0.7071, 0, -0.7071, 0];
 N.navControl.eulerCalcPreRotationInv = quatinv(N.navControl.eulerCalcPreRotation);
 N.navControl.gravityNed_mps2 = [0, 0, 9.81];
 % putting in here for now. Intend to fix to point to actual gyroG later on
-gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05]; % [deg / s / g]
-N.navControl.gyroG = gyroG * 0.01745 / 9.8065; % [rad / s / (m/s)]
+% gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05]; % [deg / s / g]
+% N.navControl.gyroG = gyroG * 0.01745 / 9.8065; % [rad / s / (m/s)]
 
 N.navStates.debounce_s = 0.1;
 N.navStates.boostThreshold_mps2 = 50;
