@@ -13,6 +13,9 @@ P.vehicleParams.area_m2      = 0.018;                      % [m^2]
 P.vehicleParams.cg_m = 71.33*in2m;                          % [m]
 P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
 
+%% Simulation Params
+P.simParams.dt_s = 1/100; % [s] Simulation time step
+
 %% ICs
 P.icParams.velBdy_mps  = [0.001, 0, 0];   % [m/s]
 P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
@@ -36,6 +39,13 @@ P.envParams.date_y = decyear('01-September-2026','dd-mmm-yyyy'); % [y] year + fr
 % Wind Simulations
 P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
 P.windParams.constantNed_mps = [10; 0; 0]; % [m/s]
+
+% Motor Parameters
+P.motorParams.thrustDataFile = 'AeroTech_M1315W.csv'; % [N] Motor thrust data file name
+P.motorParams.startUpDelay = 5; % [s] Motor start up delay 
+P.motorParams.thrustData = readmatrix(P.motorParams.thrustDataFile);
+P.motorParams.time = P.motorParams.thrustData(:,1);
+P.motorParams.thrust = P.motorParams.thrustData(:,2);
 
 
 %% Aero Lookup Tables
