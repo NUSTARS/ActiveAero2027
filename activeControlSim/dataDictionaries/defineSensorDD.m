@@ -6,7 +6,7 @@ function S = defineSensorDD()
 S.sensorParams.imuPosBdy_m = [0, 0, 0]; % [m]
 
 % bias toggle
-biasOn = false;
+biasOn = true;
 
 %%% Accelerometer %%%
 % scale factor and coupling matrix measuring the components of the body
@@ -101,7 +101,7 @@ if biasOn == false
     S.sensorParams.gyroPSDWhite = zeros(3,1);
     S.sensorParams.gyroPSDGM = zeros(3,1);
     S.sensorParams.gyroTurnOnBias_rps = zeros(3,1);
-    %S.sensorParams.gyroG = zeros(3,3);
+    S.sensorParams.gyroG = zeros(3,3);
 end
 
 end
