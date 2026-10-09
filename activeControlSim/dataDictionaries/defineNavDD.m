@@ -20,6 +20,7 @@ N.navStates.coastThresholdAlt_m = 200;
 N.navStates.controlTresholdPitchYaw_rad = 0.4;
 N.navStates.controlTresholdPitchYawRate_rps = 1.0;
 
+%N.navComp.compGain = 0.99;
 N.navComp.compGain = 0.99;
 
 end

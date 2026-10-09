@@ -5,6 +5,9 @@ function S = defineSensorDD()
 % Also, assuming body coords centered on CG (or is it CP?)
 S.sensorParams.imuPosBdy_m = [0, 0, 0]; % [m]
 
+% bias toggle
+biasOn = false;
+
 %%% Accelerometer %%%
 % scale factor and coupling matrix measuring the components of the body
 % specific force along other axes. Used to correct that. Setting to perfect
@@ -91,5 +94,14 @@ baroRate_Hz = 100; % [Hz]
 S.sensorParams.baroSampleTime_s = 1 / baroRate_Hz; % [s]
 % flight regime depended pressure offset derived via CFD ie C(M) * q. Not adding yet
 
+if biasOn == false
+    S.sensorParams.accPSDWhite = zeros(3,1);
+    S.sensorParams.accPSDGM = zeros(3,1);
+    S.sensorParams.accTurnOnBias_mps2 = zeros(3,1);
+    S.sensorParams.gyroPSDWhite = zeros(3,1);
+    S.sensorParams.gyroPSDGM = zeros(3,1);
+    S.sensorParams.gyroTurnOnBias_rps = zeros(3,1);
+    %S.sensorParams.gyroG = zeros(3,3);
+end
 
 end
