@@ -4,6 +4,7 @@ function S = defineSensorDD()
 % fill in later for lever arm:
 % Also, assuming body coords centered on CG (or is it CP?)
 S.sensorParams.imuPosBdy_m = [0, 0, 0]; % [m]
+rng(42);
 
 % bias toggle
 biasOn = true;
@@ -60,7 +61,8 @@ S.sensorParams.gyroSigmaBiasTurnOn_rps = [0.009, 0.009, 0.009];
 gyroRate_Hz = 100; % [Hz]
 S.sensorParams.gyroSampleTime_s = 1 / gyroRate_Hz; % [s]
 % g sensitivity of the gyroscope
-gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05]; % [deg / s / g]
+%gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05]; % [deg / s / g]
+gyroG = zeros(3,3);
 S.sensorParams.gyroG = gyroG * 0.01745 / 9.8065; % [rad / s / (m/s)]
 % turn on bias
 gyroSigmaBiasTurnOn_rps = [0.009, 0.009, 0.009]; % [rad / s]
