@@ -27,22 +27,52 @@ end
 dictObj = Simulink.data.dictionary.open(sdddPath);
 designData = getSection(dictObj, 'Design Data');
 
+% Entries are also updated in place (only the Value of an existing
+% Simulink.Parameter is changed) so a rebuild is a pure value change to
+% any model compiled in Fast Restart -- deleting and re-adding entries
+% looks like a structural change and forces a recompile/error. Fast
+% Restart still can't absorb a change to an entry's size, data type, or
+% struct field layout; those need Fast Restart turned off once.
+% StorageClass 'Auto' is tunable in Normal mode (what the models use); if
+% a referenced model moves to Accelerator, set its Default parameter
+% behavior to 'Tunable' or these may get inlined.
+fn = fieldnames(P);
+
 existing = find(designData);
-for i = 1:numel(existing)
-    deleteEntry(designData, existing(i).Name);
+existingNames = {existing.Name};
+stale = setdiff(existingNames, fn);
+for i = 1:numel(stale)
+    deleteEntry(designData, stale{i});
 end
 
-fn = fieldnames(P);
+nAdded = 0; nUpdated = 0;
 for i = 1:numel(fn)
+    newValue = P.(fn{i});
+    if ismember(fn{i}, existingNames)
+        entry = getEntry(designData, fn{i});
+        prm = getValue(entry);
+        if isa(prm, 'Simulink.Parameter')
+            if ~isequal(prm.Value, newValue)
+                prm.Value = newValue;
+                setValue(entry, prm);
+                nUpdated = nUpdated + 1;
+            end
+            continue
+        end
+        % Not a Simulink.Parameter (e.g. hand-added raw value) -- replace it.
+        deleteEntry(designData, fn{i});
+    end
     prm = Simulink.Parameter;
-    prm.Value = P.(fn{i});
+    prm.Value = newValue;
     prm.CoderInfo.StorageClass = 'Auto';
     addEntry(designData, fn{i}, prm);
+    nAdded = nAdded + 1;
 end
 
 saveChanges(dictObj);
 close(dictObj);
 
-fprintf('Wrote %d entries to %s\n', numel(fn), sdddPath);
+fprintf('%s: %d added, %d updated, %d removed, %d unchanged\n', sdddPath, ...
+    nAdded, nUpdated, numel(stale), numel(fn) - nAdded - nUpdated);
 
 end
