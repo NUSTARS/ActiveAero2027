@@ -14,13 +14,11 @@ P.vehicleParams.cg_m = 71.33*in2m;                          % [m]
 P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
 
 %% ICs
-%P.icParams.velBdy_mps  = [0.001, 0, 0];   % [m/s]
-P.icParams.velBdy_mps  = [0.00001, 0, 0];   % [m/s]
+P.icParams.velBdy_mps  = [0.001, 0, 0];   % [m/s]
 P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
-%eulIC_rad     = [0, 0.1, 0.1];   % [rad], in the rotated frame (not bdy or NED)
-eulIC_rad     = [0, 0.0, 0.0];   % [rad], in the rotated frame (not bdy or NED)
+eulIC_rad     = [0, 0.1, 0.1];   % [rad], in the rotated frame (not bdy or NED)
 quatIC_na = eul2quat(eulIC_rad, "ZYX");
 quatRotIC_na = quatmultiply(quatIC_na, [0.7071, 0, 0.7071, 0]);
 P.icParams.eul_rad = quat2eul(quatRotIC_na, "ZYX");  % [rad], rotated-frame Euler angles
