@@ -6,12 +6,13 @@ function N = defineNavDD()
 N.navControl.useNav_b = true;
 N.navControl.useKalman_b = false;
 N.navControl.dt_s = 1/100;
-N.navControl.q0_na = [0.707106781187, 0, 0.707106781187, 0];
+N.navControl.navIC_bus = struct('qEst_na', [0.7071, 0, 0.7071, 0]);
 N.navControl.posNed0_m = [0 0 0];
 N.navControl.velNed0_mps = [0 0 0];
 N.navControl.eulerCalcPreRotation = [0.707106781187, 0, -0.707106781187, 0];
 N.navControl.eulerCalcPreRotationInv = quatinv(N.navControl.eulerCalcPreRotation);
 N.navControl.gravityNed_mps2 = [0, 0, 9.81];
+
 gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05];
 N.navControl.gyroG = gyroG * 0.01745 / 9.8065;
 
