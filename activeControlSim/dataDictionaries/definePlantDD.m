@@ -23,7 +23,7 @@ P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
 eulIC_rad     = [0, 0.1, 0.1];   % [rad], in the rotated frame (not bdy or NED)
 quatIC_na = eul2quat(eulIC_rad, "ZYX");
-quatRotIC_na = quatmultiply(quatIC_na, [0.7071, 0, 0.7071, 0]);
+quatRotIC_na = quatmultiply(quatIC_na, [0.707106781187, 0, 0.707106781187, 0]);
 P.icParams.eul_rad = quat2eul(quatRotIC_na, "ZYX");  % [rad], rotated-frame Euler angles
 
 

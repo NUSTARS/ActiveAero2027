@@ -54,6 +54,11 @@ function r = extractSimRun(out, label, forwardAxis)
 %     acceleration [m/s^2]), accEst_mps2 (Nx3 nav-estimated body-axis
 %     acceleration, NaN if not logged), flightMode_int (Nx1 nav flight mode as
 %     its flightMode enum integer value, NaN if not logged),
+%     posEst_plot, velEst_plot (Nx3 nav-estimated position/velocity in
+%     plot frame, NaN if not logged), accelBiasEst_mps2, gyroBiasEst_rps
+%     (Nx3 nav bias estimates), accelBiasTrue_mps2, gyroBiasTrue_rps
+%     (Nx3 true biases from sensor_bus.truth_bus) -- missing columns or
+%     signals are NaN,
 %     control_deg (Nx4, zeros if not logged),
 %     outerRateCmd_rps, outerRateLimited_b, outerSaturated_b (Nx3,
 %     columns [pitch yaw roll], zeros if not logged),
@@ -197,6 +202,45 @@ else
     accEst_mps2 = nan(N, 3);
 end
 
+% Nav position/velocity estimates, logged as per-axis NED scalars
+% (x = north, y = east, z = down). NaN if not logged.
+posEst_NED = nan(N, 3);
+velEst_NED = nan(N, 3);
+if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'xPosEst_m')
+    nav = simout.navigation_bus;
+    posEst_NED = [extractHeld_local(nav.xPosEst_m, t, N, 1), ...
+                  extractHeld_local(nav.yPosEst_m, t, N, 1), ...
+                  extractHeld_local(nav.zPosEst_m, t, N, 1)];
+end
+if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'xVelEst_mps')
+    nav = simout.navigation_bus;
+    velEst_NED = [extractHeld_local(nav.xVelEst_mps, t, N, 1), ...
+                  extractHeld_local(nav.yVelEst_mps, t, N, 1), ...
+                  extractHeld_local(nav.zVelEst_mps, t, N, 1)];
+end
+
+% Bias estimates from the nav bus, and true biases from the sensor
+% model's truth bus. Either may be logged with fewer than 3 columns
+% (e.g. a single-axis accel bias) or not at all; missing columns are NaN.
+accelBiasEst_mps2  = nan(N, 3);
+gyroBiasEst_rps    = nan(N, 3);
+accelBiasTrue_mps2 = nan(N, 3);
+gyroBiasTrue_rps   = nan(N, 3);
+if isfield(simout, 'navigation_bus')
+    nav = simout.navigation_bus;
+    accelBiasEst_mps2 = extractOptional3_local(nav, {'accelBias_mps2'}, t, N);
+    gyroBiasEst_rps   = extractOptional3_local(nav, {'gyroBias_rps'},   t, N);
+end
+if isfield(simout, 'sensor_bus') && isfield(simout.sensor_bus, 'truth_bus')
+    % signal1/signal2 are Simulink's default names when the truth_bus
+    % Bus Creator inputs (accelerometer, then gyroscope) are unnamed.
+    truth = simout.sensor_bus.truth_bus;
+    accelBiasTrue_mps2 = extractOptional3_local(truth, ...
+        {'accBiasTrue_mps2', 'accelBiasTrue_mps2', 'accBiasTrue', 'signal1'}, t, N);
+    gyroBiasTrue_rps   = extractOptional3_local(truth, ...
+        {'gyroBiasTrue_rps', 'gyroBias_rps', 'gyroBias', 'signal2'}, t, N);
+end
+
 % Flight mode from the nav state machine, as its integer value (see
 % models/navigation/flightMode.m). NaN if not logged.
 if isfield(simout, 'navigation_bus') && isfield(simout.navigation_bus, 'flightMode_enum')
@@ -279,6 +323,8 @@ r = struct( ...
     'pos_plot',  toPlot(pos_NED), ...
     'vel_plot',  toPlot(vel_NED), ...
     'nose_plot', toPlot(nose_NED), ...
+    'posEst_plot', toPlot(posEst_NED), ...
+    'velEst_plot', toPlot(velEst_NED), ...
     'tilt_deg',  tilt_deg, ...
     'roll_deg',  roll_deg, ...
     'aoa_deg',   aoa_deg, ...
@@ -290,6 +336,10 @@ r = struct( ...
     'acc_body',  acc_body, ...
     'accEst_mps2', accEst_mps2, ...
     'flightMode_int', flightMode_int, ...
+    'accelBiasEst_mps2',  accelBiasEst_mps2, ...
+    'gyroBiasEst_rps',    gyroBiasEst_rps, ...
+    'accelBiasTrue_mps2', accelBiasTrue_mps2, ...
+    'gyroBiasTrue_rps',   gyroBiasTrue_rps, ...
     'control_deg', control_deg, ...
     'outerRateCmd_rps',   outerRateCmd_rps, ...
     'outerRateLimited_b', outerRateLimited_b, ...
@@ -334,6 +384,23 @@ function out3 = extractAxis3_local(loopBus, fieldName, t, N)
     out3 = zeros(N, 3);
     for j = 1:3
         out3(:,j) = extractHeld_local(loopBus.(axisBuses{j}).(fieldName), t, N, 1);
+    end
+end
+
+% ==========================================================================
+function out3 = extractOptional3_local(bus, candidateNames, t, N)
+    % First field of `bus` named in candidateNames, as an Nx3 matrix:
+    % a signal logged with fewer than 3 columns fills the leading
+    % columns and leaves the rest NaN. All NaN if none of the names exist.
+    out3 = nan(N, 3);
+    for i = 1:numel(candidateNames)
+        if isfield(bus, candidateNames{i})
+            ts = bus.(candidateNames{i});
+            ncols = numel(ts.Data) / numel(ts.Time);
+            data = extractHeld_local(ts, t, N, ncols);
+            out3(:, 1:min(ncols, 3)) = data(:, 1:min(ncols, 3));
+            return;
+        end
     end
 end
 
