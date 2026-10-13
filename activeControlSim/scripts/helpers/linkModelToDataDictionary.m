@@ -4,16 +4,16 @@ function linkModelToDataDictionary(modelPath, sdddPath)
 %
 %   linkModelToDataDictionary(modelPath, sdddPath)
 %     modelPath  path to the .slx
-%     sdddPath   path to the .sldd to link (must be in the same folder as
-%                the model -- DataDictionary resolves by bare filename
-%                via MATLAB's cwd/path, not a stored path)
+%     sdddPath   path to the .sldd to link. DataDictionary resolves by bare
+%                filename via MATLAB's cwd/path, not a stored path, so the
+%                dictionary's folder is added to the path here, and must
+%                also be on the path whenever the model is opened later.
 
 [modelDir, modelName] = fileparts(modelPath);
 [dictDir, dictName, dictExt] = fileparts(sdddPath);
 
-if ~strcmp(modelDir, dictDir)
-    error('linkModelToDataDictionary:mismatch', ...
-        'Model and dictionary must be in the same folder.');
+if ~isempty(dictDir)
+    addpath(dictDir);
 end
 
 startDir = pwd;

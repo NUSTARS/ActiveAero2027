@@ -48,6 +48,20 @@ end
 nAdded = 0; nUpdated = 0;
 for i = 1:numel(fn)
     newValue = P.(fn{i});
+    % Bus objects are data types, not parameters -- store them as-is.
+    if isa(newValue, 'Simulink.Bus')
+        if ismember(fn{i}, existingNames)
+            entry = getEntry(designData, fn{i});
+            if ~isequal(getValue(entry), newValue)
+                setValue(entry, newValue);
+                nUpdated = nUpdated + 1;
+            end
+        else
+            addEntry(designData, fn{i}, newValue);
+            nAdded = nAdded + 1;
+        end
+        continue
+    end
     if ismember(fn{i}, existingNames)
         entry = getEntry(designData, fn{i});
         prm = getValue(entry);
