@@ -25,4 +25,6 @@ N.navStates.controlTresholdPitchYawRate_rps = 1.0;
 
 N.navComp.compGain = 0.99;
 
+N.navEnv.
+
 end
