@@ -33,8 +33,24 @@ P.envParams.gravityNed_mps2 = [0, 0, 9.81];   % [m/s^2]
 % geodetic lon and lat
 P.envParams.lon_deg = -87.6767064830923; % [deg]
 P.envParams.lat_deg = 42.0569355774686; % [deg]
+lat_rad = deg2rad(P.envParams.lat_deg);
+P.envParams.lat_rad = lat_rad;
 P.envParams.groundAlt_m = 182; % [m] above ellipsoid surface (sea level)
 P.envParams.date_y = decyear('01-September-2026','dd-mmm-yyyy'); % [y] year + fraction of year
+R0 = 6378137; % [m]
+e = 0.0818191908425; % [na] % eccentricity of earth
+% meridian radius of curvature
+P.envParams.RN_m = R0*(1 - e^2)/(1 - e^2*(sin(lat_rad)))^(3/2); % [m]
+% transverse radius of curvature
+P.envParams.RE_m = R0/sqrt(1 - e^2*sin(lat_rad)); % [m]
+omegaie_rps = 7.292115e-5; % [rad/s]
+% earth rotation rate in ecef axes
+P.envParams.Omegaiee_rps = omegaie_rps * [0 -1 0; 1 0 0; 0 0 0]; % [rad/s]
+% earth rotation rate in local ned axes
+P.envParams.Omegaien_rps = omegaie_rps * [0 sin(lat_rad) 0; -sin(lat_rad) 0 -cos(lat_rad); 0 cos(lat_rad) 0]; % [rad/s]
+
+
+
 
 % Wind Simulations
 P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
