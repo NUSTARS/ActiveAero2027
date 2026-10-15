@@ -151,18 +151,30 @@ to a magnetometer `Vector3f_t` instead.
 ## STM32CubeIDE `autocodeLib_CM7` setup
 
 The generated `autocodeModel_initialize.h` includes both `autocodeModel.h` and
-the application's `main.h`. `autocodeModel_initialize.c` therefore needs the
-application's `main.h` include directory when compiling the library.
+the application's `main.h`; that `main.h` includes `stm32h7xx_hal.h`. The
+library compile therefore needs the application's `Core/Inc` directory plus
+the HAL/CMSIS include paths and compiler symbols required by that HAL header.
 
 1. **Project context:** import `autocodeLib_CM7` into the same CubeIDE workspace
    as the application. Add it to the application's **Project References**.
    Build the library for the same CM7 target, configuration, and floating-point
    ABI as the application.
-2. **Library compiler include path:** in `autocodeLib_CM7` > **Properties >
-   C/C++ Build > Settings > MCU GCC Compiler > Include paths**, add
-   `${workspace_loc:/{Project}/Core/Inc}`. Replace `{Project}` with the
-   consumer CubeIDE project name so the library can find that application's
-   `main.h`.
+2. **Library compiler settings:** in `autocodeLib_CM7` > **Properties >
+   C/C++ Build > Settings > MCU GCC Compiler**, add
+   `${workspace_loc:/{Project}/Core/Inc}` to Include paths. Replace
+   `{Project}` with the consumer CubeIDE project name so the library can find
+   its `main.h`. Keep `../Inc` and copy the consumer's HAL/CMSIS include
+   directories into the library settings (resolve the paths relative to the
+   library project):
+   - `STM32H7xx_HAL_Driver/Inc`
+   - `STM32H7xx_HAL_Driver/Inc/Legacy`
+   - `CMSIS/Device/ST/STM32H7xx/Include`
+   - `CMSIS/Include`
+
+   Also copy the consumer application's C compiler **Defined symbols (-D)**.
+   A CM7 STM32H755 build typically needs `CORE_CM7`, `USE_HAL_DRIVER`,
+   `STM32H755xx`, and `USE_PWR_DIRECT_SMPS_SUPPLY`; retain matching Debug and
+   board-specific definitions.
 3. **Application compiler include paths:** retain the application's own
    `Core/Inc` and add
    `${workspace_loc:/autocodeLib/CM7/Inc}` for the generated headers.
