@@ -112,3 +112,68 @@ When overlaying two runs, each is colored separately and every legend
 entry is tagged with the run's label (its filename, or `workspace`).
 
 Other CONFIG variables: `numFrames`, `bodyScale`, `forwardAxis`.
+
+## STM32 sensor input bus
+
+`buildModels.m` generates `autocodeModel_initializeSensorBus` for the
+`sensor_bus` input. The wrapper uses `Vector3f_t` from the STM32 project's
+`main.h`; keep that header's directory on the CubeIDE include path. Call
+`autocodeModel_setup` once with long-lived bus storage, then populate the
+bus and step the model at its 10 ms base rate:
+
+```c
+#include "autocodeModel_initialize.h"
+
+static sensor_bus sensorInput;
+static FlightData_t polledSensors;
+
+void initializeModel(void)
+{
+    autocodeModel_setup(&sensorInput);
+}
+
+void modelTick(void)
+{
+    /* Poll sensors; accel must be m/s^2, gyro deg/s, and pressure Pa. */
+    autocodeModel_initializeSensorBus(&sensorInput,
+        &polledSensors.bmi_accel, &polledSensors.bmi_gyro,
+        NULL, polledSensors.bmp581_pressure);
+    autocodeModel_oneStep();
+}
+```
+
+Pass either IMU's `Vector3f_t` fields and either barometer pressure field.
+The wrapper copies accel x/y/z and pressure, and converts gyro x/y/z from
+degrees per second to radians per second. `FlightData_t` has no magnetometer,
+so pass `NULL` to zero those readings for now. On a later board, pass a pointer
+to a magnetometer `Vector3f_t` instead.
+
+## STM32CubeIDE `autocodeLib_CM7` setup
+
+The generated `autocodeModel_initialize.h` includes both `autocodeModel.h` and
+the application's `main.h`. `autocodeModel_initialize.c` therefore needs the
+application's `main.h` include directory when compiling the library.
+
+1. **Project context:** import `autocodeLib_CM7` into the same CubeIDE workspace
+   as the application. Add it to the application's **Project References**.
+   Build the library for the same CM7 target, configuration, and floating-point
+   ABI as the application.
+2. **Library compiler include path:** in `autocodeLib_CM7` > **Properties >
+   C/C++ Build > Settings > MCU GCC Compiler > Include paths**, add
+   `${workspace_loc:/{Project}/Core/Inc}`. Replace `{Project}` with the
+   consumer CubeIDE project name so the library can find that application's
+   `main.h`.
+3. **Application compiler include paths:** retain the application's own
+   `Core/Inc` and add
+   `${workspace_loc:/autocodeLib/CM7/Inc}` for the generated headers.
+4. **Application linker:** under
+   `Properties > C/C++ Build > Settings > MCU GCC Linker > Libraries`, add
+   library search path `${workspace_loc:/autocodeLib/CM7/Debug}` and library
+   `autocodeLib_CM7` (without the `lib` prefix or `.a` suffix). For Release,
+   build the library's Release configuration and point to its Release output
+   directory.
+
+When updating the library, copy the generated `Inc/` and `Src/` files from
+`build_autocodeModel/toIDE/` into the library project and rebuild it. Link the
+archive or compile those model sources directly, never both; do not compile
+`ert_main.c` into the application.
