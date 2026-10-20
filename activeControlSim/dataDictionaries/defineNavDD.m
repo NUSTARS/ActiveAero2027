@@ -12,6 +12,7 @@ N.navControl.velNed0_mps = [0 0 0];
 N.navControl.eulerCalcPreRotation = [0.707106781187, 0, -0.707106781187, 0];
 N.navControl.eulerCalcPreRotationInv = quatinv(N.navControl.eulerCalcPreRotation);
 N.navControl.gravityNed_mps2 = [0, 0, 9.81];
+N.navControl.rhoConst_kgpm3 = 1.225; 
 
 gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05];
 N.navControl.gyroG = gyroG * 0.01745 / 9.8065;
@@ -20,7 +21,7 @@ N.navStates.debounce_s = 0.1;
 N.navStates.boostThreshold_mps2 = 50;
 N.navStates.coastThresholdxAcc_mps2 = 0; 
 N.navStates.coastThresholdAlt_m = 200;
-N.navStates.controlTresholdPitchYaw_rad = 0.4;
+N.navStates.controlTresholdPitchYaw_rad = 1.0;
 N.navStates.controlTresholdPitchYawRate_rps = 1.0;
 
 N.navComp.compGain = 0.99;

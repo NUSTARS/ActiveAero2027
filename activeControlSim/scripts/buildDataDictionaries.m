@@ -22,7 +22,7 @@ if ~exist('forceRebuild','var'), forceRebuild = false; end
 
 % dictName        defineFcns                          modelFiles (relative to repo root)  extraDeps (relative to repo root)
 CONFIG = {
-    'plantParams',  {@definePlantDD, @defineSensorDD}, {'models/plant/plant.slx', 'models/plant/finModel.slx', 'models/plant/aeroModel.slx', 'models/plant/bodyModel.slx', 'models/plant/eomModel.slx', 'models/plant/environmentModel.slx', 'models/plant/windModel.slx', 'models/plant/sensorModels.slx'}, {'dataDictionaries/aeroTables.mat'}
+    'plantParams',  {@definePlantDD, @defineSensorDD}, {'models/plant/plant.slx', 'models/plant/finModel.slx', 'models/plant/aeroModel.slx', 'models/plant/bodyModel.slx', 'models/plant/eomModel.slx', 'models/plant/environmentModel.slx', 'models/plant/windModel.slx', 'models/plant/sensorModels.slx'}, {'dataDictionaries/aeroTables.mat', 'dataDictionaries/derivePlantDD.m'}
     'navParams',  {@defineNavDD, @defineBusDD},{'models/navigation/navigation.slx', 'models/activeControlSim.slx', 'models/autocodeModel.slx'}, {}
     'controllerParams',  {@defineControllerDD}, {'models/control/Guidance.slx', 'models/control/controller.slx', 'models/control/pitchYawInnerLoop.slx', 'models/control/rollInnerLoop.slx', 'models/control/pitchYawOuterLoop.slx', 'models/control/rollOuterLoop.slx'}, {}
 };

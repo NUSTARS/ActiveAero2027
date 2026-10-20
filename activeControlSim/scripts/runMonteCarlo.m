@@ -1,94 +1,131 @@
-%RUNMONTECARLO  Run a batch of sims with dispersed parameters and save the
-%   results.
-%
-%   A script, not a function -- leaves `out`, `simIn`, and `mc` in the
-%   workspace, and clears its own bookkeeping variables.
-%
-%   Dispersions are applied per run with Simulink.SimulationInput/
-%   setVariable, which overrides a data dictionary entry for that run
-%   only -- nothing is written to the .sldd. Each override replaces a
-%   whole top-level entry (e.g. vehicleParams) with a copy of the nominal
-%   struct, so only values change and every run reuses the Fast Restart
-%   compile. Only disperse values, never sizes/types/struct fields.
-%
-%   Current dispersions:
-%     vehicleParams.mass_kg   uniform, nominal * (1 +/- massDispersion)
-%
-%   OPTIONS (set these in the workspace before running to override)
-%     modelName       model to simulate (default 'activeControlSim')
-%     nRuns           number of runs (default 100)
-%     rngSeed         seed for the dispersion draws (default 0)
-%     massDispersion  fractional half-width of the mass spread
-%                     (default 0.10, i.e. +/-10%)
-%     useParallel     run with parsim instead of sim (default false,
-%                     needs Parallel Computing Toolbox)
-%     forceRebuild    passed through to buildDataDictionaries.m
-%                     (default false)
-%     keepFullOutput  keep every run's full logged output instead of
-%                     reducing it to summary metrics with
-%                     helpers/mcPostSim.m (default false -- full output
-%                     is slow to transfer back from parsim workers and
-%                     to save)
-%
-%   OUTPUT
-%     out   1xnRuns Simulink.SimulationOutput -- holds only the
-%           mcPostSim.m metrics (e.g. out(i).apogee_m) unless
-%           keepFullOutput is true
-%     simIn 1xnRuns Simulink.SimulationInput (exact inputs of each run)
-%     mc    struct of per-run dispersed values and summary metrics
-%   all saved to results/monteCarloResults.mat, overwriting any previous
-%   batch.
+%RUNMONTECARLO  Run a batch of sims with dispersed parameters and save the results.
 
-if ~exist('modelName','var'), modelName = 'activeControlSim'; end
-if ~exist('nRuns','var'), nRuns = 100; end
-if ~exist('rngSeed','var'), rngSeed = 0; end
-if ~exist('massDispersion','var'), massDispersion = 0.10; end
-if ~exist('useParallel','var'), useParallel = false; end
-if ~exist('forceRebuild','var'), forceRebuild = false; end
-if ~exist('keepFullOutput','var'), keepFullOutput = false; end
+modelName = 'activeControlSim';
+nRuns = 500;
+rngSeed = 1;
 
-repoRoot = fileparts(fileparts(mfilename('fullpath')));
-run(fullfile(repoRoot, 'setupPaths.m'));
+% Any numeric parameter in plantParams.sldd (definePlantDD +
+% defineSensorDD), as '<entry>.<field>[.<subfield>...]', with its
+% absolute dispersion in the parameter's own units. Each run adds a
+% uniform random offset in [-halfWidth, +halfWidth] to the nominal value,
+% drawn independently per element. halfWidth is either a scalar (same
+% half-width on every element) or an array the same size as the
+% parameter (per-element; 0 leaves that element fixed, e.g. the
+% off-diagonals of the inertia matrix).
+% Plant values computed from other parameters are recomputed after
+% dispersing (see dataDictionaries/derivePlantDD.m -- e.g. disperse the
+% rail angle icParams.eulIC_rad, and icParams.eul_rad follows). Anything
+% derived outside derivePlantDD is not (e.g. dispersing accSigmaBias_mps2
+% doesn't change accPSDGM), so disperse the value the model actually uses.
+dispersions = {
+    % parameter                          +/- half-width [param units]
+    'vehicleParams.mass_kg',             1.0
+    'vehicleParams.inertia_kgm2',        diag([0.005, 1.0, 1.0])
+    'vehicleParams.cg_m',                0.06
+    'icParams.eulIC_rad',                [1.0, 0.2, 0.2]   % [roll pitch yaw]
+    'windParams.constantNed_mps',        [5; 5; 0]
+    'aeroParams.finStaticScale_na'       0.1
+    'aeroParams.finControlScale_na'      0.2
+    'aeroParams.finStaticInputScale_na'  0.1
+    'aeroParams.finControlInputScale_na' 0.2
+    'aeroParams.bodyScale_na',           0.1
+    'aeroParams.CpBaseShift_m',          0.06
+    'aeroParams.finAngles1_rad'          [0.01, 0.01, 0.01]
+    'aeroParams.finAngles2_rad'          [0.01, 0.01, 0.01]
+    'aeroParams.finAngles3_rad'          [0.01, 0.01, 0.01]
+    'aeroParams.finAngles4_rad'          [0.01, 0.01, 0.01]
+    'motorParams.thrustScaling_na'       0.05
+    % 'sensorParams.gyroTurnOnBias_rps',   0.009
+};
+
+useParallel = false;
+keepFullOutput = false;
 
 fprintf('Building data dictionaries...\n');
 buildDataDictionaries;
 
-% Nominal values -- same source the dictionaries are built from.
-P0 = definePlantDD();
+% Nominal values -- same sources plantParams.sldd is built from. Not named
+% after the dictionary entries -- this script runs in the base workspace,
+% which the models can see, so those names would clash.
+% defineSensorDD reseeds rng, so this has to come before rng(rngSeed).
+P0 = mergeStructs_local(definePlantDD(), defineSensorDD());
+
+dispNames = dispersions(:,1);
+dispHalf  = dispersions(:,2);
+dispPath  = cellfun(@(n) strsplit(n, '.'), dispNames, 'UniformOutput', false);
+dispSize  = cell(size(dispNames));
+for d = 1:numel(dispNames)
+    nominal = getPath_local(P0, dispPath{d}, dispNames{d});
+    if ~isnumeric(nominal)
+        error('runMonteCarlo:notNumeric', ...
+            '%s is a %s, not numeric -- it can''t be dispersed.', dispNames{d}, class(nominal));
+    end
+    dispSize{d} = size(nominal);
+    if isscalar(dispHalf{d})
+        dispHalf{d} = repmat(dispHalf{d}, dispSize{d});
+    elseif ~isequal(size(dispHalf{d}), dispSize{d})
+        error('runMonteCarlo:badHalfWidth', ...
+            '%s is %s, but its half-width is %s -- use a scalar or a matching array.', ...
+            dispNames{d}, mat2str(dispSize{d}), mat2str(size(dispHalf{d})));
+    end
+end
 
 %% Draw dispersions
+% mc.input holds what each run was given, mc.output what it produced.
+% mc.input.dispOffset{d}(i,:) is run i's offset on parameter
+% mc.input.dispNames{d}, one column per element (column-major, reshape to
+% the parameter's size).
 rng(rngSeed);
-mc.mass_kg = P0.vehicleParams.mass_kg * (1 + massDispersion*(2*rand(nRuns,1) - 1));
+mc.input.dispNames     = dispNames;
+mc.input.dispHalfWidth = dispHalf;
+mc.input.dispOffset    = cell(size(dispNames));
+for d = 1:numel(dispNames)
+    mc.input.dispOffset{d} = dispHalf{d}(:)' .* (2*rand(nRuns, numel(dispHalf{d})) - 1);
+end
 
 %% Build per-run inputs
 simIn(1:nRuns) = Simulink.SimulationInput(modelName);
 for i = 1:nRuns
-    vp = P0.vehicleParams;   % not named vehicleParams -- this script runs in the base
-                             % workspace, which the models can see, so that name would
-                             % clash with the dictionary entry
-    vp.mass_kg = mc.mass_kg(i);
+    runPrm = P0;
+    for d = 1:numel(dispNames)
+        runPrm = setfield(runPrm, dispPath{d}{:}, getfield(P0, dispPath{d}{:}) ...
+            + reshape(mc.input.dispOffset{d}(i,:), dispSize{d})); %#ok<GFLD,SFLD>
+    end
+    runPrm = derivePlantDD(runPrm);
 
-    simIn(i) = simIn(i).setVariable('vehicleParams', asParam_local(vp));
+    % Override every dictionary entry that differs from nominal (dispersed
+    % directly or via a derived value) as a whole struct.
+    entryNames = fieldnames(runPrm);
+    for e = 1:numel(entryNames)
+        if ~isequal(runPrm.(entryNames{e}), P0.(entryNames{e}))
+            simIn(i) = simIn(i).setVariable(entryNames{e}, asParam_local(runPrm.(entryNames{e})));
+        end
+    end
     if ~keepFullOutput
         simIn(i) = simIn(i).setPostSimFcn(@mcPostSim);
     end
+    simIn(i) = simIn(i).setModelParameter('SimulationMode', 'accelerator');
 end
 
 %% Simulate
 fprintf('Simulating %d runs of %s...\n', nRuns, modelName);
 if useParallel
-    out = parsim(simIn, 'UseFastRestart', 'on', 'ShowProgress', 'on', ...
-        'TransferBaseWorkspaceVariables', 'off');
+    out = parsim(simIn, 'UseFastRestart', 'on', 'TransferBaseWorkspaceVariables', 'off');
 else
-    out = sim(simIn, 'UseFastRestart', 'on', 'ShowProgress', 'on');
+    out = sim(simIn, 'UseFastRestart', 'on');
 end
 
 %% Summary metrics
-mc.apogee_m = nan(nRuns, 1);
-mc.failed   = false(nRuns, 1);
+% Every field mcPostSim returns, taken from its all-NaN failed-run
+% output so the list doesn't depend on any run succeeding.
+metricNames = fieldnames(mcPostSim(struct('ErrorMessage', 'none')));
+for f = 1:numel(metricNames)
+    mc.output.(metricNames{f}) = nan(nRuns, 1);
+end
+mc.output.failed = false(nRuns, 1);
 for i = 1:nRuns
     if ~isempty(out(i).ErrorMessage)
-        mc.failed(i) = true;
+        mc.output.failed(i) = true;
         fprintf('Run %d failed: %s\n', i, out(i).ErrorMessage);
         continue
     end
@@ -97,17 +134,26 @@ for i = 1:nRuns
     else
         s = out(i);
     end
-    mc.apogee_m(i) = s.apogee_m;
+    for f = 1:numel(metricNames)
+        mc.output.(metricNames{f})(i) = s.(metricNames{f});
+    end
 end
 
-fprintf('Apogee: mean %.1f m, std %.1f m, range [%.1f, %.1f] m (%d failed)\n', ...
-    mean(mc.apogee_m, 'omitnan'), std(mc.apogee_m, 'omitnan'), ...
-    min(mc.apogee_m), max(mc.apogee_m), sum(mc.failed));
+% One row per metric, statistics across the successful runs, with the
+% run index each min/max came from (NaN if every run is NaN).
+stats = nan(numel(metricNames), 6);
+for f = 1:numel(metricNames)
+    v = mc.output.(metricNames{f});
+    [vMin, iMin] = min(v);
+    [vMax, iMax] = max(v);
+    if isnan(vMin), iMin = NaN; iMax = NaN; end
+    stats(f,:) = [mean(v, 'omitnan'), std(v, 'omitnan'), vMin, iMin, vMax, iMax];
+end
+summaryTable = array2table(stats, 'RowNames', metricNames, ...
+    'VariableNames', {'Mean', 'Std', 'Min', 'MinRun', 'Max', 'MaxRun'});
 
-figure(201); clf;
-scatter(mc.mass_kg, mc.apogee_m, 'filled');
-xlabel('Mass [kg]'); ylabel('Apogee [m]'); grid on;
-title(sprintf('Monte Carlo: %d runs', nRuns));
+fprintf('\nMonte Carlo summary: %d runs (%d failed)\n', nRuns, sum(mc.output.failed));
+disp(summaryTable);
 
 %% Save
 resultsDir = fullfile(repoRoot, 'results');
@@ -115,11 +161,8 @@ if ~exist(resultsDir, 'dir')
     mkdir(resultsDir);
 end
 resultFile = fullfile(resultsDir, 'monteCarloResults.mat');
-save(resultFile, 'out', 'simIn', 'mc', 'modelName', 'rngSeed', '-v7.3');
+save(resultFile, 'out', 'simIn', 'mc', 'summaryTable', 'modelName', 'rngSeed', '-v7.3');
 fprintf('Saved results to %s\n', resultFile);
-
-clear repoRoot nRuns rngSeed massDispersion useParallel forceRebuild keepFullOutput ...
-    P0 i vp s resultsDir resultFile
 
 % ======================================================================
 function prm = asParam_local(value)
@@ -128,4 +171,31 @@ function prm = asParam_local(value)
     % the dictionary entry it replaces.
     prm = Simulink.Parameter(value);
     prm.CoderInfo.StorageClass = 'Auto';
+end
+
+% ======================================================================
+function M = mergeStructs_local(varargin)
+    % Merge the top-level fields of each input struct into one.
+    M = struct();
+    for k = 1:numel(varargin)
+        fn = fieldnames(varargin{k});
+        for j = 1:numel(fn)
+            M.(fn{j}) = varargin{k}.(fn{j});
+        end
+    end
+end
+
+% ======================================================================
+function v = getPath_local(S, path, name)
+    % Value at nested field path {f1, f2, ...} of S, with a clear error
+    % naming the bad field if any level doesn't exist.
+    v = S;
+    for k = 1:numel(path)
+        if ~isstruct(v) || ~isfield(v, path{k})
+            error('runMonteCarlo:badParam', ...
+                '%s: no field ''%s'' -- check the name against definePlantDD.m / defineSensorDD.m.', ...
+                name, path{k});
+        end
+        v = v.(path{k});
+    end
 end

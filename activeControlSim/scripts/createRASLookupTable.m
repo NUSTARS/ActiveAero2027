@@ -37,7 +37,7 @@ CpFull = interpGrid(withFinsData.Alpha, withFinsData.Mach, withFinsData.CP, alph
 CnFinControl = repmat(CnFin, [1 1 numel(controlPoints)]);   % broadcast baseline across all control inputs
 cnControl = controlFactor * [-1*negCnControl, posCnControl];  % Cn is odd -> negate negative-side values
 cnControl = repmat(cnControl, [1 1 numel(alphaSamples)]);
-cnControl = permute(cnControl, [1 3 2]);                     % align dims to [Mach x ControlInput x Alpha]
+cnControl = permute(cnControl, [1 3 2]);                      % align dims to [Mach x Alpha x ControlInput]
 CnFinControl = CnFinControl + cnControl;
 
 % --- Assemble Ca: baseline fin force + control input contribution ---
