@@ -1,6 +1,6 @@
 function F = defineFilterDD()
 
-F.filterParams.P0 = 1e-4 * ones(15,15);%[0 0 0; 0 0 0; 0 0 0];
+F.filterParams.P0 = 1e-4 * eye(15,15);%[0 0 0; 0 0 0; 0 0 0];
 errEuler0 = [0 0 0];
 errVel0 = [0 0 0];
 errPos0 = [0 0 0];
