@@ -8,8 +8,8 @@ function P = definePlantDD()
 in2m = 1/39.37;
 
 %% Vehicle Params
-P.vehicleParams.mass_kg      = 18;                        % [kg]
-P.vehicleParams.area_m2      = 0.018;                      % [m^2]
+P.vehicleParams.mass_kg = 17.5;                        % [kg]
+P.vehicleParams.area_m2 = 0.018;                      % [m^2]
 P.vehicleParams.cg_m = 71.33*in2m;                          % [m]
 P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
 
@@ -21,11 +21,9 @@ P.icParams.velBdy_mps  = [0.001, 0, 0];   % [m/s]
 P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
-eulIC_rad     = [0, 0.1, 0.1];   % [rad], in the rotated frame (not bdy or NED)
-quatIC_na = eul2quat(eulIC_rad, "ZYX");
-quatRotIC_na = quatmultiply(quatIC_na, [0.707106781187, 0, 0.707106781187, 0]);
-P.icParams.eul_rad = quat2eul(quatRotIC_na, "ZYX");  % [rad], rotated-frame Euler angles
-
+% Rail angle. icParams.eul_rad is derived from this in derivePlantDD.m.
+P.icParams.eulIC_rad = [0.0, 0.1, 0.1];
+%P.icParams.eulIC_rad = [-0.5395 0.2640 0.2240];   % [rad], [roll pitch yaw] (3-2-1), in the rotated frame (not bdy or NED)
 
 %% Enviornment
 P.envParams.gravityNed_mps2 = [0, 0, 9.81];   % [m/s^2]
@@ -54,26 +52,26 @@ P.envParams.Omegaien_rps = omegaie_rps * [0 sin(lat_rad) 0; -sin(lat_rad) 0 -cos
 
 % Wind Simulations
 P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
-P.windParams.constantNed_mps = [10; 0; 0]; % [m/s]
+P.windParams.constantNed_mps = [5; 0; 0]; % [m/s]
 
 % Motor Parameters
 P.motorParams.thrustDataFile = 'AeroTech_M1315W.csv'; % [N] Motor thrust data file name
 P.motorParams.startUpDelay = 5; % [s] Motor start up delay 
 P.motorParams.thrustData = readmatrix(P.motorParams.thrustDataFile);
 P.motorParams.time = P.motorParams.thrustData(:,1);
-P.motorParams.thrust = P.motorParams.thrustData(:,2);
+P.motorParams.thrustScaling_na = 1.0;
 
 
 %% Aero Lookup Tables
-load('aeroTables.mat', 'aeroTables')
-P.aeroParams.machBreakpoints_na = aeroTables.machPoints;
-P.aeroParams.aoaBreakpoints_deg = aeroTables.aoaPoints;
-P.aeroParams.controlBreakpoints_deg = aeroTables.controlPoints;
-P.aeroParams.CpBase_m = in2m.*aeroTables.CpBase;
-P.aeroParams.CaBase_na = aeroTables.CaBase;
-P.aeroParams.CnBase_na = aeroTables.CnBase;
-P.aeroParams.CnFin_na = aeroTables.CnFinControl;
-P.aeroParams.CaFin_na = aeroTables.CaFinControl;
+P.aeroParams.aeroFileName = 'aeroTables.mat';
+% Multipliers on the tables loaded in derivePlantDD (disperse these, not
+% the tables -- derivePlantDD reloads the tables from aeroFileName)
+P.aeroParams.finStaticScale_na = 1.0;
+P.aeroParams.finControlScale_na = 1.0;
+P.aeroParams.finStaticInputScale_na = 1.0;
+P.aeroParams.finControlInputScale_na = 1.0;
+P.aeroParams.bodyScale_na = 1.0;
+P.aeroParams.CpBaseShift_m = 0.0;
 
 
 %% Fin Moments
@@ -93,5 +91,7 @@ P.aeroParams.finAngles2_rad = [pi/2, 0, 0];
 P.aeroParams.finAngles3_rad = [pi, 0, 0];
 P.aeroParams.finAngles4_rad = [3*pi/2, 0, 0];
 
+%% Derived values
+P = derivePlantDD(P);
 
 end
