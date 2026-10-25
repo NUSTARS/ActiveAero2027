@@ -113,6 +113,14 @@ entry is tagged with the run's label (its filename, or `workspace`).
 
 Other CONFIG variables: `numFrames`, `bodyScale`, `forwardAxis`.
 
+
+## Model code generation
+
+After `setupPaths`, run `scripts/buildModels.m` to rebuild `autocodePlant` and
+`autocodeModel` on every run. The script post-processes shared generated
+constants, exports STM32-ready files to each model's `toIDE/` folder, and
+generates reusable harnesses.
+
 ## STM32 sensor input bus
 
 `buildModels.m` generates `autocodeModel_initializeSensorBus` for the
