@@ -125,6 +125,15 @@ B.filter_bus = makeBus_local({
     'gyroFilt_rps',      3, 'double'
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
+    % Kalman filter internals for scripts/plotFilterResults.m
+    'kf_Pplus',          [15 15], 'double'   % posterior covariance
+    'kf_Pminus',         [15 15], 'double'   % prior covariance
+    'kf_errxPlus',       15,      'double'   % posterior error state
+    'kf_innov',          6,       'double'   % innovation errz
+    'kf_H',              [6 15],  'double'   % measurement matrix
+    'kf_K',              [15 6],  'double'   % Kalman gain
+    'kf_S',              [6 6],   'double'   % innovation covariance
+    'kf_gnssFlag',       1,       'double'   % measurement-update flag
 });
 
 B.deadReckoning_bus = makeBus_local({
