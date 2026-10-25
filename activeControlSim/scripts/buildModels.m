@@ -112,6 +112,9 @@ for k = 1:numel(buildModelNames)
     generateModelHarness(mdl, fullfile(projectRoot, ['build_' mdl]));
 end
 
+% Refresh the copied CubeIDE CM7 project after code generation succeeds.
+copyGeneratedToCubeIDE(projectRoot, buildModelNames);
+
 
 %% Local helper functions
 function writeText(path, contents)
@@ -327,5 +330,41 @@ function buildModelsInSeparateFolders(modelNames, modelsDir, projectRoot)
             'CacheFolder', buildDir, 'createDir', true);
         load_system(fullfile(modelsDir, [mdl '.slx']));
         slbuild(mdl, 'ForceTopModelBuild', true);
+    end
+end
+function copyGeneratedToCubeIDE(projectRoot, modelNames)
+    cm7Dir = fullfile(fileparts(projectRoot), 'STM32AutocodeLib', 'CM7');
+    if ~isfolder(cm7Dir)
+        error('Cannot locate copied CM7 library: %s', cm7Dir);
+    end
+
+    % autocodePlant is secondary; copy it first so autocodeModel wins shared names.
+    for k = 1:numel(modelNames)
+        modelName = modelNames{k};
+        exportDir = fullfile(projectRoot, ['build_' modelName], 'toIDE');
+        for subdirs = {'Src', 'Inc'}
+            subdir = subdirs{1};
+            sourceDir = fullfile(exportDir, subdir);
+            destinationDir = fullfile(cm7Dir, subdir);
+            if ~isfolder(sourceDir)
+                error('Cannot locate generated export directory: %s', sourceDir);
+            end
+            if ~isfolder(destinationDir)
+                error('Cannot locate CubeIDE output directory: %s', destinationDir);
+            end
+            files = dir(fullfile(sourceDir, '*'));
+            files = files(~[files.isdir]);
+            for j = 1:numel(files)
+                sourceFile = fullfile(files(j).folder, files(j).name);
+                destinationFile = fullfile(destinationDir, files(j).name);
+                [ok, msg] = copyfile(sourceFile, destinationFile, 'f');
+                if ~ok
+                    error('Cannot copy %s to %s: %s', ...
+                        sourceFile, destinationFile, msg);
+                end
+            end
+            fprintf('Copied %d generated files to %s.\n', ...
+                numel(files), destinationDir);
+        end
     end
 end

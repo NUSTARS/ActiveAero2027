@@ -7,8 +7,9 @@ Call `autocodeModel_setup` once during startup, then call `autocodeModel_oneStep
 ```c
 #include "autocodeModel_initialize.h"
 static sensor_bus input_sensor_bus_e;
-/* Include the STM32 directory containing main.h in the include path. */
-static FlightData_t polledSensors;
+static Vector3f_t polledAccel;
+static Vector3f_t polledGyro;
+static real_T polledPressure_Pa;
 
 void initializeModel(void)
 {
@@ -17,19 +18,19 @@ void initializeModel(void)
 
 void modelTick(void)
 {
-    /* Accel in m/s^2 and gyro in deg/s; helper converts gyro to rad/s. */
-    autocodeModel_initializeSensorBus(&input_sensor_bus_e, &polledSensors.bmi_accel, &polledSensors.bmi_gyro, NULL, polledSensors.bmp581_pressure);
+    /* Populate accel/gyro in source units and pressure in Pa. */
+    autocodeModel_initializeSensorBus(&input_sensor_bus_e, &polledAccel, &polledGyro, NULL, polledPressure_Pa);
     autocodeModel_oneStep();
 }
 ```
 
-`initializeSensorBus` copies x/y/z from caller-selected `Vector3f_t` accel/gyro fields, converts gyro values from deg/s to rad/s, and copies pressure in Pa. Use BMI088 or LSM6DSO fields and BMP581 or BMP585 pressure as appropriate. `FlightData_t` has no magnetometer field, so pass `NULL` for now; later pass a pointer to a `Vector3f_t` magnetometer reading. A NULL magnetometer and unavailable `truth_bus` bias fields are zeroed.
+`initializeSensorBus` copies x/y/z from caller-selected `Vector3f_t` accel/gyro fields, converts gyro from deg/s to rad/s, and copies pressure in Pa. Populate those values from BMI088/LSM6DSO and BMP581/BMP585 as appropriate. Pass `NULL` when no magnetometer is available; later pass a `Vector3f_t` magnetometer pointer if available. The helper zeros the magnetometer and unavailable `truth_bus` bias fields.
 
 ## STM32CubeIDE project settings
 
 Keep `autocodeLib_CM7` imported in the same workspace as the application, add it under the application project's `Project References`, and build the library for the same CM7 target, configuration, and floating-point ABI as the application.
 
-Because `autocodeModel_initialize.h` includes `main.h`, and the application's `main.h` includes `stm32h7xx_hal.h`, the library C compiler needs the consumer application's `Core/Inc` directory. In `autocodeLib_CM7 > Properties > C/C++ Build > Settings > MCU GCC Compiler > Include paths`, add `${workspace_loc:/{Project}/Core/Inc}` and replace `{Project}` with the consumer CubeIDE project name. Keep `../Inc`; also copy the consumer's HAL/CMSIS include directories into the library compiler settings, resolving paths for the library project: `STM32H7xx_HAL_Driver/Inc`, `STM32H7xx_HAL_Driver/Inc/Legacy`, `CMSIS/Device/ST/STM32H7xx/Include`, and `CMSIS/Include`. Copy the application C compiler's preprocessor symbols into the library configuration too. A CM7 STM32H755 target typically needs `CORE_CM7`, `USE_HAL_DRIVER`, `STM32H755xx`, and `USE_PWR_DIRECT_SMPS_SUPPLY`; retain the matching Debug/Release and board-specific definitions for the selected target.
+The generated wrapper uses `userdefTypes.h` from `CM7/Inc`; it does not depend on application-owned type headers. In `autocodeLib_CM7 > Properties > C/C++ Build > Settings > MCU GCC Compiler > Include paths`, keep `../Inc` and include the HAL/CMSIS directories required by the selected CM7 target, resolving paths relative to the library project: `STM32H7xx_HAL_Driver/Inc`, `STM32H7xx_HAL_Driver/Inc/Legacy`, `CMSIS/Device/ST/STM32H7xx/Include`, and `CMSIS/Include`. Copy the application C compiler's preprocessor symbols into the library configuration too. A CM7 STM32H755 target typically needs `CORE_CM7`, `USE_HAL_DRIVER`, `STM32H755xx`, and `USE_PWR_DIRECT_SMPS_SUPPLY`; retain the matching Debug/Release and board-specific definitions for the selected target.
 
 In the application compiler include paths, include its own `Core/Inc` and `${workspace_loc:/autocodeLib/CM7/Inc}` for the generated API headers.
 

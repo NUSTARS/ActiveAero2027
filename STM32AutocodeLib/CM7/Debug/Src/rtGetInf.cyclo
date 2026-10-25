@@ -1,0 +1,4 @@
+../Src/rtGetInf.c:19:8:rtGetInf	1
+../Src/rtGetInf.c:25:10:rtGetInfF	1
+../Src/rtGetInf.c:31:8:rtGetMinusInf	1
+../Src/rtGetInf.c:37:10:rtGetMinusInfF	1

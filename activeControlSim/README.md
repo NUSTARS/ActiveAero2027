@@ -119,21 +119,24 @@ Other CONFIG variables: `numFrames`, `bodyScale`, `forwardAxis`.
 After `setupPaths`, run `scripts/buildModels.m` to rebuild `autocodePlant` and
 `autocodeModel` on every run. The script post-processes shared generated
 constants, exports STM32-ready files to each model's `toIDE/` folder, and
-generates reusable harnesses.
+generates reusable harnesses. Successful builds also overwrite generated
+`.c`/`.h` files in `../STM32AutocodeLib/CM7/Src` and `Inc`.
 
 ## STM32 sensor input bus
 
 `buildModels.m` generates `autocodeModel_initializeSensorBus` for the
-`sensor_bus` input. The wrapper uses `Vector3f_t` from the STM32 project's
-`main.h`; keep that header's directory on the CubeIDE include path. Call
-`autocodeModel_setup` once with long-lived bus storage, then populate the
-bus and step the model at its 10 ms base rate:
+`sensor_bus` input. The wrapper uses `Vector3f_t` from
+`../STM32AutocodeLib/CM7/Inc/userdefTypes.h`, so it does not include the
+application's `main.h`. Call `autocodeModel_setup` once with long-lived bus
+storage, then populate it and step the model at its 10 ms base rate:
 
 ```c
 #include "autocodeModel_initialize.h"
 
 static sensor_bus sensorInput;
-static FlightData_t polledSensors;
+static Vector3f_t polledAccel;
+static Vector3f_t polledGyro;
+static real_T polledPressure_Pa;
 
 void initializeModel(void)
 {
@@ -142,38 +145,33 @@ void initializeModel(void)
 
 void modelTick(void)
 {
-    /* Poll sensors; accel must be m/s^2, gyro deg/s, and pressure Pa. */
+    /* Update from sensors; accel m/s^2, gyro deg/s, and pressure Pa. */
     autocodeModel_initializeSensorBus(&sensorInput,
-        &polledSensors.bmi_accel, &polledSensors.bmi_gyro,
-        NULL, polledSensors.bmp581_pressure);
+        &polledAccel, &polledGyro, NULL, polledPressure_Pa);
     autocodeModel_oneStep();
 }
 ```
 
-Pass either IMU's `Vector3f_t` fields and either barometer pressure field.
-The wrapper copies accel x/y/z and pressure, and converts gyro x/y/z from
-degrees per second to radians per second. `FlightData_t` has no magnetometer,
-so pass `NULL` to zero those readings for now. On a later board, pass a pointer
-to a magnetometer `Vector3f_t` instead.
+Populate the accel and gyro `Vector3f_t` values and pressure scalar from the
+selected sensors. The wrapper copies x/y/z and pressure, and converts gyro
+values from degrees per second to radians per second. Pass `NULL` when no
+magnetometer is available; a later board can pass a `Vector3f_t` pointer.
 
 ## STM32CubeIDE `autocodeLib_CM7` setup
 
-The generated `autocodeModel_initialize.h` includes both `autocodeModel.h` and
-the application's `main.h`; that `main.h` includes `stm32h7xx_hal.h`. The
-library compile therefore needs the application's `Core/Inc` directory plus
-the HAL/CMSIS include paths and compiler symbols required by that HAL header.
+The generated `autocodeModel_initialize.h` includes `autocodeModel.h` and
+`userdefTypes.h` from the library's `CM7/Inc`. The wrapper no longer depends
+on the consumer application's `Core/Inc`; retain the HAL/CMSIS include paths
+and compiler symbols required by the selected CM7 target.
 
 1. **Project context:** import `autocodeLib_CM7` into the same CubeIDE workspace
    as the application. Add it to the application's **Project References**.
    Build the library for the same CM7 target, configuration, and floating-point
    ABI as the application.
 2. **Library compiler settings:** in `autocodeLib_CM7` > **Properties >
-   C/C++ Build > Settings > MCU GCC Compiler**, add
-   `${workspace_loc:/{Project}/Core/Inc}` to Include paths. Replace
-   `{Project}` with the consumer CubeIDE project name so the library can find
-   its `main.h`. Keep `../Inc` and copy the consumer's HAL/CMSIS include
-   directories into the library settings (resolve the paths relative to the
-   library project):
+   C/C++ Build > Settings > MCU GCC Compiler**, keep `../Inc` and retain the
+   HAL/CMSIS include directories required by the selected target, resolving
+   paths relative to the library project:
    - `STM32H7xx_HAL_Driver/Inc`
    - `STM32H7xx_HAL_Driver/Inc/Legacy`
    - `CMSIS/Device/ST/STM32H7xx/Include`
@@ -193,7 +191,7 @@ the HAL/CMSIS include paths and compiler symbols required by that HAL header.
    build the library's Release configuration and point to its Release output
    directory.
 
-When updating the library, copy the generated `Inc/` and `Src/` files from
-`build_autocodeModel/toIDE/` into the library project and rebuild it. Link the
-archive or compile those model sources directly, never both; do not compile
-`ert_main.c` into the application.
+`buildModels.m` copies the generated `Src/` and `Inc/` files from both model
+`toIDE/` exports into `../STM32AutocodeLib/CM7/` after successful builds,
+overwriting matching files. Rebuild the CubeIDE library; link the archive or
+compile the model sources directly, never both. Do not compile `ert_main.c`.
