@@ -4,7 +4,7 @@
 
 #include "autocodeModel.h"
 #include <stddef.h>
-#include "main.h"
+#include "userdefTypes.h"
 
 /* Pass caller-owned bus inputs; setup initializes the model before binding them. Keep them valid while stepping. */
 void autocodeModel_setup(sensor_bus *input_sensor_bus_e);

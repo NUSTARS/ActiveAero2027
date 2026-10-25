@@ -1,72 +1,28 @@
 %% Build both models and post-process generated constants for STM32CubeIDE
-models = {'autocodePlant', 'autocodeModel'};
+buildModelNames = {'autocodePlant', 'autocodeModel'};
 sharedSymbol = 'rtCP_pooled_JIXvzcabvSoM';
 
 % Resolve project paths from this script's location, not the MATLAB current folder.
 scriptDir = fileparts(mfilename('fullpath'));
-root = fileparts(scriptDir);
-modelsDir = fullfile(root, 'models');
+projectRoot = fileparts(scriptDir);
+modelsDir = fullfile(projectRoot, 'models');
 if ~isfolder(modelsDir)
     error('Cannot locate models directory relative to buildModels.m: %s', modelsDir);
 end
-fprintf('Project root: %s\n', root);
+fprintf('Project root: %s\n', projectRoot);
 addpath(modelsDir);
 
-% Cache source-file hashes next to THIS script (not in the build folders).
-hashFile = fullfile(scriptDir, 'buildModels_hashes.json');
+buildDataDictionaries;
 
-oldHashes = struct();
-if isfile(hashFile)
-    try
-        oldHashes = jsondecode(fileread(hashFile));
-    catch ME
-        warning('Cannot read build hash cache (%s); rebuilding.', ME.message);
-    end
-end
-
-% Hash the actual .slx bytes, rather than timestamps. If either source
-% changed, rebuild BOTH models: the shared-constant deduplication below
-% needs the two fresh generated constant files for its equality check.
-newHashes = struct();
-allUnchanged = true;
-for k = 1:numel(models)
-    mdl = models{k};
-    load_system(fullfile(modelsDir, [mdl '.slx']));
-    modelPath = get_param(mdl, 'FileName');
-    if ~isfile(modelPath)
-        error('Cannot locate model file: %s', modelPath);
-    end
-    newHashes.(mdl) = sha256File(modelPath);
-    buildDir = fullfile(root, ['build_' mdl]);
-    outputFile = findConstFile(buildDir, ['const_params_' mdl '.c'], false);
-    cached = isfield(oldHashes, mdl) && ...
-        strcmp(oldHashes.(mdl), newHashes.(mdl));
-    if ~cached || isempty(outputFile)
-        allUnchanged = false;
-    end
-end
-
-if allUnchanged
-    fprintf('Models unchanged; skipping code generation and refreshing toIDE exports.\n');
-end
-
-if ~allUnchanged
-
-% Generate models in separate output roots.
-for k = 1:numel(models)
-    mdl = models{k};
-    buildDir = fullfile(root, ['build_' mdl]);
-    Simulink.fileGenControl('set', 'CodeGenFolder', buildDir, ...
-        'CacheFolder', buildDir, 'createDir', true);
-    load_system(fullfile(modelsDir, [mdl '.slx']));
-    slbuild(mdl);
-end
+% Generate both top models afresh in separate output roots. Post-processing
+% renames their const_params.c files, so incremental reuse is unsafe here.
+buildModelsInSeparateFolders(buildModelNames, modelsDir, projectRoot);
 
 % Locate each const_params.c wherever Simulink placed it. With shared
 % utility code enabled, R2026a may put it in slprj/ert/_sharedutils,
 % rather than <model>_ert_rtw.
-plantBuild = fullfile(root, 'build_autocodePlant');
-modelBuild = fullfile(root, 'build_autocodeModel');
+plantBuild = fullfile(projectRoot, 'build_autocodePlant');
+modelBuild = fullfile(projectRoot, 'build_autocodeModel');
 plantFile = findConstFile(plantBuild, 'const_params.c', true);
 modelFile = findConstFile(modelBuild, 'const_params.c', true);
 if isempty(plantFile) || isempty(modelFile)
@@ -104,9 +60,9 @@ writeText(plantFile, plantText);
 
 % Rename each file *at its discovered location*, and fix filename
 % references across generated makefiles and source/headers.
-for k = 1:numel(models)
-    mdl = models{k};
-    buildDir = fullfile(root, ['build_' mdl]);
+for k = 1:numel(buildModelNames)
+    mdl = char(buildModelNames(k));
+    buildDir = fullfile(projectRoot, ['build_' mdl]);
     if strcmp(mdl, 'autocodePlant')
         oldFile = plantFile;
     else
@@ -144,28 +100,21 @@ end
 
 fprintf('Done. %s defined in Model and extern in Plant.\n', sharedSymbol);
 
-end % Only build and postprocess when source models changed.
 
-% Export generated code to per-model toIDE folders, even on a cache hit.
-exportToIDE(root, models);
+% Export generated code to per-model toIDE folders.
+exportToIDE(projectRoot, buildModelNames);
 
 % Extract each generated ERT example main into a reusable MCU harness.
 % Requires generateModelHarness.m beside buildModels.m.
 addpath(scriptDir);
-for k = 1:numel(models)
-    mdl = models{k};
-    generateModelHarness(mdl, fullfile(root, ['build_' mdl]));
+for k = 1:numel(buildModelNames)
+    mdl = char(buildModelNames(k));
+    generateModelHarness(mdl, fullfile(projectRoot, ['build_' mdl]));
 end
 
-% Commit cache ONLY after successful builds, post-processing and export.
-% Atomic-ish write protects the previous valid cache if interrupted.
-tempHashFile = [hashFile '.tmp'];
-writeText(tempHashFile, jsonencode(newHashes, 'PrettyPrint', true));
-[ok, msg] = movefile(tempHashFile, hashFile, 'f');
-if ~ok
-    error('Cannot save hash cache %s: %s', hashFile, msg);
-end
-fprintf('Saved model hashes to %s\n', hashFile);
+% Refresh the copied CubeIDE CM7 project after code generation succeeds.
+copyGeneratedToCubeIDE(projectRoot, buildModelNames);
+
 
 %% Local helper functions
 function writeText(path, contents)
@@ -181,7 +130,7 @@ end
 function hex = sha256File(path)
     fid = fopen(path, 'rb');
     if fid < 0
-        error('Cannot read model file %s', path);
+        error('Cannot read file %s', path);
     end
     cleanup = onCleanup(@() fclose(fid));
     digest = java.security.MessageDigest.getInstance('SHA-256');
@@ -194,6 +143,7 @@ function hex = sha256File(path)
     bytes = typecast(digest.digest(), 'uint8');
     hex = lower(reshape(dec2hex(bytes, 2).', 1, []));
 end
+
 
 function path = findConstFile(buildDir, filename, preferShared)
     matches = dir(fullfile(buildDir, '**', filename));
@@ -222,7 +172,7 @@ function path = findConstFile(buildDir, filename, preferShared)
     path = paths{1};
 end
 
-function exportToIDE(root, models)
+function exportToIDE(projectRoot, models)
     % Collect each model's generated C/H plus recursively needed MATLAB
     % Simulink include files. Export to toIDE/Src and toIDE/Inc.
     matlabIncludes = fullfile(matlabroot, 'simulink', 'include');
@@ -233,7 +183,7 @@ function exportToIDE(root, models)
     exports = cell(size(models));
     for k = 1:numel(models)
         mdl = models{k};
-        buildDir = fullfile(root, ['build_' mdl]);
+        buildDir = fullfile(projectRoot, ['build_' mdl]);
         sharedDir = fullfile(buildDir, 'slprj', 'ert', '_sharedutils');
         modelDir = fullfile(buildDir, [mdl '_ert_rtw']);
         if ~isfolder(sharedDir) || ~isfolder(modelDir)
@@ -253,7 +203,7 @@ function exportToIDE(root, models)
     for k = 1:numel(models)
         mdl = models{k};
         sourceMap = exports{k};
-        destDir = fullfile(root, ['build_' mdl], 'toIDE');
+        destDir = fullfile(projectRoot, ['build_' mdl], 'toIDE');
         if isfolder(destDir)
             rmdir(destDir, 's'); % Prevent stale exports surviving a rebuild.
         end
@@ -366,6 +316,55 @@ function files = collectCodeFiles(generatedDirs, matlabIncludes)
                     pending{end+1} = companion; %#ok<AGROW>
                 end
             end
+        end
+    end
+end
+function buildModelsInSeparateFolders(modelNames, modelsDir, projectRoot)
+    currentDir = pwd;
+    currentDirCleanup = onCleanup(@() cd(currentDir));
+    cd(projectRoot);
+    for k = 1:numel(modelNames)
+        mdl = char(modelNames(k));
+        buildDir = fullfile(projectRoot, ['build_' mdl]);
+        Simulink.fileGenControl('set', 'CodeGenFolder', buildDir, ...
+            'CacheFolder', buildDir, 'createDir', true);
+        load_system(fullfile(modelsDir, [mdl '.slx']));
+        slbuild(mdl, 'ForceTopModelBuild', true);
+    end
+end
+function copyGeneratedToCubeIDE(projectRoot, modelNames)
+    cm7Dir = fullfile(fileparts(projectRoot), 'STM32AutocodeLib', 'CM7');
+    if ~isfolder(cm7Dir)
+        error('Cannot locate copied CM7 library: %s', cm7Dir);
+    end
+
+    % autocodePlant is secondary; copy it first so autocodeModel wins shared names.
+    for k = 1:numel(modelNames)
+        modelName = modelNames{k};
+        exportDir = fullfile(projectRoot, ['build_' modelName], 'toIDE');
+        for subdirs = {'Src', 'Inc'}
+            subdir = subdirs{1};
+            sourceDir = fullfile(exportDir, subdir);
+            destinationDir = fullfile(cm7Dir, subdir);
+            if ~isfolder(sourceDir)
+                error('Cannot locate generated export directory: %s', sourceDir);
+            end
+            if ~isfolder(destinationDir)
+                error('Cannot locate CubeIDE output directory: %s', destinationDir);
+            end
+            files = dir(fullfile(sourceDir, '*'));
+            files = files(~[files.isdir]);
+            for j = 1:numel(files)
+                sourceFile = fullfile(files(j).folder, files(j).name);
+                destinationFile = fullfile(destinationDir, files(j).name);
+                [ok, msg] = copyfile(sourceFile, destinationFile, 'f');
+                if ~ok
+                    error('Cannot copy %s to %s: %s', ...
+                        sourceFile, destinationFile, msg);
+                end
+            end
+            fprintf('Copied %d generated files to %s.\n', ...
+                numel(files), destinationDir);
         end
     end
 end

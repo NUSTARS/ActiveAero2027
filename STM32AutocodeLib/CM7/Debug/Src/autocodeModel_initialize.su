@@ -1,0 +1,5 @@
+../Src/autocodeModel_initialize.c:22:6:rt_OneStep_autocodeModel	24	static
+../Src/autocodeModel_initialize.c:54:6:autocodeModel_setup	32	static
+../Src/autocodeModel_initialize.c:63:6:autocodeModel_initializeSensorBus	48	static
+../Src/autocodeModel_initialize.c:87:6:autocodeModel_oneStep	8	static
+../Src/autocodeModel_initialize.c:92:11:autocodeModel_getModel	4	static
