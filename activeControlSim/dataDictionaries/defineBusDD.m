@@ -106,7 +106,7 @@ B.noiseFiltered_bus = makeBus_local({
 });
 
 B.bias_bus = makeBus_local({
-    'accelBias_mps2',    3, 'double'
+    'accelBias_mps2',    1, 'double'
     'gyroBias_rps',      3, 'double'
 });
 
@@ -123,7 +123,7 @@ B.filter_bus = makeBus_local({
     'posEst_m',          3, 'double'
     'accelFilt_mps2',    3, 'double'
     'gyroFilt_rps',      3, 'double'
-    'accelBias_mps2',    3, 'double'
+    'accelBias_mps2',    1, 'double'
     'gyroBias_rps',      3, 'double'
 });
 
@@ -145,9 +145,9 @@ B.navigation_bus = makeBus_local({
     'xAccEst_mps2',      1, 'double'
     'yAccEst_mps2',      1, 'double'
     'zAccEst_mps2',      1, 'double'
-    'dynPressureEst_Pa', 1, 'double'
-    'accelBias_mps2',    3, 'double'
+    'accelBias_mps2',    1, 'double'
     'gyroBias_rps',      3, 'double'
+    'dynPressureEst_Pa', 1, 'double'
     'xVelEst_mps',       1, 'double'
     'yVelEst_mps',       1, 'double'
     'zVelEst_mps',       1, 'double'
