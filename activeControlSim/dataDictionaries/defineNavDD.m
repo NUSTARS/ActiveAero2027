@@ -17,13 +17,15 @@ N.navControl.rhoConst_kgpm3 = 1.225;
 gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05];
 N.navControl.gyroG = gyroG * 0.01745 / 9.8065;
 
+N.navControl.filterDelay_na = 500;
+
 N.navStates.debounce_s = 0.1;
-N.navStates.boostThreshold_mps2 = 2;
+N.navStates.boostThreshold_mps2 = 12;
 N.navStates.coastThresholdxAcc_mps2 = 0; 
 N.navStates.coastThresholdAlt_m = 200;
 N.navStates.controlTresholdPitchYaw_rad = 1.0;
 N.navStates.controlTresholdPitchYawRate_rps = 1.0;
 
-N.navComp.compGain = 0.99;
+N.navComp.compGain = 0.995;
 
 end
