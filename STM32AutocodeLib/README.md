@@ -24,6 +24,7 @@
 ### Instructions
 1. Change directory into the cloned ActiveAero build, then run setupPaths to configure data directories and model linkings
 2. Change into the subdirectory scripts, then run buildModels. This file should build models and configure entrypoints for model initialization
+    - After code generation, ensure each generated `.c` file is in `CM7/Debug/Src/subdir.mk` (`C_SRCS`, `OBJS`, and `C_DEPS`) and `CM7/Debug/objects.list`, then rebuild `autocodeLib_CM7` before building the board firmware. The current model requires `BINARYSEARCH_real_T.c` and `LookUp_real_T_real_T.c`. The board build tracks the archive through `AvionicsBoardV1/CM7/makefile.targets`, so a normal build relinks the firmware after the archive changes.
 3. In STM32CubeIDE, open the following projects:
     - The generated STM32 libary in the root directory of ActiveAero
     - The current NUStars Avionics Firmware
