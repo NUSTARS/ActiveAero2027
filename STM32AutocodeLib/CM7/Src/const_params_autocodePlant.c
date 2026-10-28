@@ -9,7 +9,7 @@
  *
  * Model version              : 1.7
  * Simulink Coder version : 26.1 (R2026a) 20-Nov-2025
- * C source code generated on : Wed Oct 14 21:16:03 2026
+ * C source code generated on : Tue Oct 20 20:26:56 2026
  */
 #include "rtwtypes.h"
 
@@ -144,8 +144,7 @@ extern const real_T rtCP_pooled_EUbHB07NscWq[5];
 const real_T rtCP_pooled_EUbHB07NscWq[5] = { -4.0, -2.0, 0.0, 2.0, 4.0 } ;
 
 extern const real_T rtCP_pooled_JIXvzcabvSoM[9];
-const real_T rtCP_pooled_JIXvzcabvSoM[9] = { 8.8971600469076642E-5, 0.0, 0.0,
-  0.0, 8.8971600469076642E-5, 0.0, 0.0, 0.0, 8.8971600469076642E-5 } ;
+
 
 extern const real_T rtCP_pooled_JSo03ipyAXHp[12];
 const real_T rtCP_pooled_JSo03ipyAXHp[12] = { 500.0, 1750.0, 3750.0, 7500.0,
@@ -276,6 +275,9 @@ const real_T rtCP_pooled_Ypj7adFkGj9p[26] = { 1728.683, 1673.336, 1686.81,
 
 extern const uint32_T rtCP_pooled_dTVRh1Zt8UHp[3];
 const uint32_T rtCP_pooled_dTVRh1Zt8UHp[3] = { 1U, 10U, 30U } ;
+
+extern const real_T rtCP_pooled_dv0Tl0SlWhXs[3];
+const real_T rtCP_pooled_dv0Tl0SlWhXs[3] = { 5.0, 0.0, 0.0 } ;
 
 extern const real_T rtCP_pooled_eAvIOzbeucLm[150];
 const real_T rtCP_pooled_eAvIOzbeucLm[150] = { 0.03635, 0.03685, 0.0369,

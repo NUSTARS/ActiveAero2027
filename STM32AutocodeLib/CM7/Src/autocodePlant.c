@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Oct 14 21:16:03 2026
+ * C/C++ source code generated on : Tue Oct 27 19:08:19 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -345,8 +345,8 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     int32_T Merge_b_tmp;
     int32_T i;
     int32_T rtb_Sum2_d;
-    int32_T s208_iter;
-    int32_T s249_iter;
+    int32_T s209_iter;
+    int32_T s250_iter;
     uint32_T bpIndices[3];
     uint32_T bpIndices_0[3];
     uint32_T bpIndices_1[3];
@@ -365,43 +365,43 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     boolean_T rtb_min_relop_n;
     boolean_T tmp;
 
-    /* Outputs for Enabled SubSystem: '<S105>/Hugw(s)' incorporates:
-     *  EnablePort: '<S118>/Enable'
-     */
-    /* Outputs for Enabled SubSystem: '<S104>/Hrgw' incorporates:
-     *  EnablePort: '<S117>/Enable'
-     */
-    /* Outputs for Enabled SubSystem: '<S105>/Hvgw(s)' incorporates:
+    /* Outputs for Enabled SubSystem: '<S106>/Hugw(s)' incorporates:
      *  EnablePort: '<S119>/Enable'
      */
-    /* Outputs for Enabled SubSystem: '<S104>/Hqgw' incorporates:
-     *  EnablePort: '<S116>/Enable'
+    /* Outputs for Enabled SubSystem: '<S105>/Hrgw' incorporates:
+     *  EnablePort: '<S118>/Enable'
      */
-    /* Outputs for Enabled SubSystem: '<S105>/Hwgw(s)' incorporates:
+    /* Outputs for Enabled SubSystem: '<S106>/Hvgw(s)' incorporates:
      *  EnablePort: '<S120>/Enable'
      */
-    /* Outputs for Enabled SubSystem: '<S104>/Hpgw' incorporates:
-     *  EnablePort: '<S115>/Enable'
+    /* Outputs for Enabled SubSystem: '<S105>/Hqgw' incorporates:
+     *  EnablePort: '<S117>/Enable'
      */
-    /* Outputs for Enabled SubSystem: '<S189>/Convert from geodetic to  spherical coordinates' incorporates:
-     *  EnablePort: '<S201>/Enable'
+    /* Outputs for Enabled SubSystem: '<S106>/Hwgw(s)' incorporates:
+     *  EnablePort: '<S121>/Enable'
+     */
+    /* Outputs for Enabled SubSystem: '<S105>/Hpgw' incorporates:
+     *  EnablePort: '<S116>/Enable'
+     */
+    /* Outputs for Enabled SubSystem: '<S190>/Convert from geodetic to  spherical coordinates' incorporates:
+     *  EnablePort: '<S202>/Enable'
      */
     tmp = (rtmIsMajorTimeStep(autocodePlant_M) &&
            autocodePlant_M->Timing.TaskCounters.TID[1] == 0);
 
-    /* End of Outputs for SubSystem: '<S189>/Convert from geodetic to  spherical coordinates' */
-    /* End of Outputs for SubSystem: '<S104>/Hpgw' */
-    /* End of Outputs for SubSystem: '<S105>/Hwgw(s)' */
-    /* End of Outputs for SubSystem: '<S104>/Hqgw' */
-    /* End of Outputs for SubSystem: '<S105>/Hvgw(s)' */
-    /* End of Outputs for SubSystem: '<S104>/Hrgw' */
-    /* End of Outputs for SubSystem: '<S105>/Hugw(s)' */
+    /* End of Outputs for SubSystem: '<S190>/Convert from geodetic to  spherical coordinates' */
+    /* End of Outputs for SubSystem: '<S105>/Hpgw' */
+    /* End of Outputs for SubSystem: '<S106>/Hwgw(s)' */
+    /* End of Outputs for SubSystem: '<S105>/Hqgw' */
+    /* End of Outputs for SubSystem: '<S106>/Hvgw(s)' */
+    /* End of Outputs for SubSystem: '<S105>/Hrgw' */
+    /* End of Outputs for SubSystem: '<S106>/Hugw(s)' */
     if (tmp) {
-      /* Sum: '<S156>/bias' incorporates:
-       *  Constant: '<S156>/  '
-       *  DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn'
-       *  DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn1'
-       *  DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn2'
+      /* Sum: '<S157>/bias' incorporates:
+       *  Constant: '<S157>/  '
+       *  DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn'
+       *  DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn1'
+       *  DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn2'
        */
       rtb_ZeroOrderHold_a[0] = autocodePlant_DW->DiscreteTransferFcn_states +
         0.007805089418666159;
@@ -410,10 +410,10 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_ZeroOrderHold_a[2] = autocodePlant_DW->DiscreteTransferFcn2_states +
         0.007805089418666159;
 
-      /* Sum: '<S154>/bias' incorporates:
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn1'
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn2'
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn3'
+      /* Sum: '<S155>/bias' incorporates:
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn1'
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn2'
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn3'
        */
       rtb_ZeroOrderHold_c[0] = autocodePlant_DW->DiscreteTransferFcn2_states_k -
         0.01056034519496827;
@@ -423,66 +423,66 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         0.01056034519496827;
 
       /* BusCreator generated from: '<Root>/sensor_bus' incorporates:
-       *  Constant: '<S156>/  '
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn2'
-       *  DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn'
-       *  Sum: '<S154>/bias'
-       *  Sum: '<S156>/bias'
+       *  Constant: '<S157>/  '
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn2'
+       *  DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn'
+       *  Sum: '<S155>/bias'
+       *  Sum: '<S157>/bias'
        */
       rtb_w3 = autocodePlant_DW->DiscreteTransferFcn_states +
         0.007805089418666159;
       rtb_sigma_ugsigma_vg = autocodePlant_DW->DiscreteTransferFcn2_states_k -
         0.01056034519496827;
 
-      /* Sum: '<S154>/bias + noise' incorporates:
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn2'
-       *  Gain: '<S160>/Output'
-       *  RandomNumber: '<S160>/White Noise'
-       *  Sum: '<S154>/bias'
+      /* Sum: '<S155>/bias + noise' incorporates:
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn2'
+       *  Gain: '<S161>/Output'
+       *  RandomNumber: '<S161>/White Noise'
+       *  Sum: '<S155>/bias'
        */
       autocodePlant_B->biasnoise[0] =
         (autocodePlant_DW->DiscreteTransferFcn2_states_k - 0.01056034519496827)
         + 0.0073574999999999995 * autocodePlant_DW->NextOutput;
 
       /* BusCreator generated from: '<Root>/sensor_bus' incorporates:
-       *  Constant: '<S156>/  '
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn1'
-       *  DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn1'
-       *  Sum: '<S154>/bias'
-       *  Sum: '<S156>/bias'
+       *  Constant: '<S157>/  '
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn1'
+       *  DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn1'
+       *  Sum: '<S155>/bias'
+       *  Sum: '<S157>/bias'
        */
       rtb_LowAltitudeScaleLength = autocodePlant_DW->DiscreteTransferFcn1_states
         + 0.007805089418666159;
       rtb_truth_bus_accBiasTrue_mps2_ =
         autocodePlant_DW->DiscreteTransferFcn1_states_a - 0.01056034519496827;
 
-      /* Sum: '<S154>/bias + noise' incorporates:
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn1'
-       *  Gain: '<S160>/Output'
-       *  RandomNumber: '<S160>/White Noise'
-       *  Sum: '<S154>/bias'
+      /* Sum: '<S155>/bias + noise' incorporates:
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn1'
+       *  Gain: '<S161>/Output'
+       *  RandomNumber: '<S161>/White Noise'
+       *  Sum: '<S155>/bias'
        */
       autocodePlant_B->biasnoise[1] =
         (autocodePlant_DW->DiscreteTransferFcn1_states_a - 0.01056034519496827)
         + 0.0073574999999999995 * autocodePlant_DW->NextOutput;
 
       /* BusCreator generated from: '<Root>/sensor_bus' incorporates:
-       *  Constant: '<S156>/  '
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn3'
-       *  DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn2'
-       *  Sum: '<S154>/bias'
-       *  Sum: '<S156>/bias'
+       *  Constant: '<S157>/  '
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn3'
+       *  DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn2'
+       *  Sum: '<S155>/bias'
+       *  Sum: '<S157>/bias'
        */
       rtb_truth_bus_gyroBiasTrue_rps_ =
         autocodePlant_DW->DiscreteTransferFcn2_states + 0.007805089418666159;
       rtb_truth_bus_accBiasTrue_mps_0 =
         autocodePlant_DW->DiscreteTransferFcn3_states - 0.01056034519496827;
 
-      /* Sum: '<S154>/bias + noise' incorporates:
-       *  DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn3'
-       *  Gain: '<S160>/Output'
-       *  RandomNumber: '<S160>/White Noise'
-       *  Sum: '<S154>/bias'
+      /* Sum: '<S155>/bias + noise' incorporates:
+       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn3'
+       *  Gain: '<S161>/Output'
+       *  RandomNumber: '<S161>/White Noise'
+       *  Sum: '<S155>/bias'
        */
       autocodePlant_B->biasnoise[2] =
         (autocodePlant_DW->DiscreteTransferFcn3_states - 0.01056034519496827) +
@@ -507,20 +507,20 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_q_na_idx_2 = autocodePlant_X->uDOFQuaternion_CSTATE[11];
     rtb_q_na_idx_3 = autocodePlant_X->uDOFQuaternion_CSTATE[12];
 
-    /* RelationalOperator: '<S83>/Compare' incorporates:
-     *  Constant: '<S83>/Constant'
+    /* RelationalOperator: '<S84>/Compare' incorporates:
+     *  Constant: '<S84>/Constant'
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      *  UnaryMinus: '<S4>/Unary Minus'
      */
     rtb_Compare_n = (-autocodePlant_X->uDOFQuaternion_CSTATE[5] <= 4.0);
 
-    /* Sqrt: '<S99>/sqrt' incorporates:
+    /* Sqrt: '<S100>/sqrt' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S100>/Product'
-     *  Product: '<S100>/Product1'
-     *  Product: '<S100>/Product2'
-     *  Product: '<S100>/Product3'
-     *  Sum: '<S100>/Sum'
+     *  Product: '<S101>/Product'
+     *  Product: '<S101>/Product1'
+     *  Product: '<S101>/Product2'
+     *  Product: '<S101>/Product3'
+     *  Sum: '<S101>/Sum'
      */
     rtb_TT0gLR = sqrt(((autocodePlant_X->uDOFQuaternion_CSTATE[9] *
                         autocodePlant_X->uDOFQuaternion_CSTATE[9] +
@@ -531,130 +531,130 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
                       autocodePlant_X->uDOFQuaternion_CSTATE[12] *
                       autocodePlant_X->uDOFQuaternion_CSTATE[12]);
 
-    /* Product: '<S95>/Product2' incorporates:
+    /* Product: '<S96>/Product2' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_Sign1 = autocodePlant_X->uDOFQuaternion_CSTATE[11] / rtb_TT0gLR;
 
-    /* Product: '<S95>/Product3' incorporates:
+    /* Product: '<S96>/Product3' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_Sign1_e = autocodePlant_X->uDOFQuaternion_CSTATE[12] / rtb_TT0gLR;
 
-    /* Product: '<S95>/Product1' incorporates:
+    /* Product: '<S96>/Product1' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_Gain_l = autocodePlant_X->uDOFQuaternion_CSTATE[10] / rtb_TT0gLR;
 
-    /* Product: '<S95>/Product' incorporates:
+    /* Product: '<S96>/Product' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_TT0gLR = autocodePlant_X->uDOFQuaternion_CSTATE[9] / rtb_TT0gLR;
 
-    /* Product: '<S96>/Product7' incorporates:
-     *  Product: '<S97>/Product7'
+    /* Product: '<S97>/Product7' incorporates:
+     *  Product: '<S98>/Product7'
      */
     rtb_Sum1_oo = rtb_Sign1_e * rtb_Sign1_e;
 
-    /* Product: '<S96>/Product' incorporates:
-     *  Product: '<S97>/Product'
+    /* Product: '<S97>/Product' incorporates:
+     *  Product: '<S98>/Product'
      */
     rtb_a = rtb_Gain_l * rtb_Sign1;
 
-    /* Product: '<S96>/Product1' incorporates:
-     *  Product: '<S97>/Product1'
+    /* Product: '<S97>/Product1' incorporates:
+     *  Product: '<S98>/Product1'
      */
     rtb_Gain_oa = rtb_TT0gLR * rtb_Sign1_e;
 
-    /* Product: '<S96>/Product3' incorporates:
-     *  Product: '<S98>/Product'
+    /* Product: '<S97>/Product3' incorporates:
+     *  Product: '<S99>/Product'
      */
     rtb_Product2_f = rtb_Gain_l * rtb_Sign1_e;
 
-    /* Product: '<S96>/Product2' incorporates:
-     *  Product: '<S98>/Product1'
+    /* Product: '<S97>/Product2' incorporates:
+     *  Product: '<S99>/Product1'
      */
     rtb_Product_iw = rtb_TT0gLR * rtb_Sign1;
 
-    /* Product: '<S96>/Product6' incorporates:
-     *  Product: '<S98>/Product7'
+    /* Product: '<S97>/Product6' incorporates:
+     *  Product: '<S99>/Product7'
      */
     rtb_Sign1_oh = rtb_Sign1 * rtb_Sign1;
 
     /* Gain: '<S4>/mass' incorporates:
      *  Constant: '<S4>/gNed_mps2'
-     *  Constant: '<S96>/Constant'
-     *  Gain: '<S96>/Gain'
-     *  Gain: '<S96>/Gain1'
-     *  Gain: '<S96>/Gain2'
-     *  Product: '<S96>/Product'
-     *  Product: '<S96>/Product1'
-     *  Product: '<S96>/Product2'
-     *  Product: '<S96>/Product3'
-     *  Product: '<S96>/Product4'
-     *  Product: '<S96>/Product5'
-     *  Product: '<S96>/Product6'
-     *  Product: '<S96>/Product7'
-     *  Product: '<S96>/Product8'
-     *  Sum: '<S96>/Sum'
-     *  Sum: '<S96>/Sum1'
-     *  Sum: '<S96>/Sum2'
-     *  Sum: '<S96>/Sum3'
+     *  Constant: '<S97>/Constant'
+     *  Gain: '<S97>/Gain'
+     *  Gain: '<S97>/Gain1'
+     *  Gain: '<S97>/Gain2'
+     *  Product: '<S97>/Product'
+     *  Product: '<S97>/Product1'
+     *  Product: '<S97>/Product2'
+     *  Product: '<S97>/Product3'
+     *  Product: '<S97>/Product4'
+     *  Product: '<S97>/Product5'
+     *  Product: '<S97>/Product6'
+     *  Product: '<S97>/Product7'
+     *  Product: '<S97>/Product8'
+     *  Sum: '<S97>/Sum'
+     *  Sum: '<S97>/Sum1'
+     *  Sum: '<S97>/Sum2'
+     *  Sum: '<S97>/Sum3'
      */
     rtb_gravityForceBdy_N[0] = ((((0.5 - rtb_Sign1_oh) - rtb_Sum1_oo) * 2.0 *
       0.0 + (rtb_a + rtb_Gain_oa) * 2.0 * 0.0) + (rtb_Product2_f -
-      rtb_Product_iw) * 2.0 * 9.81) * 18.0;
+      rtb_Product_iw) * 2.0 * 9.81) * 17.5;
 
-    /* Product: '<S97>/Product3' incorporates:
-     *  Product: '<S98>/Product3'
+    /* Product: '<S98>/Product3' incorporates:
+     *  Product: '<S99>/Product3'
      */
     rtb_Sign1 *= rtb_Sign1_e;
 
-    /* Product: '<S97>/Product2' incorporates:
-     *  Product: '<S98>/Product2'
+    /* Product: '<S98>/Product2' incorporates:
+     *  Product: '<S99>/Product2'
      */
     rtb_TT0gLR *= rtb_Gain_l;
 
-    /* Sum: '<S97>/Sum3' incorporates:
-     *  Constant: '<S97>/Constant'
-     *  Product: '<S97>/Product6'
-     *  Sum: '<S98>/Sum3'
+    /* Sum: '<S98>/Sum3' incorporates:
+     *  Constant: '<S98>/Constant'
+     *  Product: '<S98>/Product6'
+     *  Sum: '<S99>/Sum3'
      */
     rtb_Gain_l = 0.5 - rtb_Gain_l * rtb_Gain_l;
 
     /* Gain: '<S4>/mass' incorporates:
      *  Constant: '<S4>/gNed_mps2'
-     *  Gain: '<S97>/Gain'
-     *  Gain: '<S97>/Gain1'
-     *  Gain: '<S97>/Gain2'
      *  Gain: '<S98>/Gain'
      *  Gain: '<S98>/Gain1'
      *  Gain: '<S98>/Gain2'
-     *  Product: '<S97>/Product2'
-     *  Product: '<S97>/Product3'
-     *  Product: '<S97>/Product4'
-     *  Product: '<S97>/Product5'
-     *  Product: '<S97>/Product8'
+     *  Gain: '<S99>/Gain'
+     *  Gain: '<S99>/Gain1'
+     *  Gain: '<S99>/Gain2'
+     *  Product: '<S98>/Product2'
+     *  Product: '<S98>/Product3'
      *  Product: '<S98>/Product4'
      *  Product: '<S98>/Product5'
      *  Product: '<S98>/Product8'
-     *  Sum: '<S97>/Sum'
-     *  Sum: '<S97>/Sum1'
-     *  Sum: '<S97>/Sum2'
-     *  Sum: '<S97>/Sum3'
+     *  Product: '<S99>/Product4'
+     *  Product: '<S99>/Product5'
+     *  Product: '<S99>/Product8'
      *  Sum: '<S98>/Sum'
      *  Sum: '<S98>/Sum1'
      *  Sum: '<S98>/Sum2'
      *  Sum: '<S98>/Sum3'
+     *  Sum: '<S99>/Sum'
+     *  Sum: '<S99>/Sum1'
+     *  Sum: '<S99>/Sum2'
+     *  Sum: '<S99>/Sum3'
      */
     rtb_gravityForceBdy_N[1] = (((rtb_Gain_l - rtb_Sum1_oo) * 2.0 * 0.0 + (rtb_a
       - rtb_Gain_oa) * 2.0 * 0.0) + (rtb_TT0gLR + rtb_Sign1) * 2.0 * 9.81) *
-      18.0;
+      17.5;
     rtb_gravityForceBdy_N[2] = (((rtb_Product2_f + rtb_Product_iw) * 2.0 * 0.0 +
       (rtb_Sign1 - rtb_TT0gLR) * 2.0 * 0.0) + (rtb_Gain_l - rtb_Sign1_oh) * 2.0 *
-      9.81) * 18.0;
+      9.81) * 17.5;
 
-    /* Quat2Dcm: '<S86>/Quaternions to  Direction Cosine Matrix' incorporates:
+    /* Quat2Dcm: '<S87>/Quaternions to  Direction Cosine Matrix' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_Switch_d_idx_1 = 1.0 / sqrt(((autocodePlant_X->uDOFQuaternion_CSTATE[9] *
@@ -715,25 +715,26 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_QuaternionstoDirectionCosin[5] = (rtb_a - rtb_Gain_oa) * 2.0;
     rtb_QuaternionstoDirectionCosin[8] = (rtb_Sum1_oo - rtb_TT0gLR) + rtb_Sign1;
 
-    /* Product: '<S86>/Matrix Multiply' incorporates:
-     *  Constant: '<S86>/Constant'
-     *  Quat2Dcm: '<S86>/Quaternions to  Direction Cosine Matrix'
+    /* Product: '<S87>/Matrix Multiply' incorporates:
+     *  Constant: '<S87>/Constant'
+     *  Quat2Dcm: '<S87>/Quaternions to  Direction Cosine Matrix'
      */
     rtb_TT0gLR = 0.0;
+    rtb_Product2_f = 0.0;
     rtb_Gain_l = 0.0;
-    rtb_Gain_oa = 0.0;
     for (i = 0; i < 3; i++) {
       rtb_Product2_e = rtCP__Constant_Value_dx[i];
       rtb_TT0gLR += rtb_QuaternionstoDirectionCosin[3 * i] * rtb_Product2_e;
-      rtb_Gain_l += rtb_QuaternionstoDirectionCosin[3 * i + 1] * rtb_Product2_e;
-      rtb_Gain_oa += rtb_QuaternionstoDirectionCosin[3 * i + 2] * rtb_Product2_e;
+      rtb_Product2_f += rtb_QuaternionstoDirectionCosin[3 * i + 1] *
+        rtb_Product2_e;
+      rtb_Gain_l += rtb_QuaternionstoDirectionCosin[3 * i + 2] * rtb_Product2_e;
     }
 
-    rtb_Switch_f[2] = rtb_Gain_oa;
-    rtb_Switch_f[1] = rtb_Gain_l;
+    rtb_Switch_f[2] = rtb_Gain_l;
+    rtb_Switch_f[1] = rtb_Product2_f;
     rtb_Switch_f[0] = rtb_TT0gLR;
 
-    /* Saturate: '<S91>/Limit  altitude  to troposhere' incorporates:
+    /* Saturate: '<S92>/Limit  altitude  to troposhere' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      *  UnaryMinus: '<S4>/Unary Minus'
      */
@@ -745,30 +746,30 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Product2_e = -autocodePlant_X->uDOFQuaternion_CSTATE[5];
     }
 
-    /* Sum: '<S91>/Sum1' incorporates:
-     *  Constant: '<S91>/Sea Level  Temperature'
-     *  Gain: '<S91>/Lapse Rate'
-     *  Saturate: '<S91>/Limit  altitude  to troposhere'
+    /* Sum: '<S92>/Sum1' incorporates:
+     *  Constant: '<S92>/Sea Level  Temperature'
+     *  Gain: '<S92>/Lapse Rate'
+     *  Saturate: '<S92>/Limit  altitude  to troposhere'
      */
     rtb_Sum1_oo = 288.15 - 0.0065 * rtb_Product2_e;
 
-    /* Sqrt: '<S91>/a' incorporates:
-     *  Gain: '<S91>/gamma*R'
+    /* Sqrt: '<S92>/a' incorporates:
+     *  Gain: '<S92>/gamma*R'
      */
     rtb_a = sqrt(401.87433999999996 * rtb_Sum1_oo);
 
     /* Sum: '<S4>/Minus' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S86>/Matrix Multiply'
+     *  Product: '<S87>/Matrix Multiply'
      */
     rtb_TmpSignalConversionAtProd_0 = autocodePlant_X->uDOFQuaternion_CSTATE[0]
       - rtb_TT0gLR;
     rtb_airspeed_mps[0] = rtb_TmpSignalConversionAtProd_0;
 
-    /* Sum: '<S8>/Sum' incorporates:
+    /* Sum: '<S9>/Sum' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S15>/Element Product'
-     *  Sum: '<S15>/Sum'
+     *  Product: '<S16>/Element Product'
+     *  Sum: '<S16>/Sum'
      */
     rtb_TT0gLR = (autocodePlant_ConstB.Subtract1[2] *
                   autocodePlant_X->uDOFQuaternion_CSTATE[7] -
@@ -777,21 +778,24 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_TmpSignalConversionAtProd_0;
     rtb_Sum_jl[0] = rtb_TT0gLR;
 
-    /* Product: '<S8>/Product8' */
+    /* DotProduct: '<S9>/Dot Product4' */
+    rtb_Gain_oa = rtb_TT0gLR * rtb_TT0gLR;
+
+    /* Product: '<S9>/Product8' */
     rtb_Sign1 = rtb_TT0gLR * autocodePlant_ConstB.Sum2_i[0];
 
     /* Sum: '<S4>/Minus' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S86>/Matrix Multiply'
+     *  Product: '<S87>/Matrix Multiply'
      */
     rtb_TmpSignalConversionAtProd_0 = autocodePlant_X->uDOFQuaternion_CSTATE[1]
-      - rtb_Gain_l;
+      - rtb_Product2_f;
     rtb_airspeed_mps[1] = rtb_TmpSignalConversionAtProd_0;
 
-    /* Sum: '<S8>/Sum' incorporates:
+    /* Sum: '<S9>/Sum' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S15>/Element Product'
-     *  Sum: '<S15>/Sum'
+     *  Product: '<S16>/Element Product'
+     *  Sum: '<S16>/Sum'
      */
     rtb_Product2_f = (autocodePlant_ConstB.Subtract1[0] *
                       autocodePlant_X->uDOFQuaternion_CSTATE[8] -
@@ -800,91 +804,158 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_TmpSignalConversionAtProd_0;
     rtb_Sum_jl[1] = rtb_Product2_f;
 
-    /* Product: '<S8>/Product8' */
-    rtb_Gain_l = rtb_Product2_f * autocodePlant_ConstB.Sum2_i[1];
+    /* Product: '<S9>/Product8' */
+    rtb_Product_iw = rtb_Product2_f * autocodePlant_ConstB.Sum2_i[1];
 
     /* Sum: '<S4>/Minus' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S86>/Matrix Multiply'
+     *  Product: '<S87>/Matrix Multiply'
      */
     rtb_TmpSignalConversionAtProd_0 = autocodePlant_X->uDOFQuaternion_CSTATE[2]
-      - rtb_Gain_oa;
+      - rtb_Gain_l;
     rtb_airspeed_mps[2] = rtb_TmpSignalConversionAtProd_0;
 
-    /* Sum: '<S8>/Sum' incorporates:
+    /* Sum: '<S9>/Sum' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S15>/Element Product'
-     *  Sum: '<S15>/Sum'
+     *  Product: '<S16>/Element Product'
+     *  Sum: '<S16>/Sum'
      */
-    rtb_Product_iw = (autocodePlant_ConstB.Subtract1[1] *
-                      autocodePlant_X->uDOFQuaternion_CSTATE[6] -
-                      autocodePlant_ConstB.Subtract1[0] *
-                      autocodePlant_X->uDOFQuaternion_CSTATE[7]) +
+    rtb_TT0gLR = (autocodePlant_ConstB.Subtract1[1] *
+                  autocodePlant_X->uDOFQuaternion_CSTATE[6] -
+                  autocodePlant_ConstB.Subtract1[0] *
+                  autocodePlant_X->uDOFQuaternion_CSTATE[7]) +
       rtb_TmpSignalConversionAtProd_0;
-    rtb_Sum_jl[2] = rtb_Product_iw;
+    rtb_Sum_jl[2] = rtb_TT0gLR;
 
-    /* Product: '<S8>/Product8' */
-    rtb_Sign1_e = rtb_Product_iw * autocodePlant_ConstB.Sum2_i[2];
+    /* Product: '<S9>/Product8' */
+    rtb_Gain_l = rtb_TT0gLR * autocodePlant_ConstB.Sum2_i[2];
 
-    /* DotProduct: '<S8>/Dot Product4' incorporates:
-     *  DotProduct: '<S8>/Dot Product3'
+    /* DotProduct: '<S9>/Dot Product4' incorporates:
+     *  DotProduct: '<S9>/Dot Product3'
      */
-    rtb_Sign1_oh = (rtb_TT0gLR * rtb_TT0gLR + rtb_Product2_f * rtb_Product2_f) +
-      rtb_Product_iw * rtb_Product_iw;
+    rtb_Sign1_oh = (rtb_Product2_f * rtb_Product2_f + rtb_Gain_oa) + rtb_TT0gLR *
+      rtb_TT0gLR;
 
-    /* Product: '<S8>/Divide1' incorporates:
-     *  DotProduct: '<S8>/Dot Product4'
-     *  Sqrt: '<S8>/Sqrt1'
+    /* Product: '<S9>/Divide1' incorporates:
+     *  DotProduct: '<S9>/Dot Product4'
+     *  Sqrt: '<S9>/Sqrt1'
      */
     rtb_Gain_oa = sqrt(rtb_Sign1_oh) / rtb_a;
 
-    /* Product: '<S8>/Divide' incorporates:
-     *  DotProduct: '<S8>/Dot Product'
-     *  DotProduct: '<S8>/Dot Product1'
-     *  SignalConversion generated from: '<S8>/Dot Product'
-     *  Sqrt: '<S8>/Sqrt'
+    /* Product: '<S9>/Divide' incorporates:
+     *  DotProduct: '<S9>/Dot Product'
+     *  DotProduct: '<S9>/Dot Product1'
+     *  SignalConversion generated from: '<S9>/Dot Product'
+     *  Sqrt: '<S9>/Sqrt'
      */
     rtb_Gain_ii = ((autocodePlant_ConstB.Sum_b * rtb_Sign1 +
-                    autocodePlant_ConstB.Sum_l * rtb_Gain_l) +
-                   autocodePlant_ConstB.Sum_c * rtb_Sign1_e) / sqrt((rtb_Sign1 *
-      rtb_Sign1 + rtb_Gain_l * rtb_Gain_l) + rtb_Sign1_e * rtb_Sign1_e);
+                    autocodePlant_ConstB.Sum_l * rtb_Product_iw) +
+                   autocodePlant_ConstB.Sum_c * rtb_Gain_l) / sqrt((rtb_Sign1 *
+      rtb_Sign1 + rtb_Product_iw * rtb_Product_iw) + rtb_Gain_l * rtb_Gain_l);
 
-    /* Trigonometry: '<S8>/Acos' */
+    /* Trigonometry: '<S9>/Acos' */
     if (rtb_Gain_ii > 1.0) {
       rtb_Gain_ii = 1.0;
     } else if (rtb_Gain_ii < -1.0) {
       rtb_Gain_ii = -1.0;
     }
 
-    /* Gain: '<S19>/Gain' incorporates:
-     *  Trigonometry: '<S8>/Acos'
+    /* Gain: '<S20>/Gain' incorporates:
+     *  Trigonometry: '<S9>/Acos'
      */
     rtb_Gain_l = 57.29577951308232 * acos(rtb_Gain_ii);
+    if (tmp) {
+      /* Backlash: '<S7>/Backlash' incorporates:
+       *  UnitDelay: '<S7>/Unit Delay'
+       */
+      if (autocodePlant_DW->UnitDelay_DSTATE[0] < autocodePlant_DW->PrevY[0] -
+          0.5) {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[0] = autocodePlant_DW->UnitDelay_DSTATE[0] +
+          0.5;
+      } else if (autocodePlant_DW->UnitDelay_DSTATE[0] <=
+                 autocodePlant_DW->PrevY[0] + 0.5) {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[0] = autocodePlant_DW->PrevY[0];
+      } else {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[0] = autocodePlant_DW->UnitDelay_DSTATE[0] -
+          0.5;
+      }
 
-    /* DotProduct: '<S8>/Dot Product2' incorporates:
-     *  SignalConversion generated from: '<S8>/Dot Product2'
-     *  Sum: '<S8>/Sum'
-     */
-    rtb_Sign1 = (autocodePlant_ConstB.Sum_f * rtb_TT0gLR +
-                 autocodePlant_ConstB.Sum_i * rtb_Product2_f) +
-      autocodePlant_ConstB.Sum_e * rtb_Product_iw;
+      if (autocodePlant_DW->UnitDelay_DSTATE[1] < autocodePlant_DW->PrevY[1] -
+          0.5) {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[1] = autocodePlant_DW->UnitDelay_DSTATE[1] +
+          0.5;
+      } else if (autocodePlant_DW->UnitDelay_DSTATE[1] <=
+                 autocodePlant_DW->PrevY[1] + 0.5) {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[1] = autocodePlant_DW->PrevY[1];
+      } else {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[1] = autocodePlant_DW->UnitDelay_DSTATE[1] -
+          0.5;
+      }
 
-    /* Signum: '<S8>/Sign1' */
-    if (rtIsNaN(rtb_Sign1)) {
-      rtb_Sign1 = (rtNaN);
-    } else if (rtb_Sign1 < 0.0) {
-      rtb_Sign1 = -1.0;
-    } else {
-      rtb_Sign1 = (rtb_Sign1 > 0.0);
+      if (autocodePlant_DW->UnitDelay_DSTATE[2] < autocodePlant_DW->PrevY[2] -
+          0.5) {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[2] = autocodePlant_DW->UnitDelay_DSTATE[2] +
+          0.5;
+      } else if (autocodePlant_DW->UnitDelay_DSTATE[2] <=
+                 autocodePlant_DW->PrevY[2] + 0.5) {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[2] = autocodePlant_DW->PrevY[2];
+      } else {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[2] = autocodePlant_DW->UnitDelay_DSTATE[2] -
+          0.5;
+      }
+
+      if (autocodePlant_DW->UnitDelay_DSTATE[3] < autocodePlant_DW->PrevY[3] -
+          0.5) {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[3] = autocodePlant_DW->UnitDelay_DSTATE[3] +
+          0.5;
+      } else if (autocodePlant_DW->UnitDelay_DSTATE[3] <=
+                 autocodePlant_DW->PrevY[3] + 0.5) {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[3] = autocodePlant_DW->PrevY[3];
+      } else {
+        /* Backlash: '<S7>/Backlash' */
+        autocodePlant_B->Backlash[3] = autocodePlant_DW->UnitDelay_DSTATE[3] -
+          0.5;
+      }
+
+      /* End of Backlash: '<S7>/Backlash' */
     }
 
-    /* End of Signum: '<S8>/Sign1' */
+    /* DotProduct: '<S9>/Dot Product2' incorporates:
+     *  SignalConversion generated from: '<S9>/Dot Product2'
+     *  Sum: '<S9>/Sum'
+     */
+    rtb_Sign1 = (autocodePlant_ConstB.Sum_f * rtb_Sum_jl[0] +
+                 autocodePlant_ConstB.Sum_i * rtb_Product2_f) +
+      autocodePlant_ConstB.Sum_e * rtb_TT0gLR;
 
-    /* Lookup_n-D: '<S8>/CA Lookup Table' incorporates:
-     *  Gain: '<S19>/Gain'
-     *  Gain: '<S36>/Gain'
-     *  Inport: '<Root>/control_deg'
-     *  Product: '<S8>/Product7'
+    /* Signum: '<S9>/Sign1' incorporates:
+     *  Bias: '<S9>/Bias'
+     */
+    if (rtIsNaN(rtb_Sign1 + 1.0E-12)) {
+      rtb_Sign1 = (rtNaN);
+    } else if (rtb_Sign1 + 1.0E-12 < 0.0) {
+      rtb_Sign1 = -1.0;
+    } else {
+      rtb_Sign1 = (rtb_Sign1 + 1.0E-12 > 0.0);
+    }
+
+    /* End of Signum: '<S9>/Sign1' */
+
+    /* Lookup_n-D: '<S9>/CA Lookup Table' incorporates:
+     *  Gain: '<S20>/Gain'
+     *  Gain: '<S37>/Gain'
+     *  Product: '<S9>/Product7'
      */
     bpIndices[0U] = plook_binx(rtb_Gain_oa, rtCP__CALookupTable_bp01Data, 9U,
       &rtb_Gain_ii);
@@ -892,27 +963,27 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     bpIndices[1U] = plook_binx(rtb_Gain_l, rtCP__CALookupTable_bp02Data, 2U,
       &rtb_Gain_ii);
     rtb_Sum_ls[1U] = rtb_Gain_ii;
-    bpIndices[2U] = plook_binx(autocodePlant_U_control_deg[0] * rtb_Sign1,
+    bpIndices[2U] = plook_binx(autocodePlant_B->Backlash[0] * rtb_Sign1,
       rtCP__CALookupTable_bp03Data, 4U, &rtb_Gain_ii);
     rtb_Sum_ls[2U] = rtb_Gain_ii;
     rtb_Sign1_e = intrp3d_l_pw(bpIndices, rtb_Sum_ls,
       rtCP__CALookupTable_tableData, rtCP__CALookupTable_dimSizes);
 
-    /* Gain: '<S91>/1//T0' */
+    /* Gain: '<S92>/1//T0' */
     rtb_Product2_f = 0.00347041471455839 * rtb_Sum1_oo;
 
-    /* Math: '<S91>/(T//T0)^(g//LR) ' incorporates:
-     *  Constant: '<S91>/Constant'
+    /* Math: '<S92>/(T//T0)^(g//LR) ' incorporates:
+     *  Constant: '<S92>/Constant'
      */
     rtb_TT0gLR = rt_powd_snf(rtb_Product2_f, 5.255875601466713);
 
-    /* Product: '<S91>/Product' */
+    /* Product: '<S92>/Product' */
     rtb_Product_iw = rtb_TT0gLR / rtb_Product2_f;
 
-    /* Saturate: '<S91>/Limit  altitude  to Stratosphere' incorporates:
-     *  Constant: '<S91>/Altitude of Troposphere'
+    /* Saturate: '<S92>/Limit  altitude  to Stratosphere' incorporates:
+     *  Constant: '<S92>/Altitude of Troposphere'
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Sum: '<S91>/Sum'
+     *  Sum: '<S92>/Sum'
      *  UnaryMinus: '<S4>/Unary Minus'
      */
     if (11000.0 - (-autocodePlant_X->uDOFQuaternion_CSTATE[5]) > 0.0) {
@@ -924,43 +995,42 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Product2_e = 11000.0 - (-autocodePlant_X->uDOFQuaternion_CSTATE[5]);
     }
 
-    /* Math: '<S91>/Stratosphere Model' incorporates:
-     *  Gain: '<S91>/g//R'
-     *  Product: '<S91>/Product1'
-     *  Saturate: '<S91>/Limit  altitude  to Stratosphere'
+    /* Math: '<S92>/Stratosphere Model' incorporates:
+     *  Gain: '<S92>/g//R'
+     *  Product: '<S92>/Product1'
+     *  Saturate: '<S92>/Limit  altitude  to Stratosphere'
      *
-     * About '<S91>/Stratosphere Model':
+     * About '<S92>/Stratosphere Model':
      *  Operator: exp
      */
     rtb_Product2_f = exp(1.0 / rtb_Sum1_oo * (0.03416319140953364 *
       rtb_Product2_e));
 
-    /* Product: '<S91>/Product3' incorporates:
-     *  Gain: '<S91>/rho0'
+    /* Product: '<S92>/Product3' incorporates:
+     *  Gain: '<S92>/rho0'
      */
     rtb_Product_iw = 1.225 * rtb_Product_iw * rtb_Product2_f;
 
-    /* Product: '<S8>/Product' incorporates:
-     *  Constant: '<S8>/Constant1'
+    /* Product: '<S9>/Product' incorporates:
+     *  Constant: '<S9>/Constant1'
      *  Product: '<S10>/Product'
      *  Product: '<S11>/Product'
-     *  Product: '<S7>/Product'
-     *  Product: '<S9>/Product'
+     *  Product: '<S12>/Product'
+     *  Product: '<S8>/Product'
      */
     rtb_UnaryMinus_a = 0.5 * rtb_Product_iw;
     rtb_Sign1_oh *= rtb_UnaryMinus_a;
 
-    /* UnaryMinus: '<S8>/Unary Minus' incorporates:
-     *  Constant: '<S8>/   '
-     *  Product: '<S8>/Product1'
+    /* UnaryMinus: '<S9>/Unary Minus' incorporates:
+     *  Constant: '<S9>/   '
+     *  Product: '<S9>/Product1'
      */
     rtb_Sign1_e = -(rtb_Sign1_e * rtb_Sign1_oh * 0.018);
 
-    /* Lookup_n-D: '<S8>/CN Lookup Table' incorporates:
-     *  Gain: '<S19>/Gain'
-     *  Gain: '<S36>/Gain'
-     *  Inport: '<Root>/control_deg'
-     *  Product: '<S8>/Product5'
+    /* Lookup_n-D: '<S9>/CN Lookup Table' incorporates:
+     *  Gain: '<S20>/Gain'
+     *  Gain: '<S37>/Gain'
+     *  Product: '<S9>/Product5'
      */
     bpIndices_0[0U] = plook_binx(rtb_Gain_oa, rtCP__CNLookupTable_bp01Data, 9U,
       &rtb_Gain_ii);
@@ -968,22 +1038,22 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     bpIndices_0[1U] = plook_binx(rtb_Gain_l, rtCP__CNLookupTable_bp02Data, 2U,
       &rtb_Gain_ii);
     rtb_Sum_l4[1U] = rtb_Gain_ii;
-    bpIndices_0[2U] = plook_binx(autocodePlant_U_control_deg[0] * rtb_Sign1,
+    bpIndices_0[2U] = plook_binx(autocodePlant_B->Backlash[0] * rtb_Sign1,
       rtCP__CNLookupTable_bp03Data, 4U, &rtb_Gain_ii);
     rtb_Sum_l4[2U] = rtb_Gain_ii;
     rtb_Gain_oa = intrp3d_l_pw(bpIndices_0, rtb_Sum_l4,
       rtCP__CNLookupTable_tableData, rtCP__CNLookupTable_dimSizes);
 
-    /* UnaryMinus: '<S8>/Unary Minus1' incorporates:
-     *  Constant: '<S8>/ '
-     *  Product: '<S8>/Product2'
+    /* UnaryMinus: '<S9>/Unary Minus1' incorporates:
+     *  Constant: '<S9>/ '
+     *  Product: '<S9>/Product2'
      */
     rtb_Gain_oa = -(rtb_Gain_oa * rtb_Sign1_oh * 0.018);
 
-    /* Sum: '<S8>/Sum1' incorporates:
-     *  Product: '<S8>/Product3'
-     *  Product: '<S8>/Product4'
-     *  SignalConversion generated from: '<S8>/Dot Product2'
+    /* Sum: '<S9>/Sum1' incorporates:
+     *  Product: '<S9>/Product3'
+     *  Product: '<S9>/Product4'
+     *  SignalConversion generated from: '<S9>/Dot Product2'
      */
     rtb_Sum1_p2[0] = rtb_Gain_oa * autocodePlant_ConstB.Sum_f * rtb_Sign1 +
       rtb_Sign1_e * autocodePlant_ConstB.Sum_b;
@@ -992,8 +1062,8 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_Sum1_p2[2] = rtb_Gain_oa * autocodePlant_ConstB.Sum_e * rtb_Sign1 +
       rtb_Sign1_e * autocodePlant_ConstB.Sum_c;
 
-    /* Sum: '<S16>/Sum' incorporates:
-     *  Product: '<S16>/Element Product'
+    /* Sum: '<S17>/Sum' incorporates:
+     *  Product: '<S17>/Element Product'
      */
     rtb_Sum_j[0] = autocodePlant_ConstB.Subtract1[1] * rtb_Sum1_p2[2] -
       rtb_Sum1_p2[1] * autocodePlant_ConstB.Subtract1[2];
@@ -1002,10 +1072,10 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_Sum_j[2] = autocodePlant_ConstB.Subtract1[0] * rtb_Sum1_p2[1] -
       rtb_Sum1_p2[0] * autocodePlant_ConstB.Subtract1[1];
 
-    /* Sum: '<S9>/Sum' incorporates:
+    /* Sum: '<S10>/Sum' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S32>/Element Product'
-     *  Sum: '<S32>/Sum'
+     *  Product: '<S33>/Element Product'
+     *  Sum: '<S33>/Sum'
      */
     rtb_Sign1_e = (autocodePlant_ConstB.Subtract1_m[2] *
                    autocodePlant_X->uDOFQuaternion_CSTATE[7] -
@@ -1014,13 +1084,13 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_airspeed_mps[0];
     rtb_Sum_ls[0] = rtb_Sign1_e;
 
-    /* Product: '<S9>/Product8' */
+    /* Product: '<S10>/Product8' */
     rtb_Gain_ii = rtb_Sign1_e * autocodePlant_ConstB.Sum2_l[0];
 
-    /* Sum: '<S9>/Sum' incorporates:
+    /* Sum: '<S10>/Sum' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S32>/Element Product'
-     *  Sum: '<S32>/Sum'
+     *  Product: '<S33>/Element Product'
+     *  Sum: '<S33>/Sum'
      */
     rtb_Gain_c = (autocodePlant_ConstB.Subtract1_m[0] *
                   autocodePlant_X->uDOFQuaternion_CSTATE[8] -
@@ -1029,13 +1099,13 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       [1];
     rtb_Sum_ls[1] = rtb_Gain_c;
 
-    /* Product: '<S9>/Product8' */
+    /* Product: '<S10>/Product8' */
     rtb_Gain_oa = rtb_Gain_c * autocodePlant_ConstB.Sum2_l[1];
 
-    /* Sum: '<S9>/Sum' incorporates:
+    /* Sum: '<S10>/Sum' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S32>/Element Product'
-     *  Sum: '<S32>/Sum'
+     *  Product: '<S33>/Element Product'
+     *  Sum: '<S33>/Sum'
      *  Sum: '<S4>/Minus'
      */
     rtb_Gain_e = (autocodePlant_ConstB.Subtract1_m[1] *
@@ -1045,194 +1115,20 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_TmpSignalConversionAtProd_0;
     rtb_Sum_ls[2] = rtb_Gain_e;
 
-    /* Product: '<S9>/Product8' */
+    /* Product: '<S10>/Product8' */
     rtb_Switch_d_idx_1 = rtb_Gain_e * autocodePlant_ConstB.Sum2_l[2];
-
-    /* DotProduct: '<S9>/Dot Product4' incorporates:
-     *  DotProduct: '<S9>/Dot Product3'
-     */
-    rtb_Sign1_b = (rtb_Sign1_e * rtb_Sign1_e + rtb_Gain_c * rtb_Gain_c) +
-      rtb_Gain_e * rtb_Gain_e;
-
-    /* Product: '<S9>/Divide1' incorporates:
-     *  DotProduct: '<S9>/Dot Product4'
-     *  Sqrt: '<S9>/Sqrt1'
-     */
-    rtb_Sign1_oh = sqrt(rtb_Sign1_b) / rtb_a;
-
-    /* Product: '<S9>/Divide' incorporates:
-     *  DotProduct: '<S9>/Dot Product'
-     *  DotProduct: '<S9>/Dot Product1'
-     *  SignalConversion generated from: '<S9>/Dot Product'
-     *  Sqrt: '<S9>/Sqrt'
-     */
-    rtb_Gain_ii = ((autocodePlant_ConstB.Sum_k3 * rtb_Gain_ii +
-                    autocodePlant_ConstB.Sum_cv * rtb_Gain_oa) +
-                   autocodePlant_ConstB.Sum_b1v * rtb_Switch_d_idx_1) / sqrt
-      ((rtb_Gain_ii * rtb_Gain_ii + rtb_Gain_oa * rtb_Gain_oa) +
-       rtb_Switch_d_idx_1 * rtb_Switch_d_idx_1);
-
-    /* Trigonometry: '<S9>/Acos' */
-    if (rtb_Gain_ii > 1.0) {
-      rtb_Gain_ii = 1.0;
-    } else if (rtb_Gain_ii < -1.0) {
-      rtb_Gain_ii = -1.0;
-    }
-
-    /* Gain: '<S36>/Gain' incorporates:
-     *  Trigonometry: '<S9>/Acos'
-     */
-    rtb_Gain_oa = 57.29577951308232 * acos(rtb_Gain_ii);
-
-    /* DotProduct: '<S9>/Dot Product2' incorporates:
-     *  SignalConversion generated from: '<S9>/Dot Product2'
-     *  Sum: '<S9>/Sum'
-     */
-    rtb_Gain_ii = (autocodePlant_ConstB.Sum_m * rtb_Sign1_e +
-                   autocodePlant_ConstB.Sum_b1 * rtb_Gain_c) +
-      autocodePlant_ConstB.Sum_k * rtb_Gain_e;
-
-    /* Signum: '<S9>/Sign1' */
-    if (rtIsNaN(rtb_Gain_ii)) {
-      rtb_Sign1_e = (rtNaN);
-    } else if (rtb_Gain_ii < 0.0) {
-      rtb_Sign1_e = -1.0;
-    } else {
-      rtb_Sign1_e = (rtb_Gain_ii > 0.0);
-    }
-
-    /* End of Signum: '<S9>/Sign1' */
-
-    /* Lookup_n-D: '<S9>/CA Lookup Table' incorporates:
-     *  Gain: '<S36>/Gain'
-     *  Inport: '<Root>/control_deg'
-     *  Product: '<S9>/Product7'
-     *  Signum: '<S10>/Sign1'
-     */
-    bpIndices_1[0U] = plook_binx(rtb_Sign1_oh, rtCP__CALookupTable_bp01Data_n,
-      9U, &rtb_Gain_ii);
-    rtb_Sum_cu[0U] = rtb_Gain_ii;
-    bpIndices_1[1U] = plook_binx(rtb_Gain_oa, rtCP__CALookupTable_bp02Data_h, 2U,
-      &rtb_Gain_ii);
-    rtb_Sum_cu[1U] = rtb_Gain_ii;
-    bpIndices_1[2U] = plook_binx(autocodePlant_U_control_deg[1] * rtb_Sign1_e,
-      rtCP__CALookupTable_bp03Data_f, 4U, &rtb_Gain_ii);
-    rtb_Sum_cu[2U] = rtb_Gain_ii;
-    rtb_Gain_c = intrp3d_l_pw(bpIndices_1, rtb_Sum_cu,
-      rtCP__CALookupTable_tableData_b, rtCP__CALookupTable_dimSizes_c);
-
-    /* Product: '<S9>/Product' */
-    rtb_Sign1_b *= rtb_UnaryMinus_a;
-
-    /* UnaryMinus: '<S9>/Unary Minus' incorporates:
-     *  Constant: '<S9>/   '
-     *  Product: '<S9>/Product1'
-     */
-    rtb_Gain_c = -(rtb_Gain_c * rtb_Sign1_b * 0.018);
-
-    /* Lookup_n-D: '<S9>/CN Lookup Table' incorporates:
-     *  Gain: '<S36>/Gain'
-     *  Inport: '<Root>/control_deg'
-     *  Product: '<S9>/Product5'
-     *  Signum: '<S10>/Sign1'
-     */
-    bpIndices_2[0U] = plook_binx(rtb_Sign1_oh, rtCP__CNLookupTable_bp01Data_f,
-      9U, &rtb_Gain_ii);
-    rtb_Sum_bq[0U] = rtb_Gain_ii;
-    bpIndices_2[1U] = plook_binx(rtb_Gain_oa, rtCP__CNLookupTable_bp02Data_a, 2U,
-      &rtb_Gain_ii);
-    rtb_Sum_bq[1U] = rtb_Gain_ii;
-    bpIndices_2[2U] = plook_binx(autocodePlant_U_control_deg[1] * rtb_Sign1_e,
-      rtCP__CNLookupTable_bp03Data_p, 4U, &rtb_Gain_ii);
-    rtb_Sum_bq[2U] = rtb_Gain_ii;
-    rtb_Sign1_oh = intrp3d_l_pw(bpIndices_2, rtb_Sum_bq,
-      rtCP__CNLookupTable_tableData_f, rtCP__CNLookupTable_dimSizes_e);
-
-    /* UnaryMinus: '<S9>/Unary Minus1' incorporates:
-     *  Constant: '<S9>/ '
-     *  Product: '<S9>/Product2'
-     */
-    rtb_Sign1_oh = -(rtb_Sign1_oh * rtb_Sign1_b * 0.018);
-
-    /* Sum: '<S9>/Sum1' incorporates:
-     *  Product: '<S9>/Product3'
-     *  Product: '<S9>/Product4'
-     *  SignalConversion generated from: '<S9>/Dot Product2'
-     */
-    rtb_Sum1_ny[0] = rtb_Sign1_oh * autocodePlant_ConstB.Sum_m * rtb_Sign1_e +
-      rtb_Gain_c * autocodePlant_ConstB.Sum_k3;
-    rtb_Sum1_ny[1] = rtb_Sign1_oh * autocodePlant_ConstB.Sum_b1 * rtb_Sign1_e +
-      rtb_Gain_c * autocodePlant_ConstB.Sum_cv;
-    rtb_Sum1_ny[2] = rtb_Sign1_oh * autocodePlant_ConstB.Sum_k * rtb_Sign1_e +
-      rtb_Gain_c * autocodePlant_ConstB.Sum_b1v;
-
-    /* Sum: '<S33>/Sum' incorporates:
-     *  Product: '<S33>/Element Product'
-     */
-    rtb_Sum_l4[0] = autocodePlant_ConstB.Subtract1_m[1] * rtb_Sum1_ny[2] -
-      rtb_Sum1_ny[1] * autocodePlant_ConstB.Subtract1_m[2];
-    rtb_Sum_l4[1] = rtb_Sum1_ny[0] * autocodePlant_ConstB.Subtract1_m[2] -
-      autocodePlant_ConstB.Subtract1_m[0] * rtb_Sum1_ny[2];
-    rtb_Sum_l4[2] = autocodePlant_ConstB.Subtract1_m[0] * rtb_Sum1_ny[1] -
-      rtb_Sum1_ny[0] * autocodePlant_ConstB.Subtract1_m[1];
-
-    /* Sum: '<S10>/Sum' incorporates:
-     *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S49>/Element Product'
-     *  Sum: '<S49>/Sum'
-     */
-    rtb_Sign1_oh = (autocodePlant_ConstB.Subtract1_k[2] *
-                    autocodePlant_X->uDOFQuaternion_CSTATE[7] -
-                    autocodePlant_ConstB.Subtract1_k[1] *
-                    autocodePlant_X->uDOFQuaternion_CSTATE[8]) +
-      rtb_airspeed_mps[0];
-    rtb_Sum_cu[0] = rtb_Sign1_oh;
-
-    /* Product: '<S10>/Product8' */
-    rtb_Gain_ii = rtb_Sign1_oh * autocodePlant_ConstB.Sum2_iw[0];
-
-    /* Sum: '<S10>/Sum' incorporates:
-     *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S49>/Element Product'
-     *  Sum: '<S49>/Sum'
-     */
-    rtb_Gain_e = (autocodePlant_ConstB.Subtract1_k[0] *
-                  autocodePlant_X->uDOFQuaternion_CSTATE[8] -
-                  autocodePlant_ConstB.Subtract1_k[2] *
-                  autocodePlant_X->uDOFQuaternion_CSTATE[6]) + rtb_airspeed_mps
-      [1];
-    rtb_Sum_cu[1] = rtb_Gain_e;
-
-    /* Product: '<S10>/Product8' */
-    rtb_Gain_c = rtb_Gain_e * autocodePlant_ConstB.Sum2_iw[1];
-
-    /* Sum: '<S10>/Sum' incorporates:
-     *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S49>/Element Product'
-     *  Sum: '<S49>/Sum'
-     *  Sum: '<S4>/Minus'
-     */
-    rtb_Product2_e = (autocodePlant_ConstB.Subtract1_k[1] *
-                      autocodePlant_X->uDOFQuaternion_CSTATE[6] -
-                      autocodePlant_ConstB.Subtract1_k[0] *
-                      autocodePlant_X->uDOFQuaternion_CSTATE[7]) +
-      rtb_TmpSignalConversionAtProd_0;
-    rtb_Sum_cu[2] = rtb_Product2_e;
-
-    /* Product: '<S10>/Product8' */
-    rtb_Product3_ax = rtb_Product2_e * autocodePlant_ConstB.Sum2_iw[2];
 
     /* DotProduct: '<S10>/Dot Product4' incorporates:
      *  DotProduct: '<S10>/Dot Product3'
      */
-    rtb_Switch_d_idx_1 = (rtb_Sign1_oh * rtb_Sign1_oh + rtb_Gain_e * rtb_Gain_e)
-      + rtb_Product2_e * rtb_Product2_e;
+    rtb_Sign1_b = (rtb_Sign1_e * rtb_Sign1_e + rtb_Gain_c * rtb_Gain_c) +
+      rtb_Gain_e * rtb_Gain_e;
 
     /* Product: '<S10>/Divide1' incorporates:
      *  DotProduct: '<S10>/Dot Product4'
      *  Sqrt: '<S10>/Sqrt1'
      */
-    rtb_Sign1_b = sqrt(rtb_Switch_d_idx_1) / rtb_a;
+    rtb_Sign1_oh = sqrt(rtb_Sign1_b) / rtb_a;
 
     /* Product: '<S10>/Divide' incorporates:
      *  DotProduct: '<S10>/Dot Product'
@@ -1240,11 +1136,11 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
      *  SignalConversion generated from: '<S10>/Dot Product'
      *  Sqrt: '<S10>/Sqrt'
      */
-    rtb_Gain_ii = ((autocodePlant_ConstB.Sum_a * rtb_Gain_ii +
-                    autocodePlant_ConstB.Sum_ia * rtb_Gain_c) +
-                   autocodePlant_ConstB.Sum_bt * rtb_Product3_ax) / sqrt
-      ((rtb_Gain_ii * rtb_Gain_ii + rtb_Gain_c * rtb_Gain_c) + rtb_Product3_ax *
-       rtb_Product3_ax);
+    rtb_Gain_ii = ((autocodePlant_ConstB.Sum_k3 * rtb_Gain_ii +
+                    autocodePlant_ConstB.Sum_cv * rtb_Gain_oa) +
+                   autocodePlant_ConstB.Sum_b1v * rtb_Switch_d_idx_1) / sqrt
+      ((rtb_Gain_ii * rtb_Gain_ii + rtb_Gain_oa * rtb_Gain_oa) +
+       rtb_Switch_d_idx_1 * rtb_Switch_d_idx_1);
 
     /* Trigonometry: '<S10>/Acos' */
     if (rtb_Gain_ii > 1.0) {
@@ -1253,160 +1149,160 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Gain_ii = -1.0;
     }
 
-    /* Gain: '<S53>/Gain' incorporates:
+    /* Gain: '<S37>/Gain' incorporates:
      *  Trigonometry: '<S10>/Acos'
      */
-    rtb_Gain_c = 57.29577951308232 * acos(rtb_Gain_ii);
+    rtb_Gain_oa = 57.29577951308232 * acos(rtb_Gain_ii);
 
     /* DotProduct: '<S10>/Dot Product2' incorporates:
      *  SignalConversion generated from: '<S10>/Dot Product2'
      *  Sum: '<S10>/Sum'
      */
-    rtb_Gain_ii = (autocodePlant_ConstB.Sum_o * rtb_Sign1_oh +
-                   autocodePlant_ConstB.Sum_er * rtb_Gain_e) +
-      autocodePlant_ConstB.Sum_g * rtb_Product2_e;
+    rtb_Gain_ii = (autocodePlant_ConstB.Sum_m * rtb_Sign1_e +
+                   autocodePlant_ConstB.Sum_b1 * rtb_Gain_c) +
+      autocodePlant_ConstB.Sum_k * rtb_Gain_e;
 
-    /* Signum: '<S10>/Sign1' */
-    if (rtIsNaN(rtb_Gain_ii)) {
-      rtb_Sign1_oh = (rtNaN);
-    } else if (rtb_Gain_ii < 0.0) {
-      rtb_Sign1_oh = -1.0;
+    /* Signum: '<S10>/Sign1' incorporates:
+     *  Bias: '<S10>/Bias'
+     */
+    if (rtIsNaN(rtb_Gain_ii + 1.0E-12)) {
+      rtb_Sign1_e = (rtNaN);
+    } else if (rtb_Gain_ii + 1.0E-12 < 0.0) {
+      rtb_Sign1_e = -1.0;
     } else {
-      rtb_Sign1_oh = (rtb_Gain_ii > 0.0);
+      rtb_Sign1_e = (rtb_Gain_ii + 1.0E-12 > 0.0);
     }
 
     /* End of Signum: '<S10>/Sign1' */
 
     /* Lookup_n-D: '<S10>/CA Lookup Table' incorporates:
-     *  Gain: '<S53>/Gain'
-     *  Inport: '<Root>/control_deg'
+     *  Gain: '<S37>/Gain'
      *  Product: '<S10>/Product7'
      *  Signum: '<S11>/Sign1'
      */
-    bpIndices_3[0U] = plook_binx(rtb_Sign1_b, rtCP__CALookupTable_bp01Data_f, 9U,
+    bpIndices_1[0U] = plook_binx(rtb_Sign1_oh, rtCP__CALookupTable_bp01Data_n,
+      9U, &rtb_Gain_ii);
+    rtb_Sum_cu[0U] = rtb_Gain_ii;
+    bpIndices_1[1U] = plook_binx(rtb_Gain_oa, rtCP__CALookupTable_bp02Data_h, 2U,
       &rtb_Gain_ii);
-    rtb_Sum_pc[0U] = rtb_Gain_ii;
-    bpIndices_3[1U] = plook_binx(rtb_Gain_c, rtCP__CALookupTable_bp02Data_e, 2U,
-      &rtb_Gain_ii);
-    rtb_Sum_pc[1U] = rtb_Gain_ii;
-    bpIndices_3[2U] = plook_binx(autocodePlant_U_control_deg[2] * rtb_Sign1_oh,
-      rtCP__CALookupTable_bp03Data_fn, 4U, &rtb_Gain_ii);
-    rtb_Sum_pc[2U] = rtb_Gain_ii;
-    rtb_Gain_e = intrp3d_l_pw(bpIndices_3, rtb_Sum_pc,
-      rtCP__CALookupTable_tableData_n, rtCP__CALookupTable_dimSizes_e);
+    rtb_Sum_cu[1U] = rtb_Gain_ii;
+    bpIndices_1[2U] = plook_binx(autocodePlant_B->Backlash[1] * rtb_Sign1_e,
+      rtCP__CALookupTable_bp03Data_f, 4U, &rtb_Gain_ii);
+    rtb_Sum_cu[2U] = rtb_Gain_ii;
+    rtb_Gain_c = intrp3d_l_pw(bpIndices_1, rtb_Sum_cu,
+      rtCP__CALookupTable_tableData_b, rtCP__CALookupTable_dimSizes_c);
 
     /* Product: '<S10>/Product' */
-    rtb_Product1_kn = rtb_Switch_d_idx_1 * rtb_UnaryMinus_a;
+    rtb_Sign1_b *= rtb_UnaryMinus_a;
 
     /* UnaryMinus: '<S10>/Unary Minus' incorporates:
      *  Constant: '<S10>/   '
      *  Product: '<S10>/Product1'
      */
-    rtb_Gain_e = -(rtb_Gain_e * rtb_Product1_kn * 0.018);
+    rtb_Gain_c = -(rtb_Gain_c * rtb_Sign1_b * 0.018);
 
     /* Lookup_n-D: '<S10>/CN Lookup Table' incorporates:
-     *  Gain: '<S53>/Gain'
-     *  Inport: '<Root>/control_deg'
+     *  Gain: '<S37>/Gain'
      *  Product: '<S10>/Product5'
      *  Signum: '<S11>/Sign1'
      */
-    bpIndices_4[0U] = plook_binx(rtb_Sign1_b, rtCP__CNLookupTable_bp01Data_n, 9U,
+    bpIndices_2[0U] = plook_binx(rtb_Sign1_oh, rtCP__CNLookupTable_bp01Data_f,
+      9U, &rtb_Gain_ii);
+    rtb_Sum_bq[0U] = rtb_Gain_ii;
+    bpIndices_2[1U] = plook_binx(rtb_Gain_oa, rtCP__CNLookupTable_bp02Data_a, 2U,
       &rtb_Gain_ii);
-    rtb_Sum_kx[0U] = rtb_Gain_ii;
-    bpIndices_4[1U] = plook_binx(rtb_Gain_c, rtCP__CNLookupTable_bp02Data_i, 2U,
-      &rtb_Gain_ii);
-    rtb_Sum_kx[1U] = rtb_Gain_ii;
-    bpIndices_4[2U] = plook_binx(autocodePlant_U_control_deg[2] * rtb_Sign1_oh,
-      rtCP__CNLookupTable_bp03Data_l, 4U, &rtb_Gain_ii);
-    rtb_Sum_kx[2U] = rtb_Gain_ii;
-    rtb_Sign1_b = intrp3d_l_pw(bpIndices_4, rtb_Sum_kx,
-      rtCP__CNLookupTable_tableData_j, rtCP__CNLookupTable_dimSizes_ex);
+    rtb_Sum_bq[1U] = rtb_Gain_ii;
+    bpIndices_2[2U] = plook_binx(autocodePlant_B->Backlash[1] * rtb_Sign1_e,
+      rtCP__CNLookupTable_bp03Data_p, 4U, &rtb_Gain_ii);
+    rtb_Sum_bq[2U] = rtb_Gain_ii;
+    rtb_Sign1_oh = intrp3d_l_pw(bpIndices_2, rtb_Sum_bq,
+      rtCP__CNLookupTable_tableData_f, rtCP__CNLookupTable_dimSizes_e);
 
     /* UnaryMinus: '<S10>/Unary Minus1' incorporates:
      *  Constant: '<S10>/ '
      *  Product: '<S10>/Product2'
      */
-    rtb_Sign1_b = -(rtb_Sign1_b * rtb_Product1_kn * 0.018);
+    rtb_Sign1_oh = -(rtb_Sign1_oh * rtb_Sign1_b * 0.018);
 
     /* Sum: '<S10>/Sum1' incorporates:
      *  Product: '<S10>/Product3'
      *  Product: '<S10>/Product4'
      *  SignalConversion generated from: '<S10>/Dot Product2'
      */
-    rtb_Sum1_lp[0] = rtb_Sign1_b * autocodePlant_ConstB.Sum_o * rtb_Sign1_oh +
-      rtb_Gain_e * autocodePlant_ConstB.Sum_a;
-    rtb_Sum1_lp[1] = rtb_Sign1_b * autocodePlant_ConstB.Sum_er * rtb_Sign1_oh +
-      rtb_Gain_e * autocodePlant_ConstB.Sum_ia;
-    rtb_Sum1_lp[2] = rtb_Sign1_b * autocodePlant_ConstB.Sum_g * rtb_Sign1_oh +
-      rtb_Gain_e * autocodePlant_ConstB.Sum_bt;
+    rtb_Sum1_ny[0] = rtb_Sign1_oh * autocodePlant_ConstB.Sum_m * rtb_Sign1_e +
+      rtb_Gain_c * autocodePlant_ConstB.Sum_k3;
+    rtb_Sum1_ny[1] = rtb_Sign1_oh * autocodePlant_ConstB.Sum_b1 * rtb_Sign1_e +
+      rtb_Gain_c * autocodePlant_ConstB.Sum_cv;
+    rtb_Sum1_ny[2] = rtb_Sign1_oh * autocodePlant_ConstB.Sum_k * rtb_Sign1_e +
+      rtb_Gain_c * autocodePlant_ConstB.Sum_b1v;
 
-    /* Sum: '<S50>/Sum' incorporates:
+    /* Sum: '<S34>/Sum' incorporates:
+     *  Product: '<S34>/Element Product'
+     */
+    rtb_Sum_l4[0] = autocodePlant_ConstB.Subtract1_m[1] * rtb_Sum1_ny[2] -
+      rtb_Sum1_ny[1] * autocodePlant_ConstB.Subtract1_m[2];
+    rtb_Sum_l4[1] = rtb_Sum1_ny[0] * autocodePlant_ConstB.Subtract1_m[2] -
+      autocodePlant_ConstB.Subtract1_m[0] * rtb_Sum1_ny[2];
+    rtb_Sum_l4[2] = autocodePlant_ConstB.Subtract1_m[0] * rtb_Sum1_ny[1] -
+      rtb_Sum1_ny[0] * autocodePlant_ConstB.Subtract1_m[1];
+
+    /* Sum: '<S11>/Sum' incorporates:
+     *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      *  Product: '<S50>/Element Product'
+     *  Sum: '<S50>/Sum'
      */
-    rtb_Sum_bq[0] = autocodePlant_ConstB.Subtract1_k[1] * rtb_Sum1_lp[2] -
-      rtb_Sum1_lp[1] * autocodePlant_ConstB.Subtract1_k[2];
-    rtb_Sum_bq[1] = rtb_Sum1_lp[0] * autocodePlant_ConstB.Subtract1_k[2] -
-      autocodePlant_ConstB.Subtract1_k[0] * rtb_Sum1_lp[2];
-    rtb_Sum_bq[2] = autocodePlant_ConstB.Subtract1_k[0] * rtb_Sum1_lp[1] -
-      rtb_Sum1_lp[0] * autocodePlant_ConstB.Subtract1_k[1];
-
-    /* Sum: '<S11>/Sum' incorporates:
-     *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S66>/Element Product'
-     *  Sum: '<S66>/Sum'
-     */
-    rtb_Sign1_b = (autocodePlant_ConstB.Subtract1_j[2] *
-                   autocodePlant_X->uDOFQuaternion_CSTATE[7] -
-                   autocodePlant_ConstB.Subtract1_j[1] *
-                   autocodePlant_X->uDOFQuaternion_CSTATE[8]) +
+    rtb_Sign1_oh = (autocodePlant_ConstB.Subtract1_k[2] *
+                    autocodePlant_X->uDOFQuaternion_CSTATE[7] -
+                    autocodePlant_ConstB.Subtract1_k[1] *
+                    autocodePlant_X->uDOFQuaternion_CSTATE[8]) +
       rtb_airspeed_mps[0];
-    rtb_Sum_pc[0] = rtb_Sign1_b;
+    rtb_Sum_cu[0] = rtb_Sign1_oh;
 
     /* Product: '<S11>/Product8' */
-    rtb_Gain_ii = rtb_Sign1_b * autocodePlant_ConstB.Sum2_ayz[0];
+    rtb_Gain_ii = rtb_Sign1_oh * autocodePlant_ConstB.Sum2_iw[0];
 
     /* Sum: '<S11>/Sum' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S66>/Element Product'
-     *  Sum: '<S66>/Sum'
+     *  Product: '<S50>/Element Product'
+     *  Sum: '<S50>/Sum'
      */
-    rtb_Product2_e = (autocodePlant_ConstB.Subtract1_j[0] *
-                      autocodePlant_X->uDOFQuaternion_CSTATE[8] -
-                      autocodePlant_ConstB.Subtract1_j[2] *
-                      autocodePlant_X->uDOFQuaternion_CSTATE[6]) +
-      rtb_airspeed_mps[1];
-    rtb_Sum_pc[1] = rtb_Product2_e;
+    rtb_Gain_e = (autocodePlant_ConstB.Subtract1_k[0] *
+                  autocodePlant_X->uDOFQuaternion_CSTATE[8] -
+                  autocodePlant_ConstB.Subtract1_k[2] *
+                  autocodePlant_X->uDOFQuaternion_CSTATE[6]) + rtb_airspeed_mps
+      [1];
+    rtb_Sum_cu[1] = rtb_Gain_e;
 
     /* Product: '<S11>/Product8' */
-    rtb_Gain_e = rtb_Product2_e * autocodePlant_ConstB.Sum2_ayz[1];
+    rtb_Gain_c = rtb_Gain_e * autocodePlant_ConstB.Sum2_iw[1];
 
     /* Sum: '<S11>/Sum' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S66>/Element Product'
+     *  Product: '<S50>/Element Product'
      *  Sum: '<S4>/Minus'
-     *  Sum: '<S66>/Sum'
+     *  Sum: '<S50>/Sum'
      */
-    rtb_Product3_ax = (autocodePlant_ConstB.Subtract1_j[1] *
-                       autocodePlant_X->uDOFQuaternion_CSTATE[6] -
-                       autocodePlant_ConstB.Subtract1_j[0] *
-                       autocodePlant_X->uDOFQuaternion_CSTATE[7]) +
+    rtb_Product2_e = (autocodePlant_ConstB.Subtract1_k[1] *
+                      autocodePlant_X->uDOFQuaternion_CSTATE[6] -
+                      autocodePlant_ConstB.Subtract1_k[0] *
+                      autocodePlant_X->uDOFQuaternion_CSTATE[7]) +
       rtb_TmpSignalConversionAtProd_0;
-    rtb_Sum_pc[2] = rtb_Product3_ax;
+    rtb_Sum_cu[2] = rtb_Product2_e;
 
     /* Product: '<S11>/Product8' */
-    rtb_Switch_d_idx_2 = rtb_Product3_ax * autocodePlant_ConstB.Sum2_ayz[2];
+    rtb_Product3_ax = rtb_Product2_e * autocodePlant_ConstB.Sum2_iw[2];
 
     /* DotProduct: '<S11>/Dot Product4' incorporates:
      *  DotProduct: '<S11>/Dot Product3'
      */
-    rtb_Switch_d_idx_1 = (rtb_Sign1_b * rtb_Sign1_b + rtb_Product2_e *
-                          rtb_Product2_e) + rtb_Product3_ax * rtb_Product3_ax;
+    rtb_Switch_d_idx_1 = (rtb_Sign1_oh * rtb_Sign1_oh + rtb_Gain_e * rtb_Gain_e)
+      + rtb_Product2_e * rtb_Product2_e;
 
     /* Product: '<S11>/Divide1' incorporates:
      *  DotProduct: '<S11>/Dot Product4'
      *  Sqrt: '<S11>/Sqrt1'
      */
-    rtb_Product1_kn = sqrt(rtb_Switch_d_idx_1) / rtb_a;
+    rtb_Sign1_b = sqrt(rtb_Switch_d_idx_1) / rtb_a;
 
     /* Product: '<S11>/Divide' incorporates:
      *  DotProduct: '<S11>/Dot Product'
@@ -1414,11 +1310,11 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
      *  SignalConversion generated from: '<S11>/Dot Product'
      *  Sqrt: '<S11>/Sqrt'
      */
-    rtb_Gain_ii = ((autocodePlant_ConstB.Sum_dx * rtb_Gain_ii +
-                    autocodePlant_ConstB.Sum_o3 * rtb_Gain_e) +
-                   autocodePlant_ConstB.Sum_j * rtb_Switch_d_idx_2) / sqrt
-      ((rtb_Gain_ii * rtb_Gain_ii + rtb_Gain_e * rtb_Gain_e) +
-       rtb_Switch_d_idx_2 * rtb_Switch_d_idx_2);
+    rtb_Gain_ii = ((autocodePlant_ConstB.Sum_a * rtb_Gain_ii +
+                    autocodePlant_ConstB.Sum_ia * rtb_Gain_c) +
+                   autocodePlant_ConstB.Sum_bt * rtb_Product3_ax) / sqrt
+      ((rtb_Gain_ii * rtb_Gain_ii + rtb_Gain_c * rtb_Gain_c) + rtb_Product3_ax *
+       rtb_Product3_ax);
 
     /* Trigonometry: '<S11>/Acos' */
     if (rtb_Gain_ii > 1.0) {
@@ -1427,35 +1323,210 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Gain_ii = -1.0;
     }
 
-    /* Gain: '<S70>/Gain' incorporates:
+    /* Gain: '<S54>/Gain' incorporates:
      *  Trigonometry: '<S11>/Acos'
      */
-    rtb_Gain_e = 57.29577951308232 * acos(rtb_Gain_ii);
+    rtb_Gain_c = 57.29577951308232 * acos(rtb_Gain_ii);
 
     /* DotProduct: '<S11>/Dot Product2' incorporates:
      *  SignalConversion generated from: '<S11>/Dot Product2'
      *  Sum: '<S11>/Sum'
      */
-    rtb_Gain_ii = (autocodePlant_ConstB.Sum_d * rtb_Sign1_b +
-                   autocodePlant_ConstB.Sum_b4 * rtb_Product2_e) +
-      autocodePlant_ConstB.Sum_ln * rtb_Product3_ax;
+    rtb_Gain_ii = (autocodePlant_ConstB.Sum_o * rtb_Sign1_oh +
+                   autocodePlant_ConstB.Sum_er * rtb_Gain_e) +
+      autocodePlant_ConstB.Sum_g * rtb_Product2_e;
 
-    /* Signum: '<S11>/Sign1' */
-    if (rtIsNaN(rtb_Gain_ii)) {
-      rtb_Sign1_b = (rtNaN);
-    } else if (rtb_Gain_ii < 0.0) {
-      rtb_Sign1_b = -1.0;
+    /* Signum: '<S11>/Sign1' incorporates:
+     *  Bias: '<S11>/Bias'
+     */
+    if (rtIsNaN(rtb_Gain_ii + 1.0E-12)) {
+      rtb_Sign1_oh = (rtNaN);
+    } else if (rtb_Gain_ii + 1.0E-12 < 0.0) {
+      rtb_Sign1_oh = -1.0;
     } else {
-      rtb_Sign1_b = (rtb_Gain_ii > 0.0);
+      rtb_Sign1_oh = (rtb_Gain_ii + 1.0E-12 > 0.0);
     }
 
     /* End of Signum: '<S11>/Sign1' */
 
     /* Lookup_n-D: '<S11>/CA Lookup Table' incorporates:
-     *  Gain: '<S70>/Gain'
-     *  Inport: '<Root>/control_deg'
+     *  Gain: '<S54>/Gain'
      *  Product: '<S11>/Product7'
-     *  Product: '<S174>/Product1'
+     *  Signum: '<S12>/Sign1'
+     */
+    bpIndices_3[0U] = plook_binx(rtb_Sign1_b, rtCP__CALookupTable_bp01Data_f, 9U,
+      &rtb_Gain_ii);
+    rtb_Sum_pc[0U] = rtb_Gain_ii;
+    bpIndices_3[1U] = plook_binx(rtb_Gain_c, rtCP__CALookupTable_bp02Data_e, 2U,
+      &rtb_Gain_ii);
+    rtb_Sum_pc[1U] = rtb_Gain_ii;
+    bpIndices_3[2U] = plook_binx(autocodePlant_B->Backlash[2] * rtb_Sign1_oh,
+      rtCP__CALookupTable_bp03Data_fn, 4U, &rtb_Gain_ii);
+    rtb_Sum_pc[2U] = rtb_Gain_ii;
+    rtb_Gain_e = intrp3d_l_pw(bpIndices_3, rtb_Sum_pc,
+      rtCP__CALookupTable_tableData_n, rtCP__CALookupTable_dimSizes_e);
+
+    /* Product: '<S11>/Product' */
+    rtb_Product1_kn = rtb_Switch_d_idx_1 * rtb_UnaryMinus_a;
+
+    /* UnaryMinus: '<S11>/Unary Minus' incorporates:
+     *  Constant: '<S11>/   '
+     *  Product: '<S11>/Product1'
+     */
+    rtb_Gain_e = -(rtb_Gain_e * rtb_Product1_kn * 0.018);
+
+    /* Lookup_n-D: '<S11>/CN Lookup Table' incorporates:
+     *  Gain: '<S54>/Gain'
+     *  Product: '<S11>/Product5'
+     *  Signum: '<S12>/Sign1'
+     */
+    bpIndices_4[0U] = plook_binx(rtb_Sign1_b, rtCP__CNLookupTable_bp01Data_n, 9U,
+      &rtb_Gain_ii);
+    rtb_Sum_kx[0U] = rtb_Gain_ii;
+    bpIndices_4[1U] = plook_binx(rtb_Gain_c, rtCP__CNLookupTable_bp02Data_i, 2U,
+      &rtb_Gain_ii);
+    rtb_Sum_kx[1U] = rtb_Gain_ii;
+    bpIndices_4[2U] = plook_binx(autocodePlant_B->Backlash[2] * rtb_Sign1_oh,
+      rtCP__CNLookupTable_bp03Data_l, 4U, &rtb_Gain_ii);
+    rtb_Sum_kx[2U] = rtb_Gain_ii;
+    rtb_Sign1_b = intrp3d_l_pw(bpIndices_4, rtb_Sum_kx,
+      rtCP__CNLookupTable_tableData_j, rtCP__CNLookupTable_dimSizes_ex);
+
+    /* UnaryMinus: '<S11>/Unary Minus1' incorporates:
+     *  Constant: '<S11>/ '
+     *  Product: '<S11>/Product2'
+     */
+    rtb_Sign1_b = -(rtb_Sign1_b * rtb_Product1_kn * 0.018);
+
+    /* Sum: '<S11>/Sum1' incorporates:
+     *  Product: '<S11>/Product3'
+     *  Product: '<S11>/Product4'
+     *  SignalConversion generated from: '<S11>/Dot Product2'
+     */
+    rtb_Sum1_lp[0] = rtb_Sign1_b * autocodePlant_ConstB.Sum_o * rtb_Sign1_oh +
+      rtb_Gain_e * autocodePlant_ConstB.Sum_a;
+    rtb_Sum1_lp[1] = rtb_Sign1_b * autocodePlant_ConstB.Sum_er * rtb_Sign1_oh +
+      rtb_Gain_e * autocodePlant_ConstB.Sum_ia;
+    rtb_Sum1_lp[2] = rtb_Sign1_b * autocodePlant_ConstB.Sum_g * rtb_Sign1_oh +
+      rtb_Gain_e * autocodePlant_ConstB.Sum_bt;
+
+    /* Sum: '<S51>/Sum' incorporates:
+     *  Product: '<S51>/Element Product'
+     */
+    rtb_Sum_bq[0] = autocodePlant_ConstB.Subtract1_k[1] * rtb_Sum1_lp[2] -
+      rtb_Sum1_lp[1] * autocodePlant_ConstB.Subtract1_k[2];
+    rtb_Sum_bq[1] = rtb_Sum1_lp[0] * autocodePlant_ConstB.Subtract1_k[2] -
+      autocodePlant_ConstB.Subtract1_k[0] * rtb_Sum1_lp[2];
+    rtb_Sum_bq[2] = autocodePlant_ConstB.Subtract1_k[0] * rtb_Sum1_lp[1] -
+      rtb_Sum1_lp[0] * autocodePlant_ConstB.Subtract1_k[1];
+
+    /* Sum: '<S12>/Sum' incorporates:
+     *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
+     *  Product: '<S67>/Element Product'
+     *  Sum: '<S67>/Sum'
+     */
+    rtb_Sign1_b = (autocodePlant_ConstB.Subtract1_j[2] *
+                   autocodePlant_X->uDOFQuaternion_CSTATE[7] -
+                   autocodePlant_ConstB.Subtract1_j[1] *
+                   autocodePlant_X->uDOFQuaternion_CSTATE[8]) +
+      rtb_airspeed_mps[0];
+    rtb_Sum_pc[0] = rtb_Sign1_b;
+
+    /* Product: '<S12>/Product8' */
+    rtb_Gain_ii = rtb_Sign1_b * autocodePlant_ConstB.Sum2_ayz[0];
+
+    /* Sum: '<S12>/Sum' incorporates:
+     *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
+     *  Product: '<S67>/Element Product'
+     *  Sum: '<S67>/Sum'
+     */
+    rtb_Product2_e = (autocodePlant_ConstB.Subtract1_j[0] *
+                      autocodePlant_X->uDOFQuaternion_CSTATE[8] -
+                      autocodePlant_ConstB.Subtract1_j[2] *
+                      autocodePlant_X->uDOFQuaternion_CSTATE[6]) +
+      rtb_airspeed_mps[1];
+    rtb_Sum_pc[1] = rtb_Product2_e;
+
+    /* Product: '<S12>/Product8' */
+    rtb_Gain_e = rtb_Product2_e * autocodePlant_ConstB.Sum2_ayz[1];
+
+    /* Sum: '<S12>/Sum' incorporates:
+     *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
+     *  Product: '<S67>/Element Product'
+     *  Sum: '<S4>/Minus'
+     *  Sum: '<S67>/Sum'
+     */
+    rtb_Product3_ax = (autocodePlant_ConstB.Subtract1_j[1] *
+                       autocodePlant_X->uDOFQuaternion_CSTATE[6] -
+                       autocodePlant_ConstB.Subtract1_j[0] *
+                       autocodePlant_X->uDOFQuaternion_CSTATE[7]) +
+      rtb_TmpSignalConversionAtProd_0;
+    rtb_Sum_pc[2] = rtb_Product3_ax;
+
+    /* Product: '<S12>/Product8' */
+    rtb_Switch_d_idx_2 = rtb_Product3_ax * autocodePlant_ConstB.Sum2_ayz[2];
+
+    /* DotProduct: '<S12>/Dot Product4' incorporates:
+     *  DotProduct: '<S12>/Dot Product3'
+     */
+    rtb_Switch_d_idx_1 = (rtb_Sign1_b * rtb_Sign1_b + rtb_Product2_e *
+                          rtb_Product2_e) + rtb_Product3_ax * rtb_Product3_ax;
+
+    /* Product: '<S12>/Divide1' incorporates:
+     *  DotProduct: '<S12>/Dot Product4'
+     *  Sqrt: '<S12>/Sqrt1'
+     */
+    rtb_Product1_kn = sqrt(rtb_Switch_d_idx_1) / rtb_a;
+
+    /* Product: '<S12>/Divide' incorporates:
+     *  DotProduct: '<S12>/Dot Product'
+     *  DotProduct: '<S12>/Dot Product1'
+     *  SignalConversion generated from: '<S12>/Dot Product'
+     *  Sqrt: '<S12>/Sqrt'
+     */
+    rtb_Gain_ii = ((autocodePlant_ConstB.Sum_dx * rtb_Gain_ii +
+                    autocodePlant_ConstB.Sum_o3 * rtb_Gain_e) +
+                   autocodePlant_ConstB.Sum_j * rtb_Switch_d_idx_2) / sqrt
+      ((rtb_Gain_ii * rtb_Gain_ii + rtb_Gain_e * rtb_Gain_e) +
+       rtb_Switch_d_idx_2 * rtb_Switch_d_idx_2);
+
+    /* Trigonometry: '<S12>/Acos' */
+    if (rtb_Gain_ii > 1.0) {
+      rtb_Gain_ii = 1.0;
+    } else if (rtb_Gain_ii < -1.0) {
+      rtb_Gain_ii = -1.0;
+    }
+
+    /* Gain: '<S71>/Gain' incorporates:
+     *  Trigonometry: '<S12>/Acos'
+     */
+    rtb_Gain_e = 57.29577951308232 * acos(rtb_Gain_ii);
+
+    /* DotProduct: '<S12>/Dot Product2' incorporates:
+     *  SignalConversion generated from: '<S12>/Dot Product2'
+     *  Sum: '<S12>/Sum'
+     */
+    rtb_Gain_ii = (autocodePlant_ConstB.Sum_d * rtb_Sign1_b +
+                   autocodePlant_ConstB.Sum_b4 * rtb_Product2_e) +
+      autocodePlant_ConstB.Sum_ln * rtb_Product3_ax;
+
+    /* Signum: '<S12>/Sign1' incorporates:
+     *  Bias: '<S12>/Bias'
+     */
+    if (rtIsNaN(rtb_Gain_ii + 1.0E-12)) {
+      rtb_Sign1_b = (rtNaN);
+    } else if (rtb_Gain_ii + 1.0E-12 < 0.0) {
+      rtb_Sign1_b = -1.0;
+    } else {
+      rtb_Sign1_b = (rtb_Gain_ii + 1.0E-12 > 0.0);
+    }
+
+    /* End of Signum: '<S12>/Sign1' */
+
+    /* Lookup_n-D: '<S12>/CA Lookup Table' incorporates:
+     *  Gain: '<S71>/Gain'
+     *  Product: '<S12>/Product7'
+     *  Product: '<S175>/Product1'
      */
     bpIndices_5[0U] = plook_binx(rtb_Product1_kn, rtCP__CALookupTable_bp01Data_k,
       9U, &rtb_Gain_ii);
@@ -1463,26 +1534,25 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     bpIndices_5[1U] = plook_binx(rtb_Gain_e, rtCP__CALookupTable_bp02Data_f, 2U,
       &rtb_Gain_ii);
     rtb_Product6_f[1U] = rtb_Gain_ii;
-    bpIndices_5[2U] = plook_binx(autocodePlant_U_control_deg[3] * rtb_Sign1_b,
+    bpIndices_5[2U] = plook_binx(autocodePlant_B->Backlash[3] * rtb_Sign1_b,
       rtCP__CALookupTable_bp03Data_b, 4U, &rtb_Gain_ii);
     rtb_Product6_f[2U] = rtb_Gain_ii;
     rtb_Gain_ii = intrp3d_l_pw(bpIndices_5, rtb_Product6_f,
       rtCP__CALookupTable_tableData_l, rtCP__CALookupTable_dimSizes_a);
 
-    /* Product: '<S11>/Product' */
+    /* Product: '<S12>/Product' */
     rtb_Product3_ax = rtb_Switch_d_idx_1 * rtb_UnaryMinus_a;
 
-    /* UnaryMinus: '<S11>/Unary Minus' incorporates:
-     *  Constant: '<S11>/   '
-     *  Product: '<S11>/Product1'
+    /* UnaryMinus: '<S12>/Unary Minus' incorporates:
+     *  Constant: '<S12>/   '
+     *  Product: '<S12>/Product1'
      */
     rtb_Switch_d_idx_1 = -(rtb_Gain_ii * rtb_Product3_ax * 0.018);
 
-    /* Lookup_n-D: '<S11>/CN Lookup Table' incorporates:
-     *  Gain: '<S70>/Gain'
-     *  Inport: '<Root>/control_deg'
-     *  Product: '<S11>/Product5'
-     *  Product: '<S174>/Product1'
+    /* Lookup_n-D: '<S12>/CN Lookup Table' incorporates:
+     *  Gain: '<S71>/Gain'
+     *  Product: '<S12>/Product5'
+     *  Product: '<S175>/Product1'
      */
     bpIndices_6[0U] = plook_binx(rtb_Product1_kn, rtCP__CNLookupTable_bp01Data_d,
       9U, &rtb_Gain_ii);
@@ -1490,22 +1560,22 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     bpIndices_6[1U] = plook_binx(rtb_Gain_e, rtCP__CNLookupTable_bp02Data_av, 2U,
       &rtb_Gain_ii);
     rtb_finMomentArm_m[1U] = rtb_Gain_ii;
-    bpIndices_6[2U] = plook_binx(autocodePlant_U_control_deg[3] * rtb_Sign1_b,
+    bpIndices_6[2U] = plook_binx(autocodePlant_B->Backlash[3] * rtb_Sign1_b,
       rtCP__CNLookupTable_bp03Data_g, 4U, &rtb_Gain_ii);
     rtb_finMomentArm_m[2U] = rtb_Gain_ii;
     rtb_Product1_kn = intrp3d_l_pw(bpIndices_6, rtb_finMomentArm_m,
       rtCP__CNLookupTable_tableData_d, rtCP__CNLookupTable_dimSizes_h);
 
-    /* UnaryMinus: '<S11>/Unary Minus1' incorporates:
-     *  Constant: '<S11>/ '
-     *  Product: '<S11>/Product2'
+    /* UnaryMinus: '<S12>/Unary Minus1' incorporates:
+     *  Constant: '<S12>/ '
+     *  Product: '<S12>/Product2'
      */
     rtb_Gain_ii = -(rtb_Product1_kn * rtb_Product3_ax * 0.018);
 
-    /* Sum: '<S11>/Sum1' incorporates:
-     *  Product: '<S11>/Product3'
-     *  Product: '<S11>/Product4'
-     *  SignalConversion generated from: '<S11>/Dot Product2'
+    /* Sum: '<S12>/Sum1' incorporates:
+     *  Product: '<S12>/Product3'
+     *  Product: '<S12>/Product4'
+     *  SignalConversion generated from: '<S12>/Dot Product2'
      */
     rtb_Sum1_b[0] = rtb_Gain_ii * autocodePlant_ConstB.Sum_d * rtb_Sign1_b +
       rtb_Switch_d_idx_1 * autocodePlant_ConstB.Sum_dx;
@@ -1514,8 +1584,8 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_Sum1_b[2] = rtb_Gain_ii * autocodePlant_ConstB.Sum_ln * rtb_Sign1_b +
       rtb_Switch_d_idx_1 * autocodePlant_ConstB.Sum_j;
 
-    /* Sum: '<S67>/Sum' incorporates:
-     *  Product: '<S67>/Element Product'
+    /* Sum: '<S68>/Sum' incorporates:
+     *  Product: '<S68>/Element Product'
      */
     rtb_Sum_kx[0] = autocodePlant_ConstB.Subtract1_j[1] * rtb_Sum1_b[2] -
       rtb_Sum1_b[1] * autocodePlant_ConstB.Subtract1_j[2];
@@ -1524,9 +1594,9 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_Sum_kx[2] = autocodePlant_ConstB.Subtract1_j[0] * rtb_Sum1_b[1] -
       rtb_Sum1_b[0] * autocodePlant_ConstB.Subtract1_j[1];
 
-    /* DotProduct: '<S7>/Dot Product4' incorporates:
-     *  DotProduct: '<S7>/Dot Product3'
-     *  Math: '<S13>/Math Function'
+    /* DotProduct: '<S8>/Dot Product4' incorporates:
+     *  DotProduct: '<S8>/Dot Product3'
+     *  Math: '<S14>/Math Function'
      *  Sum: '<S4>/Minus'
      */
     rtb_Product1_kn = rtb_airspeed_mps[1] * rtb_airspeed_mps[1];
@@ -1535,108 +1605,108 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_Product2_e = (rtb_airspeed_mps[0] * rtb_airspeed_mps[0] +
                       rtb_Product1_kn) + rtb_Sum1_ox;
 
-    /* Sqrt: '<S7>/Sqrt1' incorporates:
-     *  DotProduct: '<S7>/Dot Product4'
-     *  Sqrt: '<S7>/Sqrt'
+    /* Sqrt: '<S8>/Sqrt1' incorporates:
+     *  DotProduct: '<S8>/Dot Product4'
+     *  Sqrt: '<S8>/Sqrt'
      */
     rtb_Gain_ii = sqrt(rtb_Product2_e);
 
-    /* Product: '<S7>/Divide1' incorporates:
-     *  Sqrt: '<S7>/Sqrt1'
+    /* Product: '<S8>/Divide1' incorporates:
+     *  Sqrt: '<S8>/Sqrt1'
      */
     rtb_Product3_ax = rtb_Gain_ii / rtb_a;
 
-    /* DotProduct: '<S7>/Dot Product' incorporates:
-     *  DotProduct: '<S7>/Dot Product4'
-     *  Product: '<S13>/Product'
+    /* DotProduct: '<S8>/Dot Product' incorporates:
+     *  DotProduct: '<S8>/Dot Product4'
+     *  Product: '<S14>/Product'
      *  Sum: '<S4>/Minus'
-     *  Switch: '<S13>/Switch'
+     *  Switch: '<S14>/Switch'
      */
     rtb_Switch_d_idx_1 = 0.0 * rtb_airspeed_mps[1];
     rtb_Switch_d_idx_2 = 0.0 * rtb_TmpSignalConversionAtProd_0;
 
-    /* Product: '<S7>/Divide' incorporates:
-     *  DotProduct: '<S7>/Dot Product'
-     *  DotProduct: '<S7>/Dot Product4'
+    /* Product: '<S8>/Divide' incorporates:
+     *  DotProduct: '<S8>/Dot Product'
+     *  DotProduct: '<S8>/Dot Product4'
      */
     rtb_Gain_ii = ((rtb_Switch_d_idx_1 + rtb_airspeed_mps[0]) +
                    rtb_Switch_d_idx_2) / rtb_Gain_ii;
 
-    /* Trigonometry: '<S7>/Acos' */
+    /* Trigonometry: '<S8>/Acos' */
     if (rtb_Gain_ii > 1.0) {
       rtb_Gain_ii = 1.0;
     } else if (rtb_Gain_ii < -1.0) {
       rtb_Gain_ii = -1.0;
     }
 
-    /* Gain: '<S14>/Gain' incorporates:
-     *  Trigonometry: '<S7>/Acos'
+    /* Gain: '<S15>/Gain' incorporates:
+     *  Trigonometry: '<S8>/Acos'
      */
     rtb_Gain_ii = 57.29577951308232 * acos(rtb_Gain_ii);
 
-    /* Sum: '<S7>/Sum' incorporates:
+    /* Sum: '<S8>/Sum' incorporates:
      *  Constant: '<S3>/Constant'
-     *  Gain: '<S14>/Gain'
-     *  Lookup_n-D: '<S7>/CP Lookup Table'
-     *  Product: '<S174>/Product3'
+     *  Gain: '<S15>/Gain'
+     *  Lookup_n-D: '<S8>/CP Lookup Table'
+     *  Product: '<S175>/Product3'
      */
     rtb_Sum = 1.8117856235712473 - look2_binlcpw(rtb_Product3_ax, rtb_Gain_ii,
       rtCP__CPLookupTable_bp01Data, rtCP__CPLookupTable_bp02Data,
       rtCP__CPLookupTable_tableData, rtCP__CPLookupTable_maxIndex, 10U);
 
-    /* Product: '<S7>/Product6' incorporates:
-     *  Constant: '<S7>/Constant3'
-     *  DotProduct: '<S7>/Dot Product3'
+    /* Product: '<S8>/Product6' incorporates:
+     *  Constant: '<S8>/Constant3'
+     *  DotProduct: '<S8>/Dot Product3'
      */
     rtb_Switch_d_idx_0 = rtb_airspeed_mps[0] * 0.0;
 
-    /* Product: '<S7>/Product5' incorporates:
-     *  Constant: '<S7>/Constant2'
+    /* Product: '<S8>/Product5' incorporates:
+     *  Constant: '<S8>/Constant2'
      */
     rtb_Product_kd = rtb_Sum * 0.0;
 
-    /* Product: '<S7>/Product' */
+    /* Product: '<S8>/Product' */
     rtb_Product2_e *= rtb_UnaryMinus_a;
 
-    /* UnaryMinus: '<S7>/Unary Minus' incorporates:
-     *  Constant: '<S7>/   '
-     *  Gain: '<S14>/Gain'
-     *  Lookup_n-D: '<S7>/CA Lookup Table'
-     *  Product: '<S174>/Product3'
-     *  Product: '<S7>/Product1'
+    /* UnaryMinus: '<S8>/Unary Minus' incorporates:
+     *  Constant: '<S8>/   '
+     *  Gain: '<S15>/Gain'
+     *  Lookup_n-D: '<S8>/CA Lookup Table'
+     *  Product: '<S175>/Product3'
+     *  Product: '<S8>/Product1'
      */
     rtb_UnaryMinus_a = -(look2_binlxpw(rtb_Product3_ax, rtb_Gain_ii,
       rtCP__CALookupTable_bp01Data_j, rtCP__CALookupTable_bp02Data_b,
       rtCP__CALookupTable_tableData_e, rtCP__CALookupTable_maxIndex_j, 10U) *
                          rtb_Product2_e * 0.018);
 
-    /* UnaryMinus: '<S7>/Unary Minus1' incorporates:
-     *  Constant: '<S7>/ '
-     *  Gain: '<S14>/Gain'
-     *  Lookup_n-D: '<S7>/CN Lookup Table'
-     *  Product: '<S174>/Product3'
-     *  Product: '<S7>/Product2'
+    /* UnaryMinus: '<S8>/Unary Minus1' incorporates:
+     *  Constant: '<S8>/ '
+     *  Gain: '<S15>/Gain'
+     *  Lookup_n-D: '<S8>/CN Lookup Table'
+     *  Product: '<S175>/Product3'
+     *  Product: '<S8>/Product2'
      */
     rtb_Product3_ax = -(look2_binlxpw(rtb_Product3_ax, rtb_Gain_ii,
       rtCP__CNLookupTable_bp01Data_a, rtCP__CNLookupTable_bp02Data_o,
       rtCP__CNLookupTable_tableData_i, rtCP__CNLookupTable_maxIndex_a, 10U) *
                         rtb_Product2_e * 0.018);
 
-    /* Math: '<S13>/Math Function1' incorporates:
-     *  Math: '<S13>/Math Function'
-     *  Sum: '<S13>/Sum of Elements'
+    /* Math: '<S14>/Math Function1' incorporates:
+     *  Math: '<S14>/Math Function'
+     *  Sum: '<S14>/Sum of Elements'
      *
-     * About '<S13>/Math Function1':
+     * About '<S14>/Math Function1':
      *  Operator: sqrt
      */
     rtb_Product2_e = sqrt((rtb_Switch_d_idx_0 * rtb_Switch_d_idx_0 +
       rtb_Product1_kn) + rtb_Sum1_ox);
 
-    /* Switch: '<S13>/Switch' incorporates:
-     *  Constant: '<S13>/Constant'
-     *  DotProduct: '<S7>/Dot Product3'
-     *  Product: '<S13>/Product'
-     *  Product: '<S7>/Product6'
+    /* Switch: '<S14>/Switch' incorporates:
+     *  Constant: '<S14>/Constant'
+     *  DotProduct: '<S8>/Dot Product3'
+     *  Product: '<S14>/Product'
+     *  Product: '<S8>/Product6'
      *  Sum: '<S4>/Minus'
      */
     if (rtb_Product2_e > 0.0) {
@@ -1647,37 +1717,37 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Product2_e = 1.0;
     }
 
-    /* Sum: '<S7>/Sum1' incorporates:
-     *  Product: '<S13>/Divide'
-     *  Product: '<S7>/Product3'
-     *  Product: '<S7>/Product4'
+    /* Sum: '<S8>/Sum1' incorporates:
+     *  Product: '<S14>/Divide'
+     *  Product: '<S8>/Product3'
+     *  Product: '<S8>/Product4'
      */
     rtb_Product6_f[0] = rtb_Switch_d_idx_0 / rtb_Product2_e * rtb_Product3_ax +
       rtb_UnaryMinus_a;
 
-    /* Product: '<S7>/Product3' incorporates:
-     *  Constant: '<S7>/Constant'
+    /* Product: '<S8>/Product3' incorporates:
+     *  Constant: '<S8>/Constant'
      */
     rtb_TmpSignalConversionAtProd_0 = rtb_UnaryMinus_a * 0.0;
 
-    /* Sum: '<S7>/Sum1' incorporates:
-     *  Product: '<S13>/Divide'
-     *  Product: '<S7>/Product3'
-     *  Product: '<S7>/Product4'
+    /* Sum: '<S8>/Sum1' incorporates:
+     *  Product: '<S14>/Divide'
+     *  Product: '<S8>/Product3'
+     *  Product: '<S8>/Product4'
      */
     rtb_Product6_f[1] = rtb_Switch_d_idx_1 / rtb_Product2_e * rtb_Product3_ax +
       rtb_TmpSignalConversionAtProd_0;
     rtb_Product6_f[2] = rtb_Switch_d_idx_2 / rtb_Product2_e * rtb_Product3_ax +
       rtb_TmpSignalConversionAtProd_0;
 
-    /* Product: '<S12>/Element Product' incorporates:
-     *  Product: '<S7>/Product5'
+    /* Product: '<S13>/Element Product' incorporates:
+     *  Product: '<S8>/Product5'
      */
     rtb_TmpSignalConversionAtProd_0 = rtb_Product6_f[0] * rtb_Product_kd;
 
-    /* Sum: '<S12>/Sum' incorporates:
-     *  Product: '<S12>/Element Product'
-     *  Product: '<S7>/Product5'
+    /* Sum: '<S13>/Sum' incorporates:
+     *  Product: '<S13>/Element Product'
+     *  Product: '<S8>/Product5'
      */
     rtb_UnaryMinus_a = rtb_Product_kd * rtb_Product6_f[2] - rtb_Product6_f[1] *
       rtb_Product_kd;
@@ -1689,9 +1759,9 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_Add[3] = (((rtb_Sum1_p2[0] + rtb_Sum1_ny[0]) + rtb_Sum1_lp[0]) +
                   rtb_Sum1_b[0]) + rtb_Product6_f[0];
 
-    /* Sum: '<S12>/Sum' incorporates:
-     *  Product: '<S12>/Element Product'
-     *  Product: '<S7>/Product5'
+    /* Sum: '<S13>/Sum' incorporates:
+     *  Product: '<S13>/Element Product'
+     *  Product: '<S8>/Product5'
      */
     rtb_UnaryMinus_a = rtb_TmpSignalConversionAtProd_0 - rtb_Sum *
       rtb_Product6_f[2];
@@ -1703,9 +1773,9 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_Add[4] = (((rtb_Sum1_p2[1] + rtb_Sum1_ny[1]) + rtb_Sum1_lp[1]) +
                   rtb_Sum1_b[1]) + rtb_Product6_f[1];
 
-    /* Sum: '<S12>/Sum' incorporates:
-     *  Product: '<S12>/Element Product'
-     *  Product: '<S7>/Product5'
+    /* Sum: '<S13>/Sum' incorporates:
+     *  Product: '<S13>/Element Product'
+     *  Product: '<S8>/Product5'
      */
     rtb_UnaryMinus_a = rtb_Sum * rtb_Product6_f[1] -
       rtb_TmpSignalConversionAtProd_0;
@@ -1721,15 +1791,15 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_TmpSignalConversionAtProd_0 = (autocodePlant_B->Delay +
       rtb_gravityForceBdy_N[0]) + rtb_Add[3];
 
-    /* Logic: '<S146>/Logical Operator' */
+    /* Logic: '<S147>/Logical Operator' */
     rtb_max_relop_c = !rtb_Compare_n;
 
-    /* Sum: '<S146>/Sum' incorporates:
-     *  Constant: '<S146>/Constant'
+    /* Sum: '<S147>/Sum' incorporates:
+     *  Constant: '<S147>/Constant'
      *  Constant: '<S6>/Constant2'
-     *  MinMax: '<S146>/Max1'
-     *  Product: '<S146>/Product1'
-     *  Product: '<S146>/Product2'
+     *  MinMax: '<S147>/Max1'
+     *  Product: '<S147>/Product1'
+     *  Product: '<S147>/Product2'
      *  Sum: '<S5>/Sum'
      */
     autocodePlant_B->Sum[0] = fmax((real_T)rtb_Compare_n *
@@ -1740,24 +1810,24 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     autocodePlant_B->Sum[2] = (rtb_gravityForceBdy_N[2] + rtb_Add[5]) * (real_T)
       rtb_max_relop_c;
 
-    /* Product: '<S144>/Divide' incorporates:
+    /* Product: '<S145>/Divide' incorporates:
      *  Constant: '<S5>/Constant'
-     *  Sum: '<S148>/Sum1'
+     *  Sum: '<S149>/Sum1'
      */
     rtb_MathFunction[0] = (autocodePlant_B->Sum[0] + autocodePlant_ConstB.Switch)
-      / 18.0;
+      / 17.5;
     rtb_MathFunction[1] = (autocodePlant_B->Sum[1] + autocodePlant_ConstB.Switch)
-      / 18.0;
+      / 17.5;
     rtb_MathFunction[2] = (autocodePlant_B->Sum[2] + autocodePlant_ConstB.Switch)
-      / 18.0;
+      / 17.5;
 
-    /* Sqrt: '<S165>/sqrt' incorporates:
+    /* Sqrt: '<S166>/sqrt' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
-     *  Product: '<S166>/Product'
-     *  Product: '<S166>/Product1'
-     *  Product: '<S166>/Product2'
-     *  Product: '<S166>/Product3'
-     *  Sum: '<S166>/Sum'
+     *  Product: '<S167>/Product'
+     *  Product: '<S167>/Product1'
+     *  Product: '<S167>/Product2'
+     *  Product: '<S167>/Product3'
+     *  Sum: '<S167>/Sum'
      */
     rtb_Product2_e = sqrt(((autocodePlant_X->uDOFQuaternion_CSTATE[9] *
       autocodePlant_X->uDOFQuaternion_CSTATE[9] +
@@ -1768,123 +1838,123 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
                           autocodePlant_X->uDOFQuaternion_CSTATE[12] *
                           autocodePlant_X->uDOFQuaternion_CSTATE[12]);
 
-    /* Product: '<S161>/Product2' incorporates:
+    /* Product: '<S162>/Product2' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_Product_kd = autocodePlant_X->uDOFQuaternion_CSTATE[11] / rtb_Product2_e;
 
-    /* Product: '<S161>/Product3' incorporates:
+    /* Product: '<S162>/Product3' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_Product3_ax = autocodePlant_X->uDOFQuaternion_CSTATE[12] /
       rtb_Product2_e;
 
-    /* Product: '<S161>/Product1' incorporates:
+    /* Product: '<S162>/Product1' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_Sum = autocodePlant_X->uDOFQuaternion_CSTATE[10] / rtb_Product2_e;
 
-    /* Product: '<S161>/Product' incorporates:
+    /* Product: '<S162>/Product' incorporates:
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_Product2_e = autocodePlant_X->uDOFQuaternion_CSTATE[9] / rtb_Product2_e;
 
-    /* Product: '<S162>/Product7' incorporates:
-     *  Product: '<S163>/Product7'
+    /* Product: '<S163>/Product7' incorporates:
+     *  Product: '<S164>/Product7'
      */
     rtb_TmpSignalConversionAtProd_0 = rtb_Product3_ax * rtb_Product3_ax;
 
-    /* Product: '<S162>/Product' incorporates:
-     *  Product: '<S163>/Product'
+    /* Product: '<S163>/Product' incorporates:
+     *  Product: '<S164>/Product'
      */
     rtb_UnaryMinus_a = rtb_Sum * rtb_Product_kd;
 
-    /* Product: '<S162>/Product1' incorporates:
-     *  Product: '<S163>/Product1'
+    /* Product: '<S163>/Product1' incorporates:
+     *  Product: '<S164>/Product1'
      */
     rtb_Switch_d_idx_1 = rtb_Product2_e * rtb_Product3_ax;
 
-    /* Product: '<S162>/Product3' incorporates:
-     *  Product: '<S164>/Product'
+    /* Product: '<S163>/Product3' incorporates:
+     *  Product: '<S165>/Product'
      */
     rtb_Switch_d_idx_2 = rtb_Sum * rtb_Product3_ax;
 
-    /* Product: '<S162>/Product2' incorporates:
-     *  Product: '<S164>/Product1'
+    /* Product: '<S163>/Product2' incorporates:
+     *  Product: '<S165>/Product1'
      */
     rtb_Product1_kn = rtb_Product2_e * rtb_Product_kd;
 
-    /* Product: '<S162>/Product6' incorporates:
-     *  Product: '<S164>/Product7'
+    /* Product: '<S163>/Product6' incorporates:
+     *  Product: '<S165>/Product7'
      */
     rtb_Sum1_ox = rtb_Product_kd * rtb_Product_kd;
 
-    /* Sum: '<S154>/fBdy_mps2' incorporates:
-     *  Constant: '<S154>/gNed_mps2'
-     *  Constant: '<S162>/Constant'
-     *  Gain: '<S162>/Gain'
-     *  Gain: '<S162>/Gain1'
-     *  Gain: '<S162>/Gain2'
-     *  Product: '<S162>/Product'
-     *  Product: '<S162>/Product1'
-     *  Product: '<S162>/Product2'
-     *  Product: '<S162>/Product3'
-     *  Product: '<S162>/Product4'
-     *  Product: '<S162>/Product5'
-     *  Product: '<S162>/Product6'
-     *  Product: '<S162>/Product7'
-     *  Product: '<S162>/Product8'
-     *  Sum: '<S162>/Sum'
-     *  Sum: '<S162>/Sum1'
-     *  Sum: '<S162>/Sum2'
-     *  Sum: '<S162>/Sum3'
+    /* Sum: '<S155>/fBdy_mps2' incorporates:
+     *  Constant: '<S155>/gNed_mps2'
+     *  Constant: '<S163>/Constant'
+     *  Gain: '<S163>/Gain'
+     *  Gain: '<S163>/Gain1'
+     *  Gain: '<S163>/Gain2'
+     *  Product: '<S163>/Product'
+     *  Product: '<S163>/Product1'
+     *  Product: '<S163>/Product2'
+     *  Product: '<S163>/Product3'
+     *  Product: '<S163>/Product4'
+     *  Product: '<S163>/Product5'
+     *  Product: '<S163>/Product6'
+     *  Product: '<S163>/Product7'
+     *  Product: '<S163>/Product8'
+     *  Sum: '<S163>/Sum'
+     *  Sum: '<S163>/Sum1'
+     *  Sum: '<S163>/Sum2'
+     *  Sum: '<S163>/Sum3'
      */
     autocodePlant_B->fBdy_mps2[0] = rtb_MathFunction[0] - ((((0.5 - rtb_Sum1_ox)
       - rtb_TmpSignalConversionAtProd_0) * 2.0 * 0.0 + (rtb_UnaryMinus_a +
       rtb_Switch_d_idx_1) * 2.0 * 0.0) + (rtb_Switch_d_idx_2 - rtb_Product1_kn) *
       2.0 * 9.81);
 
-    /* Product: '<S163>/Product3' incorporates:
-     *  Product: '<S164>/Product3'
+    /* Product: '<S164>/Product3' incorporates:
+     *  Product: '<S165>/Product3'
      */
     rtb_Product3_ax *= rtb_Product_kd;
 
-    /* Product: '<S163>/Product2' incorporates:
-     *  Product: '<S164>/Product2'
+    /* Product: '<S164>/Product2' incorporates:
+     *  Product: '<S165>/Product2'
      */
     rtb_Product2_e *= rtb_Sum;
 
-    /* Sum: '<S163>/Sum3' incorporates:
-     *  Constant: '<S163>/Constant'
-     *  Product: '<S163>/Product6'
-     *  Sum: '<S164>/Sum3'
+    /* Sum: '<S164>/Sum3' incorporates:
+     *  Constant: '<S164>/Constant'
+     *  Product: '<S164>/Product6'
+     *  Sum: '<S165>/Sum3'
      */
     rtb_Sum = 0.5 - rtb_Sum * rtb_Sum;
 
-    /* Sum: '<S154>/fBdy_mps2' incorporates:
-     *  Constant: '<S154>/gNed_mps2'
-     *  Gain: '<S163>/Gain'
-     *  Gain: '<S163>/Gain1'
-     *  Gain: '<S163>/Gain2'
+    /* Sum: '<S155>/fBdy_mps2' incorporates:
+     *  Constant: '<S155>/gNed_mps2'
      *  Gain: '<S164>/Gain'
      *  Gain: '<S164>/Gain1'
      *  Gain: '<S164>/Gain2'
-     *  Product: '<S163>/Product2'
-     *  Product: '<S163>/Product3'
-     *  Product: '<S163>/Product4'
-     *  Product: '<S163>/Product5'
-     *  Product: '<S163>/Product8'
+     *  Gain: '<S165>/Gain'
+     *  Gain: '<S165>/Gain1'
+     *  Gain: '<S165>/Gain2'
+     *  Product: '<S164>/Product2'
+     *  Product: '<S164>/Product3'
      *  Product: '<S164>/Product4'
      *  Product: '<S164>/Product5'
      *  Product: '<S164>/Product8'
-     *  Sum: '<S163>/Sum'
-     *  Sum: '<S163>/Sum1'
-     *  Sum: '<S163>/Sum2'
-     *  Sum: '<S163>/Sum3'
+     *  Product: '<S165>/Product4'
+     *  Product: '<S165>/Product5'
+     *  Product: '<S165>/Product8'
      *  Sum: '<S164>/Sum'
      *  Sum: '<S164>/Sum1'
      *  Sum: '<S164>/Sum2'
      *  Sum: '<S164>/Sum3'
+     *  Sum: '<S165>/Sum'
+     *  Sum: '<S165>/Sum1'
+     *  Sum: '<S165>/Sum2'
+     *  Sum: '<S165>/Sum3'
      */
     autocodePlant_B->fBdy_mps2[1] = rtb_MathFunction[1] - (((rtb_Sum -
       rtb_TmpSignalConversionAtProd_0) * 2.0 * 0.0 + (rtb_UnaryMinus_a -
@@ -1894,83 +1964,83 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       + rtb_Product1_kn) * 2.0 * 0.0 + (rtb_Product3_ax - rtb_Product2_e) * 2.0 *
       0.0) + (rtb_Sum - rtb_Sum1_ox) * 2.0 * 9.81);
     if (tmp) {
-      /* Product: '<S154>/scale factor and  cross-coupling' incorporates:
-       *  Constant: '<S154>/Constant'
+      /* Product: '<S155>/scale factor and  cross-coupling' incorporates:
+       *  Constant: '<S155>/Constant'
        */
       rtb_TmpSignalConversionAtProd_0 = autocodePlant_B->fBdy_mps2[1];
       rtb_UnaryMinus_a = autocodePlant_B->fBdy_mps2[0];
       rtb_Switch_d_idx_1 = autocodePlant_B->fBdy_mps2[2];
 
-      /* Product: '<S156>/Product1' */
+      /* Product: '<S157>/Product1' */
       rtb_Product3_ax = 0.0;
       rtb_Switch_d_idx_2 = 0.0;
       rtb_Sum = 0.0;
       for (i = 0; i < 3; i++) {
-        /* ZeroOrderHold: '<S154>/Zero-Order Hold' incorporates:
-         *  Constant: '<S154>/Constant'
-         *  Product: '<S154>/scale factor and  cross-coupling'
-         *  Sum: '<S154>/sum'
+        /* ZeroOrderHold: '<S155>/Zero-Order Hold' incorporates:
+         *  Constant: '<S155>/Constant'
+         *  Product: '<S155>/scale factor and  cross-coupling'
+         *  Sum: '<S155>/sum'
          */
         rtb_ZeroOrderHold_c[i] = ((rtCP__Constant_Value_dxg[i + 3] *
           rtb_TmpSignalConversionAtProd_0 + rtCP__Constant_Value_dxg[i] *
           rtb_UnaryMinus_a) + rtCP__Constant_Value_dxg[i + 6] *
           rtb_Switch_d_idx_1) + autocodePlant_B->biasnoise[i];
 
-        /* Sum: '<S156>/bias + noise' incorporates:
-         *  Gain: '<S170>/Output'
-         *  RandomNumber: '<S170>/White Noise'
+        /* Sum: '<S157>/bias + noise' incorporates:
+         *  Gain: '<S171>/Output'
+         *  RandomNumber: '<S171>/White Noise'
          */
         biasnoise_d[i] = 6.1075E-5 * autocodePlant_DW->NextOutput_i +
           rtb_ZeroOrderHold_a[i];
 
-        /* Product: '<S156>/Product1' incorporates:
-         *  Constant: '<S156>/Gs'
-         *  UnitDelay: '<S156>/Unit Delay'
+        /* Product: '<S157>/Product1' incorporates:
+         *  Constant: '<S157>/Gs'
+         *  UnitDelay: '<S157>/Unit Delay'
          */
-        rtb_Product2_e = autocodePlant_DW->UnitDelay_DSTATE[i];
+        rtb_Product2_e = autocodePlant_DW->UnitDelay_DSTATE_c[i];
         rtb_Product3_ax += rtCP__Gs_Value[3 * i] * rtb_Product2_e;
         rtb_Switch_d_idx_2 += rtCP__Gs_Value[3 * i + 1] * rtb_Product2_e;
         rtb_Sum += rtCP__Gs_Value[3 * i + 2] * rtb_Product2_e;
       }
 
-      /* Product: '<S156>/Product1' */
+      /* Product: '<S157>/Product1' */
       Gdependent[2] = rtb_Sum;
       Gdependent[1] = rtb_Switch_d_idx_2;
       Gdependent[0] = rtb_Product3_ax;
 
-      /* Product: '<S156>/Product' incorporates:
+      /* Product: '<S157>/Product' incorporates:
        *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
        */
       rtb_Product2_e = autocodePlant_X->uDOFQuaternion_CSTATE[7];
       rtb_TmpSignalConversionAtProd_0 = autocodePlant_X->uDOFQuaternion_CSTATE[6];
       rtb_UnaryMinus_a = autocodePlant_X->uDOFQuaternion_CSTATE[8];
       for (i = 0; i < 3; i++) {
-        /* ZeroOrderHold: '<S156>/Zero-Order Hold' incorporates:
-         *  Constant: '<S156>/   '
-         *  Product: '<S156>/Product'
-         *  Sum: '<S156>/      '
+        /* ZeroOrderHold: '<S157>/Zero-Order Hold' incorporates:
+         *  Constant: '<S157>/   '
+         *  Product: '<S157>/Product'
+         *  Sum: '<S157>/      '
          */
         rtb_ZeroOrderHold_a[i] = (((rtCP___Value_n[i + 3] * rtb_Product2_e +
           rtCP___Value_n[i] * rtb_TmpSignalConversionAtProd_0) +
           rtCP___Value_n[i + 6] * rtb_UnaryMinus_a) + biasnoise_d[i]) +
           Gdependent[i];
 
-        /* Gain: '<S173>/Output' incorporates:
-         *  RandomNumber: '<S173>/White Noise'
+        /* Gain: '<S174>/Output' incorporates:
+         *  RandomNumber: '<S174>/White Noise'
          */
         autocodePlant_B->Output[i] = 140.0 * autocodePlant_DW->NextOutput_b;
       }
 
-      /* RelationalOperator: '<S206>/Relational Operator' incorporates:
-       *  Constant: '<S157>/decimal year'
-       *  Memory: '<S206>/otime'
+      /* RelationalOperator: '<S207>/Relational Operator' incorporates:
+       *  Constant: '<S158>/decimal year'
+       *  Memory: '<S207>/otime'
        */
       rtb_RelationalOperator = (autocodePlant_DW->otime_PreviousInput !=
         2026.6657534246576);
     }
 
-    /* FlatEarth2LLA: '<S157>/Flat Earth to LLA' incorporates:
-     *  Constant: '<S157>/ground altitude'
+    /* FlatEarth2LLA: '<S158>/Flat Earth to LLA' incorporates:
+     *  Constant: '<S158>/ground altitude'
      *  EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)'
      */
     rtb_TmpSignalConversionAtProd_0 = fabs
@@ -2020,16 +2090,16 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_UnaryMinus_a = rtb_UnaryMinus_a * 180.0 / 3.141592653589793;
     rtb_Switch_d_idx_1 = -(autocodePlant_X->uDOFQuaternion_CSTATE[5] + 182.0);
 
-    /* End of FlatEarth2LLA: '<S157>/Flat Earth to LLA' */
+    /* End of FlatEarth2LLA: '<S158>/Flat Earth to LLA' */
 
-    /* Switch: '<S195>/Switch' incorporates:
-     *  Abs: '<S195>/Abs'
-     *  Bias: '<S195>/Bias'
-     *  Bias: '<S195>/Bias1'
-     *  Constant: '<S195>/Constant2'
-     *  Constant: '<S198>/Constant'
-     *  Math: '<S195>/Math Function1'
-     *  RelationalOperator: '<S198>/Compare'
+    /* Switch: '<S196>/Switch' incorporates:
+     *  Abs: '<S196>/Abs'
+     *  Bias: '<S196>/Bias'
+     *  Bias: '<S196>/Bias1'
+     *  Constant: '<S196>/Constant2'
+     *  Constant: '<S199>/Constant'
+     *  Math: '<S196>/Math Function1'
+     *  RelationalOperator: '<S199>/Compare'
      */
     if (fabs(rtb_TmpSignalConversionAtProd_0) > 180.0) {
       rtb_Product2_e = rt_modd_snf(rtb_TmpSignalConversionAtProd_0 + 180.0,
@@ -2038,19 +2108,19 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Product2_e = rtb_TmpSignalConversionAtProd_0;
     }
 
-    /* End of Switch: '<S195>/Switch' */
+    /* End of Switch: '<S196>/Switch' */
 
-    /* Abs: '<S191>/Abs1' */
+    /* Abs: '<S192>/Abs1' */
     rtb_Product3_ax = fabs(rtb_Product2_e);
 
-    /* RelationalOperator: '<S193>/Compare' incorporates:
-     *  Constant: '<S193>/Constant'
+    /* RelationalOperator: '<S194>/Compare' incorporates:
+     *  Constant: '<S194>/Constant'
      */
     rtb_min_relop_n = (rtb_Product3_ax > 90.0);
 
-    /* Switch: '<S185>/Switch1' incorporates:
-     *  Constant: '<S185>/Constant'
-     *  Constant: '<S185>/Constant1'
+    /* Switch: '<S186>/Switch1' incorporates:
+     *  Constant: '<S186>/Constant'
+     *  Constant: '<S186>/Constant1'
      */
     if (rtb_min_relop_n) {
       i = 180;
@@ -2058,32 +2128,32 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       i = 0;
     }
 
-    /* Sum: '<S185>/Sum' incorporates:
-     *  Switch: '<S185>/Switch1'
+    /* Sum: '<S186>/Sum' incorporates:
+     *  Switch: '<S186>/Switch1'
      */
     autocodePlant_B->Switch = (real_T)i + rtb_UnaryMinus_a;
 
-    /* Switch: '<S192>/Switch' incorporates:
-     *  Abs: '<S192>/Abs'
-     *  Constant: '<S199>/Constant'
-     *  RelationalOperator: '<S199>/Compare'
+    /* Switch: '<S193>/Switch' incorporates:
+     *  Abs: '<S193>/Abs'
+     *  Constant: '<S200>/Constant'
+     *  RelationalOperator: '<S200>/Compare'
      */
     if (fabs(autocodePlant_B->Switch) > 180.0) {
-      /* Sum: '<S185>/Sum' incorporates:
-       *  Bias: '<S192>/Bias'
-       *  Bias: '<S192>/Bias1'
-       *  Constant: '<S192>/Constant2'
-       *  Math: '<S192>/Math Function1'
-       *  Switch: '<S192>/Switch'
+      /* Sum: '<S186>/Sum' incorporates:
+       *  Bias: '<S193>/Bias'
+       *  Bias: '<S193>/Bias1'
+       *  Constant: '<S193>/Constant2'
+       *  Math: '<S193>/Math Function1'
+       *  Switch: '<S193>/Switch'
        */
       autocodePlant_B->Switch = rt_modd_snf(autocodePlant_B->Switch + 180.0,
         360.0) - 180.0;
     }
 
-    /* End of Switch: '<S192>/Switch' */
+    /* End of Switch: '<S193>/Switch' */
 
-    /* If: '<S194>/If' incorporates:
-     *  Abs: '<S194>/Abs'
+    /* If: '<S195>/If' incorporates:
+     *  Abs: '<S195>/Abs'
      */
     rtPrevAction = autocodePlant_DW->If_ActiveSubsystem;
     if (rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo)) {
@@ -2099,91 +2169,91 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     }
 
     if (rtAction == 0) {
-      /* Outputs for IfAction SubSystem: '<S194>/If Action Subsystem' incorporates:
-       *  ActionPort: '<S196>/Action Port'
+      /* Outputs for IfAction SubSystem: '<S195>/If Action Subsystem' incorporates:
+       *  ActionPort: '<S197>/Action Port'
        */
-      /* Merge: '<S194>/Merge' incorporates:
-       *  Abs: '<S194>/Abs'
-       *  Product: '<S196>/Divide'
+      /* Merge: '<S195>/Merge' incorporates:
+       *  Abs: '<S195>/Abs'
+       *  Product: '<S197>/Divide'
        */
       autocodePlant_B->Merge = rtb_Product2_e / rtb_Product3_ax;
 
-      /* End of Outputs for SubSystem: '<S194>/If Action Subsystem' */
+      /* End of Outputs for SubSystem: '<S195>/If Action Subsystem' */
 
-      /* Outputs for IfAction SubSystem: '<S194>/If Action Subsystem1' incorporates:
-       *  ActionPort: '<S197>/Action Port'
+      /* Outputs for IfAction SubSystem: '<S195>/If Action Subsystem1' incorporates:
+       *  ActionPort: '<S198>/Action Port'
        */
     } else if (rtmIsMajorTimeStep(autocodePlant_M) &&
                autocodePlant_M->Timing.TaskCounters.TID[1] == 0) {
-      /* Merge: '<S194>/Merge' incorporates:
-       *  Constant: '<S197>/Constant'
-       *  SignalConversion generated from: '<S197>/zero'
+      /* Merge: '<S195>/Merge' incorporates:
+       *  Constant: '<S198>/Constant'
+       *  SignalConversion generated from: '<S198>/zero'
        */
       autocodePlant_B->Merge = 0.0;
 
-      /* End of Outputs for SubSystem: '<S194>/If Action Subsystem1' */
+      /* End of Outputs for SubSystem: '<S195>/If Action Subsystem1' */
     }
 
-    /* End of If: '<S194>/If' */
+    /* End of If: '<S195>/If' */
 
-    /* Switch: '<S191>/Switch' */
+    /* Switch: '<S192>/Switch' */
     if (rtb_min_relop_n) {
-      /* Switch: '<S191>/Switch' incorporates:
-       *  Bias: '<S191>/Bias'
-       *  Bias: '<S191>/Bias1'
-       *  Gain: '<S191>/Gain'
-       *  Product: '<S191>/Divide1'
+      /* Switch: '<S192>/Switch' incorporates:
+       *  Bias: '<S192>/Bias'
+       *  Bias: '<S192>/Bias1'
+       *  Gain: '<S192>/Gain'
+       *  Product: '<S192>/Divide1'
        */
       autocodePlant_B->Switch_l = (-(rtb_Product3_ax - 90.0) + 90.0) *
         autocodePlant_B->Merge;
     } else {
-      /* Switch: '<S191>/Switch' */
+      /* Switch: '<S192>/Switch' */
       autocodePlant_B->Switch_l = rtb_Product2_e;
     }
 
-    /* End of Switch: '<S191>/Switch' */
+    /* End of Switch: '<S192>/Switch' */
 
-    /* UnitConversion: '<S250>/Unit Conversion' */
+    /* UnitConversion: '<S251>/Unit Conversion' */
     /* Unit Conversion - from: deg to: rad
        Expression: output = (0.0174533*input) + (0) */
     rtb_ug_p_idx_0 = 0.017453292519943295 * autocodePlant_B->Switch;
     rtb_Switch_d_idx_0 = 0.017453292519943295 * autocodePlant_B->Switch_l;
 
-    /* Trigonometry: '<S203>/sincos' */
+    /* Trigonometry: '<S204>/sincos' */
     rtb_Switch_d_idx_2 = sin(rtb_ug_p_idx_0);
     rtb_Sum = cos(rtb_ug_p_idx_0);
     rtb_Product2_e = sin(rtb_Switch_d_idx_0);
     rtb_Product3_ax = cos(rtb_Switch_d_idx_0);
 
-    /* Outputs for Enabled SubSystem: '<S189>/Convert from geodetic to  spherical coordinates ' incorporates:
-     *  EnablePort: '<S202>/Enable'
+    /* Outputs for Enabled SubSystem: '<S190>/Convert from geodetic to  spherical coordinates ' incorporates:
+     *  EnablePort: '<S203>/Enable'
      */
     if (tmp) {
       if (rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo)) {
-        /* RelationalOperator: '<S205>/Relational Operator' incorporates:
-         *  Memory: '<S205>/olon'
+        /* RelationalOperator: '<S206>/Relational Operator' incorporates:
+         *  Memory: '<S206>/olon'
          */
         autocodePlant_DW->Convertfromgeodetictosphericalc =
           (autocodePlant_B->Switch != autocodePlant_DW->olon_PreviousInput);
       }
 
-      /* Memory: '<S204>/olat' */
+      /* Memory: '<S205>/olat' */
       autocodePlant_B->olat = autocodePlant_DW->olat_PreviousInput;
     }
 
     if (autocodePlant_DW->Convertfromgeodetictosphericalc) {
       if (rtmIsMajorTimeStep(autocodePlant_M) &&
           autocodePlant_M->Timing.TaskCounters.TID[1] == 0) {
-        /* Outputs for Iterator SubSystem: '<S202>/For Iterator Subsystem' incorporates:
-         *  ForIterator: '<S249>/For Iterator'
+        /* Outputs for Iterator SubSystem: '<S203>/For Iterator Subsystem' incorporates:
+         *  ForIterator: '<S250>/For Iterator'
          */
-        for (s249_iter = 0; s249_iter < 11; s249_iter++) {
-          /* Switch: '<S249>/cp[m-1] sp[m-1]' incorporates:
-           *  SignalConversion generated from: '<S202>/cp[2]'
-           *  SignalConversion generated from: '<S202>/sp[2]'
-           *  UnitDelay: '<S249>/Unit Delay1'
+        for (s250_iter = 0; s250_iter < 11; s250_iter++) {
+          /* Switch: '<S250>/cp[m-1] sp[m-1]' incorporates:
+           *  SignalConversion generated from: '<S203>/cp[2]'
+           *  SignalConversion generated from: '<S203>/sp[2]'
+           *  UnitDelay: '<S250>/Unit Delay1'
            */
-          if (s249_iter > 0) {
+          if (s250_iter > 0) {
             rtb_Sum1_ox = autocodePlant_DW->UnitDelay1_DSTATE[0];
             rtb_Product_kd = autocodePlant_DW->UnitDelay1_DSTATE[1];
           } else {
@@ -2191,514 +2261,514 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
             rtb_Product_kd = rtb_Switch_d_idx_2;
           }
 
-          /* End of Switch: '<S249>/cp[m-1] sp[m-1]' */
+          /* End of Switch: '<S250>/cp[m-1] sp[m-1]' */
 
-          /* Sum: '<S249>/Sum2' incorporates:
-           *  Product: '<S249>/Product1'
-           *  Product: '<S249>/Product2'
-           *  SignalConversion generated from: '<S202>/cp[2]'
-           *  SignalConversion generated from: '<S202>/sp[2]'
+          /* Sum: '<S250>/Sum2' incorporates:
+           *  Product: '<S250>/Product1'
+           *  Product: '<S250>/Product2'
+           *  SignalConversion generated from: '<S203>/cp[2]'
+           *  SignalConversion generated from: '<S203>/sp[2]'
            */
           rtb_Product1_kn = rtb_Sum1_ox * rtb_Switch_d_idx_2 + rtb_Product_kd *
             rtb_Sum;
 
-          /* Sum: '<S249>/Sum1' incorporates:
-           *  Product: '<S249>/Product3'
-           *  Product: '<S249>/Product8'
-           *  SignalConversion generated from: '<S202>/cp[2]'
-           *  SignalConversion generated from: '<S202>/sp[2]'
+          /* Sum: '<S250>/Sum1' incorporates:
+           *  Product: '<S250>/Product3'
+           *  Product: '<S250>/Product8'
+           *  SignalConversion generated from: '<S203>/cp[2]'
+           *  SignalConversion generated from: '<S203>/sp[2]'
            */
           rtb_Sum1_ox = rtb_Sum1_ox * rtb_Sum - rtb_Product_kd *
             rtb_Switch_d_idx_2;
 
-          /* Assignment: '<S249>/Assignment' incorporates:
-           *  Assignment: '<S249>/Assignment1'
-           *  Constant: '<S249>/Constant'
+          /* Assignment: '<S250>/Assignment' incorporates:
+           *  Assignment: '<S250>/Assignment1'
+           *  Constant: '<S250>/Constant'
            */
-          if (s249_iter == 0) {
+          if (s250_iter == 0) {
             memcpy(&autocodePlant_B->Assignment[0], &rtCP__Constant_Value_f[0],
                    11U * sizeof(real_T));
 
-            /* Assignment: '<S249>/Assignment1' incorporates:
-             *  Constant: '<S249>/Constant'
-             *  Constant: '<S249>/Constant1'
+            /* Assignment: '<S250>/Assignment1' incorporates:
+             *  Constant: '<S250>/Constant'
+             *  Constant: '<S250>/Constant1'
              */
             memcpy(&autocodePlant_B->Assignment1[0], &rtCP__Constant1_Value_a[0],
                    11U * sizeof(real_T));
           }
 
-          autocodePlant_B->Assignment[s249_iter] = rtb_Product1_kn;
+          autocodePlant_B->Assignment[s250_iter] = rtb_Product1_kn;
 
-          /* End of Assignment: '<S249>/Assignment' */
+          /* End of Assignment: '<S250>/Assignment' */
 
-          /* Assignment: '<S249>/Assignment1' */
-          autocodePlant_B->Assignment1[s249_iter] = rtb_Sum1_ox;
+          /* Assignment: '<S250>/Assignment1' */
+          autocodePlant_B->Assignment1[s250_iter] = rtb_Sum1_ox;
 
-          /* Update for UnitDelay: '<S249>/Unit Delay1' */
+          /* Update for UnitDelay: '<S250>/Unit Delay1' */
           autocodePlant_DW->UnitDelay1_DSTATE[0] = rtb_Sum1_ox;
           autocodePlant_DW->UnitDelay1_DSTATE[1] = rtb_Product1_kn;
         }
 
-        /* End of Outputs for SubSystem: '<S202>/For Iterator Subsystem' */
+        /* End of Outputs for SubSystem: '<S203>/For Iterator Subsystem' */
       }
 
-      /* SignalConversion generated from: '<S202>/cp[13]' incorporates:
-       *  Constant: '<S202>/cp[1]'
-       *  SignalConversion generated from: '<S202>/cp[2]'
+      /* SignalConversion generated from: '<S203>/cp[13]' incorporates:
+       *  Constant: '<S203>/cp[1]'
+       *  SignalConversion generated from: '<S203>/cp[2]'
        */
       autocodePlant_B->OutportBufferForcp13[0] = 1.0;
       autocodePlant_B->OutportBufferForcp13[1] = rtb_Sum;
 
-      /* SignalConversion generated from: '<S202>/sp[13]' incorporates:
-       *  Constant: '<S202>/sp[1]'
-       *  SignalConversion generated from: '<S202>/sp[2]'
+      /* SignalConversion generated from: '<S203>/sp[13]' incorporates:
+       *  Constant: '<S203>/sp[1]'
+       *  SignalConversion generated from: '<S203>/sp[2]'
        */
       autocodePlant_B->OutportBufferForsp13[0] = 0.0;
       autocodePlant_B->OutportBufferForsp13[1] = rtb_Switch_d_idx_2;
 
-      /* SignalConversion generated from: '<S202>/cp[13]' */
+      /* SignalConversion generated from: '<S203>/cp[13]' */
       memcpy(&autocodePlant_B->OutportBufferForcp13[2],
              &autocodePlant_B->Assignment1[0], 11U * sizeof(real_T));
 
-      /* SignalConversion generated from: '<S202>/sp[13]' */
+      /* SignalConversion generated from: '<S203>/sp[13]' */
       memcpy(&autocodePlant_B->OutportBufferForsp13[2],
              &autocodePlant_B->Assignment[0], 11U * sizeof(real_T));
     }
 
-    /* End of Outputs for SubSystem: '<S189>/Convert from geodetic to  spherical coordinates ' */
+    /* End of Outputs for SubSystem: '<S190>/Convert from geodetic to  spherical coordinates ' */
 
-    /* Gain: '<S172>/Gain' */
+    /* Gain: '<S173>/Gain' */
     autocodePlant_B->Gain = 0.001 * rtb_Switch_d_idx_1;
     if (tmp) {
-      /* Memory: '<S204>/oalt' */
+      /* Memory: '<S205>/oalt' */
       autocodePlant_B->oalt = autocodePlant_DW->oalt_PreviousInput;
     }
 
-    /* Logic: '<S204>/Logical Operator' incorporates:
-     *  RelationalOperator: '<S204>/Relational Operator'
-     *  RelationalOperator: '<S204>/Relational Operator1'
+    /* Logic: '<S205>/Logical Operator' incorporates:
+     *  RelationalOperator: '<S205>/Relational Operator'
+     *  RelationalOperator: '<S205>/Relational Operator1'
      */
     rtb_min_relop_n = ((autocodePlant_B->Switch_l != autocodePlant_B->olat) ||
                        (autocodePlant_B->Gain != autocodePlant_B->oalt));
 
-    /* Product: '<S203>/Product' */
+    /* Product: '<S204>/Product' */
     rtb_Product1_kn = rtb_Product2_e * rtb_Product2_e;
 
-    /* Product: '<S203>/Product1' */
+    /* Product: '<S204>/Product1' */
     rtb_Product_kd = rtb_Product3_ax * rtb_Product3_ax;
 
-    /* Outputs for Enabled SubSystem: '<S189>/Convert from geodetic to  spherical coordinates' incorporates:
-     *  EnablePort: '<S201>/Enable'
+    /* Outputs for Enabled SubSystem: '<S190>/Convert from geodetic to  spherical coordinates' incorporates:
+     *  EnablePort: '<S202>/Enable'
      */
     if (tmp && rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo)) {
       autocodePlant_DW->Convertfromgeodetictospherica_p = rtb_min_relop_n;
     }
 
     if (autocodePlant_DW->Convertfromgeodetictospherica_p) {
-      /* Sqrt: '<S243>/sqrt' incorporates:
-       *  Product: '<S243>/Product10'
-       *  Product: '<S243>/Product9'
-       *  Sum: '<S243>/Sum7'
+      /* Sqrt: '<S244>/sqrt' incorporates:
+       *  Product: '<S244>/Product10'
+       *  Product: '<S244>/Product9'
+       *  Sum: '<S244>/Sum7'
        */
       rtb_Sum1_ox = sqrt(rtb_Product_kd * autocodePlant_ConstB.a2 +
                          autocodePlant_ConstB.b2 * rtb_Product1_kn);
 
-      /* Sqrt: '<S244>/sqrt' incorporates:
-       *  Product: '<S244>/Product'
-       *  Sum: '<S244>/Sum'
+      /* Sqrt: '<S245>/sqrt' incorporates:
+       *  Product: '<S245>/Product'
+       *  Sum: '<S245>/Sum'
        */
       rtb_Switch_d_idx_2 = sqrt(autocodePlant_ConstB.a2 - rtb_Product1_kn *
         autocodePlant_ConstB.c2);
 
-      /* Product: '<S201>/Product1' */
+      /* Product: '<S202>/Product1' */
       rtb_Sum = rtb_Switch_d_idx_2 * autocodePlant_B->Gain;
 
-      /* Sqrt: '<S201>/sqrt' incorporates:
-       *  Gain: '<S246>/Gain'
-       *  Product: '<S246>/Product1'
-       *  Product: '<S246>/Product6'
-       *  Product: '<S246>/Product7'
-       *  Product: '<S246>/Product8'
-       *  Sum: '<S246>/Sum5'
-       *  Sum: '<S246>/Sum6'
+      /* Sqrt: '<S202>/sqrt' incorporates:
+       *  Gain: '<S247>/Gain'
+       *  Product: '<S247>/Product1'
+       *  Product: '<S247>/Product6'
+       *  Product: '<S247>/Product7'
+       *  Product: '<S247>/Product8'
+       *  Sum: '<S247>/Sum5'
+       *  Sum: '<S247>/Sum6'
        */
       autocodePlant_B->sqrt_b = sqrt((autocodePlant_ConstB.a4 -
         autocodePlant_ConstB.c4 * rtb_Product1_kn) / (rtb_Switch_d_idx_2 *
         rtb_Switch_d_idx_2) + (2.0 * rtb_Sum + autocodePlant_B->Gain *
         autocodePlant_B->Gain));
 
-      /* Product: '<S241>/Product11' incorporates:
-       *  Sum: '<S241>/Sum8'
+      /* Product: '<S242>/Product11' incorporates:
+       *  Sum: '<S242>/Sum8'
        */
       autocodePlant_B->Product11 = (autocodePlant_B->Gain + rtb_Sum1_ox) /
         autocodePlant_B->sqrt_b;
 
-      /* Product: '<S247>/Product12' incorporates:
-       *  Product: '<S247>/Product1'
+      /* Product: '<S248>/Product12' incorporates:
+       *  Product: '<S248>/Product1'
        */
       autocodePlant_B->Product12 = autocodePlant_ConstB.c2_l /
         (autocodePlant_B->sqrt_b * rtb_Sum1_ox) * rtb_Product3_ax *
         rtb_Product2_e;
 
-      /* Sum: '<S245>/Sum2' */
+      /* Sum: '<S246>/Sum2' */
       rtb_Sum1_ox = autocodePlant_ConstB.a2 + rtb_Sum;
 
-      /* Sum: '<S245>/Sum1' */
+      /* Sum: '<S246>/Sum1' */
       rtb_Sum += autocodePlant_ConstB.b2;
 
-      /* Product: '<S242>/Product4' incorporates:
-       *  Product: '<S242>/Product3'
-       *  Product: '<S245>/Product1'
-       *  Product: '<S245>/Product2'
-       *  Sqrt: '<S242>/sqrt'
-       *  Sum: '<S242>/Sum3'
+      /* Product: '<S243>/Product4' incorporates:
+       *  Product: '<S243>/Product3'
+       *  Product: '<S246>/Product1'
+       *  Product: '<S246>/Product2'
+       *  Sqrt: '<S243>/sqrt'
+       *  Sum: '<S243>/Sum3'
        */
       autocodePlant_B->Product4 = rtb_Product2_e / sqrt(rtb_Sum1_ox *
         rtb_Sum1_ox / (rtb_Sum * rtb_Sum) * rtb_Product_kd + rtb_Product1_kn);
 
-      /* Sqrt: '<S248>/sqrt' incorporates:
-       *  Constant: '<S248>/Constant'
-       *  Product: '<S248>/Product5'
-       *  Sum: '<S248>/Sum4'
+      /* Sqrt: '<S249>/sqrt' incorporates:
+       *  Constant: '<S249>/Constant'
+       *  Product: '<S249>/Product5'
+       *  Sum: '<S249>/Sum4'
        */
       autocodePlant_B->sqrt_k = sqrt(1.0 - autocodePlant_B->Product4 *
         autocodePlant_B->Product4);
     }
 
-    /* End of Outputs for SubSystem: '<S189>/Convert from geodetic to  spherical coordinates' */
+    /* End of Outputs for SubSystem: '<S190>/Convert from geodetic to  spherical coordinates' */
 
-    /* Product: '<S189>/aor' incorporates:
-     *  Constant: '<S189>/re'
+    /* Product: '<S190>/aor' incorporates:
+     *  Constant: '<S190>/re'
      */
     rtb_Product3_ax = 6371.2 / autocodePlant_B->sqrt_b;
     if (tmp) {
-      /* Outputs for Iterator SubSystem: '<S189>/Compute magnetic vector in spherical coordinates' incorporates:
-       *  ForIterator: '<S200>/For Iterator'
+      /* Outputs for Iterator SubSystem: '<S190>/Compute magnetic vector in spherical coordinates' incorporates:
+       *  ForIterator: '<S201>/For Iterator'
        */
-      /* InitializeConditions for UnitDelay: '<S200>/Unit Delay2' */
+      /* InitializeConditions for UnitDelay: '<S201>/Unit Delay2' */
       autocodePlant_DW->UnitDelay2_DSTATE[0] = 0.0;
       autocodePlant_DW->UnitDelay2_DSTATE[1] = 0.0;
       autocodePlant_DW->UnitDelay2_DSTATE[2] = 0.0;
       autocodePlant_DW->UnitDelay2_DSTATE[3] = 0.0;
 
-      /* InitializeConditions for UnitDelay: '<S200>/Unit Delay' */
+      /* InitializeConditions for UnitDelay: '<S201>/Unit Delay' */
       rtb_Switch_d_idx_2 = 0.0;
-      for (s249_iter = 0; s249_iter < 12; s249_iter++) {
-        /* Switch: '<S200>/ar(n)' incorporates:
-         *  Product: '<S189>/ar'
+      for (s250_iter = 0; s250_iter < 12; s250_iter++) {
+        /* Switch: '<S201>/ar(n)' incorporates:
+         *  Product: '<S190>/ar'
          */
-        if (s249_iter <= 0) {
+        if (s250_iter <= 0) {
           rtb_Switch_d_idx_2 = rtb_Product3_ax * rtb_Product3_ax;
         }
 
-        /* End of Switch: '<S200>/ar(n)' */
+        /* End of Switch: '<S201>/ar(n)' */
 
-        /* Product: '<S200>/Product8' incorporates:
-         *  UnitDelay: '<S200>/Unit Delay'
+        /* Product: '<S201>/Product8' incorporates:
+         *  UnitDelay: '<S201>/Unit Delay'
          */
         rtb_Switch_d_idx_2 *= rtb_Product3_ax;
 
-        /* Outputs for Iterator SubSystem: '<S200>/For Iterator Subsystem' incorporates:
-         *  ForIterator: '<S208>/For Iterator'
+        /* Outputs for Iterator SubSystem: '<S201>/For Iterator Subsystem' incorporates:
+         *  ForIterator: '<S209>/For Iterator'
          */
-        /* InitializeConditions for UnitDelay: '<S209>/Unit Delay3' */
+        /* InitializeConditions for UnitDelay: '<S210>/Unit Delay3' */
         rtb_Sum = 0.0;
 
-        /* InitializeConditions for UnitDelay: '<S209>/Unit Delay2' */
+        /* InitializeConditions for UnitDelay: '<S210>/Unit Delay2' */
         rtb_Product1_kn = 0.0;
 
-        /* InitializeConditions for UnitDelay: '<S209>/Unit Delay1' */
+        /* InitializeConditions for UnitDelay: '<S210>/Unit Delay1' */
         rtb_Sum1_ox = 0.0;
 
-        /* InitializeConditions for UnitDelay: '<S209>/Unit Delay4' */
+        /* InitializeConditions for UnitDelay: '<S210>/Unit Delay4' */
         rtb_Product_kd = 0.0;
         for (i = 0; i < 6; i++) {
           ForIterator_IterationMarker[i] = 1U;
         }
 
-        /* Sum: '<S200>/Sum' incorporates:
-         *  Constant: '<S215>/Constant'
-         *  Constant: '<S215>/Constant1'
-         *  Logic: '<S215>/Logical Operator'
-         *  RelationalOperator: '<S215>/Relational Operator'
-         *  RelationalOperator: '<S215>/Relational Operator1'
-         *  SignalConversion generated from: '<S210>/Enable'
-         *  Sum: '<S208>/Sum1'
+        /* Sum: '<S201>/Sum' incorporates:
+         *  Constant: '<S216>/Constant'
+         *  Constant: '<S216>/Constant1'
+         *  Logic: '<S216>/Logical Operator'
+         *  RelationalOperator: '<S216>/Relational Operator'
+         *  RelationalOperator: '<S216>/Relational Operator1'
+         *  SignalConversion generated from: '<S211>/Enable'
+         *  Sum: '<S209>/Sum1'
          */
-        for (s208_iter = 1; s208_iter <= s249_iter + 2; s208_iter++) {
-          /* Outputs for Enabled SubSystem: '<S208>/Time adjust the gauss coefficients' incorporates:
-           *  EnablePort: '<S211>/Enable'
+        for (s209_iter = 1; s209_iter <= s250_iter + 2; s209_iter++) {
+          /* Outputs for Enabled SubSystem: '<S209>/Time adjust the gauss coefficients' incorporates:
+           *  EnablePort: '<S212>/Enable'
            */
           if (rtb_RelationalOperator) {
-            /* Assignment: '<S211>/Assignment' */
+            /* Assignment: '<S212>/Assignment' */
             if (ForIterator_IterationMarker[4] < 2) {
               ForIterator_IterationMarker[4] = 2U;
 
-              /* Assignment: '<S211>/Assignment' incorporates:
-               *  UnitDelay: '<S211>/Unit Delay'
+              /* Assignment: '<S212>/Assignment' incorporates:
+               *  UnitDelay: '<S212>/Unit Delay'
                */
               memcpy(&autocodePlant_B->Assignment_o[0],
                      &autocodePlant_DW->UnitDelay_DSTATE_e[0], 169U * sizeof
                      (real_T));
             }
 
-            /* Outputs for Atomic SubSystem: '<S211>/If Action Subsystem' */
-            /* Selector: '<S237>/c[m][n]' incorporates:
-             *  Assignment: '<S211>/Assignment'
-             *  Constant: '<S211>/cd[maxdef][maxdef]'
-             *  Selector: '<S237>/cd[m][n]'
-             *  Sum: '<S237>/Sum2'
+            /* Outputs for Atomic SubSystem: '<S212>/If Action Subsystem' */
+            /* Selector: '<S238>/c[m][n]' incorporates:
+             *  Assignment: '<S212>/Assignment'
+             *  Constant: '<S212>/cd[maxdef][maxdef]'
+             *  Selector: '<S238>/cd[m][n]'
+             *  Sum: '<S238>/Sum2'
              */
-            i = ((s249_iter + 1) * 13 + s208_iter) - 1;
+            i = ((s250_iter + 1) * 13 + s209_iter) - 1;
 
-            /* Assignment: '<S211>/Assignment' incorporates:
-             *  Constant: '<S211>/c[maxdef][maxdef]'
-             *  Constant: '<S211>/cd[maxdef][maxdef]'
-             *  Product: '<S237>/Product'
-             *  Selector: '<S237>/c[m][n]'
-             *  Selector: '<S237>/cd[m][n]'
-             *  Sum: '<S237>/Sum'
+            /* Assignment: '<S212>/Assignment' incorporates:
+             *  Constant: '<S212>/c[maxdef][maxdef]'
+             *  Constant: '<S212>/cd[maxdef][maxdef]'
+             *  Product: '<S238>/Product'
+             *  Selector: '<S238>/c[m][n]'
+             *  Selector: '<S238>/cd[m][n]'
+             *  Sum: '<S238>/Sum'
              */
             autocodePlant_B->Assignment_o[i] = rtCP__cdmaxdefmaxdef_Value[i] *
               autocodePlant_ConstB.Sum_dd + rtCP__cmaxdefmaxdef_Value[i];
 
-            /* End of Outputs for SubSystem: '<S211>/If Action Subsystem' */
+            /* End of Outputs for SubSystem: '<S212>/If Action Subsystem' */
 
-            /* Switch: '<S238>/tc_old' incorporates:
-             *  UnitDelay: '<S238>/Unit Delay'
+            /* Switch: '<S239>/tc_old' incorporates:
+             *  UnitDelay: '<S239>/Unit Delay'
              */
-            if (s249_iter <= 0) {
+            if (s250_iter <= 0) {
               memset(&autocodePlant_DW->UnitDelay_DSTATE_k[0], 0, 169U * sizeof
                      (real_T));
             }
 
-            /* End of Switch: '<S238>/tc_old' */
+            /* End of Switch: '<S239>/tc_old' */
 
-            /* If: '<S238>/If' incorporates:
-             *  Sum: '<S208>/Sum1'
+            /* If: '<S239>/If' incorporates:
+             *  Sum: '<S209>/Sum1'
              */
-            if (s208_iter - 1 != 0) {
-              /* Outputs for IfAction SubSystem: '<S238>/If Action Subsystem1' incorporates:
-               *  ActionPort: '<S239>/Action Port'
+            if (s209_iter - 1 != 0) {
+              /* Outputs for IfAction SubSystem: '<S239>/If Action Subsystem1' incorporates:
+               *  ActionPort: '<S240>/Action Port'
                */
-              /* Assignment: '<S239>/Assignment2' */
+              /* Assignment: '<S240>/Assignment2' */
               if (ForIterator_IterationMarker[5] < 2) {
                 ForIterator_IterationMarker[5] = 2U;
 
-                /* Assignment: '<S239>/Assignment2' incorporates:
-                 *  Switch: '<S238>/tc_old'
+                /* Assignment: '<S240>/Assignment2' incorporates:
+                 *  Switch: '<S239>/tc_old'
                  */
                 memcpy(&autocodePlant_B->Assignment2[0],
                        &autocodePlant_DW->UnitDelay_DSTATE_k[0], 169U * sizeof
                        (real_T));
               }
 
-              /* Selector: '<S239>/c[m][n]' incorporates:
-               *  Assignment: '<S239>/Assignment2'
-               *  Constant: '<S211>/cd[maxdef][maxdef]'
-               *  Selector: '<S239>/cd[m][n]'
-               *  Sum: '<S239>/Sum2'
+              /* Selector: '<S240>/c[m][n]' incorporates:
+               *  Assignment: '<S240>/Assignment2'
+               *  Constant: '<S212>/cd[maxdef][maxdef]'
+               *  Selector: '<S240>/cd[m][n]'
+               *  Sum: '<S240>/Sum2'
                */
-              i = ((s208_iter - 2) * 13 + s249_iter) + 1;
+              i = ((s209_iter - 2) * 13 + s250_iter) + 1;
 
-              /* Assignment: '<S239>/Assignment2' incorporates:
-               *  Constant: '<S211>/c[maxdef][maxdef]'
-               *  Constant: '<S211>/cd[maxdef][maxdef]'
-               *  Product: '<S239>/Product'
-               *  Selector: '<S239>/c[m][n]'
-               *  Selector: '<S239>/cd[m][n]'
-               *  Sum: '<S239>/Sum'
-               *  Sum: '<S239>/Sum2'
+              /* Assignment: '<S240>/Assignment2' incorporates:
+               *  Constant: '<S212>/c[maxdef][maxdef]'
+               *  Constant: '<S212>/cd[maxdef][maxdef]'
+               *  Product: '<S240>/Product'
+               *  Selector: '<S240>/c[m][n]'
+               *  Selector: '<S240>/cd[m][n]'
+               *  Sum: '<S240>/Sum'
+               *  Sum: '<S240>/Sum2'
                */
               autocodePlant_B->Assignment2[i] = rtCP__cdmaxdefmaxdef_Value[i] *
                 autocodePlant_ConstB.Sum_dd + rtCP__cmaxdefmaxdef_Value[i];
 
-              /* Gain: '<S239>/Gain' incorporates:
-               *  Assignment: '<S239>/Assignment2'
-               *  Merge: '<S238>/Merge'
-               *  UnitDelay: '<S238>/Unit Delay'
+              /* Gain: '<S240>/Gain' incorporates:
+               *  Assignment: '<S240>/Assignment2'
+               *  Merge: '<S239>/Merge'
+               *  UnitDelay: '<S239>/Unit Delay'
                */
               memcpy(&autocodePlant_DW->UnitDelay_DSTATE_k[0],
                      &autocodePlant_B->Assignment2[0], 169U * sizeof(real_T));
 
-              /* End of Outputs for SubSystem: '<S238>/If Action Subsystem1' */
+              /* End of Outputs for SubSystem: '<S239>/If Action Subsystem1' */
             }
 
-            /* End of If: '<S238>/If' */
+            /* End of If: '<S239>/If' */
             for (i = 0; i < 169; i++) {
-              /* Sum: '<S211>/Sum2' incorporates:
-               *  Assignment: '<S211>/Assignment'
+              /* Sum: '<S212>/Sum2' incorporates:
+               *  Assignment: '<S212>/Assignment'
                */
               rtb_Product2_e = autocodePlant_B->Assignment_o[i];
 
-              /* Sum: '<S211>/Sum2' incorporates:
-               *  Assignment: '<S211>/Assignment'
-               *  Merge: '<S238>/Merge'
-               *  UnitDelay: '<S238>/Unit Delay'
+              /* Sum: '<S212>/Sum2' incorporates:
+               *  Assignment: '<S212>/Assignment'
+               *  Merge: '<S239>/Merge'
+               *  UnitDelay: '<S239>/Unit Delay'
                */
               autocodePlant_B->Sum2_p[i] = rtb_Product2_e +
                 autocodePlant_DW->UnitDelay_DSTATE_k[i];
 
-              /* Update for UnitDelay: '<S211>/Unit Delay' incorporates:
-               *  Assignment: '<S211>/Assignment'
+              /* Update for UnitDelay: '<S212>/Unit Delay' incorporates:
+               *  Assignment: '<S212>/Assignment'
                */
               autocodePlant_DW->UnitDelay_DSTATE_e[i] = rtb_Product2_e;
             }
           }
 
-          /* End of Outputs for SubSystem: '<S208>/Time adjust the gauss coefficients' */
+          /* End of Outputs for SubSystem: '<S209>/Time adjust the gauss coefficients' */
 
-          /* If: '<S214>/If' incorporates:
-           *  Sum: '<S208>/Sum1'
+          /* If: '<S215>/If' incorporates:
+           *  Sum: '<S209>/Sum1'
            */
-          if (s208_iter - 1 == 0) {
-            /* Outputs for IfAction SubSystem: '<S214>/If Action Subsystem' incorporates:
-             *  ActionPort: '<S220>/Action Port'
-             */
-            /* Product: '<S220>/Product' incorporates:
-             *  Constant: '<S220>/Constant'
-             *  Selector: '<S220>/Selector'
-             *  Sum: '<S220>/Sum'
-             */
-            i = (s249_iter + 1) * 13;
-
-            /* Merge: '<S214>/Merge' incorporates:
-             *  Gain: '<S220>/Gain1'
-             *  Product: '<S220>/Product'
-             *  Selector: '<S214>/cp[m+1]'
-             *  Selector: '<S220>/Selector'
-             *  Sum: '<S211>/Sum2'
-             */
-            rtb_ug_p_idx_0 = autocodePlant_B->OutportBufferForcp13[s208_iter - 1]
-              * autocodePlant_B->Sum2_p[i];
-
-            /* Merge: '<S214>/Merge1' incorporates:
-             *  Gain: '<S220>/Gain2'
-             *  Product: '<S220>/Product'
-             *  Selector: '<S214>/sp[m+1]'
-             *  Selector: '<S220>/Selector'
-             *  Sum: '<S211>/Sum2'
-             */
-            rtb_Switch_d_idx_0 = autocodePlant_B->OutportBufferForsp13[s208_iter
-              - 1] * autocodePlant_B->Sum2_p[i];
-
-            /* End of Outputs for SubSystem: '<S214>/If Action Subsystem' */
-          } else {
-            /* Outputs for IfAction SubSystem: '<S214>/If Action Subsystem1' incorporates:
+          if (s209_iter - 1 == 0) {
+            /* Outputs for IfAction SubSystem: '<S215>/If Action Subsystem' incorporates:
              *  ActionPort: '<S221>/Action Port'
              */
             /* Product: '<S221>/Product' incorporates:
-             *  Constant: '<S222>/Constant'
+             *  Constant: '<S221>/Constant'
              *  Selector: '<S221>/Selector'
-             *  Sum: '<S222>/Sum'
-             */
-            i = ((s249_iter + 1) * 13 + s208_iter) - 1;
-
-            /* Product: '<S221>/Product1' incorporates:
-             *  Selector: '<S221>/Selector1'
-             *  Sum: '<S223>/Sum'
-             */
-            rtb_Sum2_d = ((s208_iter - 2) * 13 + s249_iter) + 1;
-
-            /* Merge: '<S214>/Merge' incorporates:
-             *  Product: '<S221>/Product'
-             *  Product: '<S221>/Product1'
-             *  Selector: '<S214>/cp[m+1]'
-             *  Selector: '<S214>/sp[m+1]'
-             *  Selector: '<S221>/Selector'
-             *  Selector: '<S221>/Selector1'
-             *  Sum: '<S211>/Sum2'
              *  Sum: '<S221>/Sum'
              */
-            rtb_ug_p_idx_0 = autocodePlant_B->OutportBufferForcp13[s208_iter - 1]
-              * autocodePlant_B->Sum2_p[i] +
-              autocodePlant_B->OutportBufferForsp13[s208_iter - 1] *
-              autocodePlant_B->Sum2_p[rtb_Sum2_d];
+            i = (s250_iter + 1) * 13;
 
-            /* Merge: '<S214>/Merge1' incorporates:
+            /* Merge: '<S215>/Merge' incorporates:
+             *  Gain: '<S221>/Gain1'
              *  Product: '<S221>/Product'
-             *  Product: '<S221>/Product1'
-             *  Selector: '<S214>/cp[m+1]'
-             *  Selector: '<S214>/sp[m+1]'
+             *  Selector: '<S215>/cp[m+1]'
              *  Selector: '<S221>/Selector'
-             *  Selector: '<S221>/Selector1'
-             *  Sum: '<S211>/Sum2'
-             *  Sum: '<S221>/Sum1'
+             *  Sum: '<S212>/Sum2'
              */
-            rtb_Switch_d_idx_0 = autocodePlant_B->OutportBufferForsp13[s208_iter
-              - 1] * autocodePlant_B->Sum2_p[i] -
-              autocodePlant_B->OutportBufferForcp13[s208_iter - 1] *
+            rtb_ug_p_idx_0 = autocodePlant_B->OutportBufferForcp13[s209_iter - 1]
+              * autocodePlant_B->Sum2_p[i];
+
+            /* Merge: '<S215>/Merge1' incorporates:
+             *  Gain: '<S221>/Gain2'
+             *  Product: '<S221>/Product'
+             *  Selector: '<S215>/sp[m+1]'
+             *  Selector: '<S221>/Selector'
+             *  Sum: '<S212>/Sum2'
+             */
+            rtb_Switch_d_idx_0 = autocodePlant_B->OutportBufferForsp13[s209_iter
+              - 1] * autocodePlant_B->Sum2_p[i];
+
+            /* End of Outputs for SubSystem: '<S215>/If Action Subsystem' */
+          } else {
+            /* Outputs for IfAction SubSystem: '<S215>/If Action Subsystem1' incorporates:
+             *  ActionPort: '<S222>/Action Port'
+             */
+            /* Product: '<S222>/Product' incorporates:
+             *  Constant: '<S223>/Constant'
+             *  Selector: '<S222>/Selector'
+             *  Sum: '<S223>/Sum'
+             */
+            i = ((s250_iter + 1) * 13 + s209_iter) - 1;
+
+            /* Product: '<S222>/Product1' incorporates:
+             *  Selector: '<S222>/Selector1'
+             *  Sum: '<S224>/Sum'
+             */
+            rtb_Sum2_d = ((s209_iter - 2) * 13 + s250_iter) + 1;
+
+            /* Merge: '<S215>/Merge' incorporates:
+             *  Product: '<S222>/Product'
+             *  Product: '<S222>/Product1'
+             *  Selector: '<S215>/cp[m+1]'
+             *  Selector: '<S215>/sp[m+1]'
+             *  Selector: '<S222>/Selector'
+             *  Selector: '<S222>/Selector1'
+             *  Sum: '<S212>/Sum2'
+             *  Sum: '<S222>/Sum'
+             */
+            rtb_ug_p_idx_0 = autocodePlant_B->OutportBufferForcp13[s209_iter - 1]
+              * autocodePlant_B->Sum2_p[i] +
+              autocodePlant_B->OutportBufferForsp13[s209_iter - 1] *
               autocodePlant_B->Sum2_p[rtb_Sum2_d];
 
-            /* End of Outputs for SubSystem: '<S214>/If Action Subsystem1' */
+            /* Merge: '<S215>/Merge1' incorporates:
+             *  Product: '<S222>/Product'
+             *  Product: '<S222>/Product1'
+             *  Selector: '<S215>/cp[m+1]'
+             *  Selector: '<S215>/sp[m+1]'
+             *  Selector: '<S222>/Selector'
+             *  Selector: '<S222>/Selector1'
+             *  Sum: '<S212>/Sum2'
+             *  Sum: '<S222>/Sum1'
+             */
+            rtb_Switch_d_idx_0 = autocodePlant_B->OutportBufferForsp13[s209_iter
+              - 1] * autocodePlant_B->Sum2_p[i] -
+              autocodePlant_B->OutportBufferForcp13[s209_iter - 1] *
+              autocodePlant_B->Sum2_p[rtb_Sum2_d];
+
+            /* End of Outputs for SubSystem: '<S215>/If Action Subsystem1' */
           }
 
-          /* End of If: '<S214>/If' */
+          /* End of If: '<S215>/If' */
 
-          /* Outputs for Enabled SubSystem: '<S208>/Compute unnormalized associated  legendre polynomials and  derivatives via recursion relations' incorporates:
-           *  EnablePort: '<S210>/Enable'
+          /* Outputs for Enabled SubSystem: '<S209>/Compute unnormalized associated  legendre polynomials and  derivatives via recursion relations' incorporates:
+           *  EnablePort: '<S211>/Enable'
            */
           if (rtb_min_relop_n) {
-            /* If: '<S210>/if n == m elseif (n==1&m==0) elseif (n>1&m~=n)' incorporates:
-             *  Sum: '<S208>/Sum1'
+            /* If: '<S211>/if n == m elseif (n==1&m==0) elseif (n>1&m~=n)' incorporates:
+             *  Sum: '<S209>/Sum1'
              */
-            if (s249_iter + 1 == s208_iter - 1) {
-              /* Outputs for IfAction SubSystem: '<S210>/If Action Subsystem' incorporates:
-               *  ActionPort: '<S224>/Action Port'
+            if (s250_iter + 1 == s209_iter - 1) {
+              /* Outputs for IfAction SubSystem: '<S211>/If Action Subsystem' incorporates:
+               *  ActionPort: '<S225>/Action Port'
                */
-              /* Selector: '<S224>/Selector' incorporates:
-               *  Gain: '<S228>/Gain'
-               *  Sum: '<S228>/Sum1'
-               *  Sum: '<S228>/Sum2'
+              /* Selector: '<S225>/Selector' incorporates:
+               *  Gain: '<S229>/Gain'
+               *  Sum: '<S229>/Sum1'
+               *  Sum: '<S229>/Sum2'
                */
-              rtb_Sum2_d = mul_s32_sat(13, s208_iter - 2);
-              if (rtb_Sum2_d > 2147483646 - s249_iter) {
+              rtb_Sum2_d = mul_s32_sat(13, s209_iter - 2);
+              if (rtb_Sum2_d > 2147483646 - s250_iter) {
                 i = MAX_int32_T;
               } else {
-                i = (s249_iter + rtb_Sum2_d) + 1;
+                i = (s250_iter + rtb_Sum2_d) + 1;
               }
 
-              /* Merge: '<S210>/Merge1' incorporates:
-               *  Product: '<S224>/Product'
-               *  Product: '<S224>/Product2'
-               *  Selector: '<S224>/Selector'
-               *  Selector: '<S224>/Selector1'
-               *  Sum: '<S224>/Sum'
-               *  Sum: '<S228>/Sum1'
-               *  UnitDelay: '<S210>/Unit Delay'
-               *  UnitDelay: '<S210>/Unit Delay1'
+              /* Merge: '<S211>/Merge1' incorporates:
+               *  Product: '<S225>/Product'
+               *  Product: '<S225>/Product2'
+               *  Selector: '<S225>/Selector'
+               *  Selector: '<S225>/Selector1'
+               *  Sum: '<S225>/Sum'
+               *  Sum: '<S229>/Sum1'
+               *  UnitDelay: '<S211>/Unit Delay'
+               *  UnitDelay: '<S211>/Unit Delay1'
                */
               autocodePlant_B->Merge1_i = autocodePlant_DW->UnitDelay_DSTATE_o
-                [(13 * s249_iter + s208_iter) - 2] * autocodePlant_B->sqrt_k +
+                [(13 * s250_iter + s209_iter) - 2] * autocodePlant_B->sqrt_k +
                 autocodePlant_DW->UnitDelay1_DSTATE_c[i - 1] *
                 autocodePlant_B->Product4;
 
-              /* Selector: '<S224>/Selector' incorporates:
-               *  Sum: '<S228>/Sum1'
+              /* Selector: '<S225>/Selector' incorporates:
+               *  Sum: '<S229>/Sum1'
                */
-              if (rtb_Sum2_d > 2147483646 - s249_iter) {
+              if (rtb_Sum2_d > 2147483646 - s250_iter) {
                 i = MAX_int32_T;
               } else {
-                i = (s249_iter + rtb_Sum2_d) + 1;
+                i = (s250_iter + rtb_Sum2_d) + 1;
               }
 
-              /* Merge: '<S210>/Merge' incorporates:
-               *  Product: '<S224>/Product1'
-               *  Selector: '<S224>/Selector'
-               *  Sum: '<S228>/Sum1'
-               *  UnitDelay: '<S210>/Unit Delay1'
+              /* Merge: '<S211>/Merge' incorporates:
+               *  Product: '<S225>/Product1'
+               *  Selector: '<S225>/Selector'
+               *  Sum: '<S229>/Sum1'
+               *  UnitDelay: '<S211>/Unit Delay1'
                */
               autocodePlant_B->Merge_b = autocodePlant_DW->UnitDelay1_DSTATE_c[i
                 - 1] * autocodePlant_B->sqrt_k;
 
-              /* End of Outputs for SubSystem: '<S210>/If Action Subsystem' */
-            } else if ((s249_iter == 0) && (s208_iter - 1 == 0)) {
-              /* Outputs for IfAction SubSystem: '<S210>/If Action Subsystem1' incorporates:
-               *  ActionPort: '<S225>/Action Port'
+              /* End of Outputs for SubSystem: '<S211>/If Action Subsystem' */
+            } else if ((s250_iter == 0) && (s209_iter - 1 == 0)) {
+              /* Outputs for IfAction SubSystem: '<S211>/If Action Subsystem1' incorporates:
+               *  ActionPort: '<S226>/Action Port'
                */
-              /* Selector: '<S225>/Selector' incorporates:
-               *  Gain: '<S230>/Gain'
-               *  Sum: '<S230>/Sum1'
+              /* Selector: '<S226>/Selector' incorporates:
+               *  Gain: '<S231>/Gain'
+               *  Sum: '<S231>/Sum1'
                */
               rtb_Sum2_d = mul_s32_sat(13, 0);
               if (rtb_Sum2_d > 2147483646) {
@@ -2707,24 +2777,24 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
                 i = rtb_Sum2_d + 1;
               }
 
-              /* Merge: '<S210>/Merge1' incorporates:
-               *  Product: '<S225>/Product'
-               *  Product: '<S225>/Product2'
-               *  Selector: '<S225>/Selector'
-               *  Selector: '<S225>/Selector1'
-               *  Sum: '<S225>/Sum'
-               *  Sum: '<S230>/Sum1'
-               *  Sum: '<S231>/Sum'
-               *  UnitDelay: '<S210>/Unit Delay'
-               *  UnitDelay: '<S210>/Unit Delay1'
+              /* Merge: '<S211>/Merge1' incorporates:
+               *  Product: '<S226>/Product'
+               *  Product: '<S226>/Product2'
+               *  Selector: '<S226>/Selector'
+               *  Selector: '<S226>/Selector1'
+               *  Sum: '<S226>/Sum'
+               *  Sum: '<S231>/Sum1'
+               *  Sum: '<S232>/Sum'
+               *  UnitDelay: '<S211>/Unit Delay'
+               *  UnitDelay: '<S211>/Unit Delay1'
                */
               autocodePlant_B->Merge1_i = autocodePlant_B->Product4 *
                 autocodePlant_DW->UnitDelay_DSTATE_o[0] -
                 autocodePlant_DW->UnitDelay1_DSTATE_c[i - 1] *
                 autocodePlant_B->sqrt_k;
 
-              /* Selector: '<S225>/Selector' incorporates:
-               *  Sum: '<S230>/Sum1'
+              /* Selector: '<S226>/Selector' incorporates:
+               *  Sum: '<S231>/Sum1'
                */
               if (rtb_Sum2_d > 2147483646) {
                 i = MAX_int32_T;
@@ -2732,39 +2802,39 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
                 i = rtb_Sum2_d + 1;
               }
 
-              /* Merge: '<S210>/Merge' incorporates:
-               *  Product: '<S225>/Product3'
-               *  Selector: '<S225>/Selector'
-               *  Sum: '<S230>/Sum1'
-               *  UnitDelay: '<S210>/Unit Delay1'
+              /* Merge: '<S211>/Merge' incorporates:
+               *  Product: '<S226>/Product3'
+               *  Selector: '<S226>/Selector'
+               *  Sum: '<S231>/Sum1'
+               *  UnitDelay: '<S211>/Unit Delay1'
                */
               autocodePlant_B->Merge_b = autocodePlant_DW->UnitDelay1_DSTATE_c[i
                 - 1] * autocodePlant_B->Product4;
 
-              /* End of Outputs for SubSystem: '<S210>/If Action Subsystem1' */
-            } else if ((s249_iter > 0) && (s249_iter + 1 != s208_iter - 1)) {
-              /* Outputs for IfAction SubSystem: '<S210>/If Action Subsystem2' incorporates:
-               *  ActionPort: '<S226>/Action Port'
+              /* End of Outputs for SubSystem: '<S211>/If Action Subsystem1' */
+            } else if ((s250_iter > 0) && (s250_iter + 1 != s209_iter - 1)) {
+              /* Outputs for IfAction SubSystem: '<S211>/If Action Subsystem2' incorporates:
+               *  ActionPort: '<S227>/Action Port'
                */
-              /* Gain: '<S232>/Gain' */
-              rtb_Sum2_d = mul_s32_sat(13, s208_iter - 1);
+              /* Gain: '<S233>/Gain' */
+              rtb_Sum2_d = mul_s32_sat(13, s209_iter - 1);
 
-              /* Switch: '<S226>/Switch1' incorporates:
-               *  Constant: '<S226>/Constant1'
-               *  RelationalOperator: '<S236>/Relational Operator'
-               *  Selector: '<S226>/Selector'
-               *  Sum: '<S232>/Sum1'
-               *  Sum: '<S236>/Sum2'
-               *  UnitDelay: '<S210>/Unit Delay1'
+              /* Switch: '<S227>/Switch1' incorporates:
+               *  Constant: '<S227>/Constant1'
+               *  RelationalOperator: '<S237>/Relational Operator'
+               *  Selector: '<S227>/Selector'
+               *  Sum: '<S233>/Sum1'
+               *  Sum: '<S237>/Sum2'
+               *  UnitDelay: '<S211>/Unit Delay1'
                */
-              if (s249_iter - 1 >= s208_iter - 1) {
-                /* Selector: '<S226>/Selector' incorporates:
-                 *  Sum: '<S232>/Sum1'
+              if (s250_iter - 1 >= s209_iter - 1) {
+                /* Selector: '<S227>/Selector' incorporates:
+                 *  Sum: '<S233>/Sum1'
                  */
-                if (rtb_Sum2_d > MAX_int32_T - s249_iter) {
+                if (rtb_Sum2_d > MAX_int32_T - s250_iter) {
                   i = MAX_int32_T;
                 } else {
-                  i = s249_iter + rtb_Sum2_d;
+                  i = s250_iter + rtb_Sum2_d;
                 }
 
                 rtb_Product2_e = autocodePlant_DW->UnitDelay1_DSTATE_c[i - 1];
@@ -2772,116 +2842,116 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
                 rtb_Product2_e = 0.0;
               }
 
-              /* Selector: '<S226>/Selector' incorporates:
-               *  Sum: '<S232>/Sum1'
+              /* Selector: '<S227>/Selector' incorporates:
+               *  Sum: '<S233>/Sum1'
                */
-              if (rtb_Sum2_d > 2147483646 - s249_iter) {
+              if (rtb_Sum2_d > 2147483646 - s250_iter) {
                 i = MAX_int32_T;
               } else {
-                i = (s249_iter + rtb_Sum2_d) + 1;
+                i = (s250_iter + rtb_Sum2_d) + 1;
               }
 
-              /* Selector: '<S226>/Selector2' incorporates:
-               *  Constant: '<S226>/k[13][13]'
-               *  Sum: '<S233>/Sum'
+              /* Selector: '<S227>/Selector2' incorporates:
+               *  Constant: '<S227>/k[13][13]'
+               *  Sum: '<S234>/Sum'
                */
-              Merge_b_tmp = ((s249_iter + 1) * 13 + s208_iter) - 1;
+              Merge_b_tmp = ((s250_iter + 1) * 13 + s209_iter) - 1;
 
-              /* Merge: '<S210>/Merge' incorporates:
-               *  Constant: '<S226>/k[13][13]'
-               *  Product: '<S226>/Product2'
-               *  Product: '<S226>/Product3'
-               *  Selector: '<S226>/Selector'
-               *  Selector: '<S226>/Selector2'
-               *  Sum: '<S226>/Sum1'
-               *  Sum: '<S232>/Sum1'
-               *  Switch: '<S226>/Switch1'
-               *  UnitDelay: '<S210>/Unit Delay1'
+              /* Merge: '<S211>/Merge' incorporates:
+               *  Constant: '<S227>/k[13][13]'
+               *  Product: '<S227>/Product2'
+               *  Product: '<S227>/Product3'
+               *  Selector: '<S227>/Selector'
+               *  Selector: '<S227>/Selector2'
+               *  Sum: '<S227>/Sum1'
+               *  Sum: '<S233>/Sum1'
+               *  Switch: '<S227>/Switch1'
+               *  UnitDelay: '<S211>/Unit Delay1'
                */
               autocodePlant_B->Merge_b = autocodePlant_DW->UnitDelay1_DSTATE_c[i
                 - 1] * autocodePlant_B->Product4 -
                 rtCP__k1313_Value_j[Merge_b_tmp] * rtb_Product2_e;
 
-              /* Switch: '<S226>/Switch' incorporates:
-               *  Constant: '<S226>/Constant'
-               *  RelationalOperator: '<S235>/Relational Operator'
-               *  Selector: '<S226>/Selector1'
-               *  Sum: '<S235>/Sum2'
-               *  UnitDelay: '<S210>/Unit Delay'
+              /* Switch: '<S227>/Switch' incorporates:
+               *  Constant: '<S227>/Constant'
+               *  RelationalOperator: '<S236>/Relational Operator'
+               *  Selector: '<S227>/Selector1'
+               *  Sum: '<S236>/Sum2'
+               *  UnitDelay: '<S211>/Unit Delay'
                */
-              if (s249_iter - 1 >= s208_iter - 1) {
+              if (s250_iter - 1 >= s209_iter - 1) {
                 rtb_Product2_e = autocodePlant_DW->UnitDelay_DSTATE_o
-                  [((s249_iter - 1) * 13 + s208_iter) - 1];
+                  [((s250_iter - 1) * 13 + s209_iter) - 1];
               } else {
                 rtb_Product2_e = 0.0;
               }
 
-              /* Selector: '<S226>/Selector' incorporates:
-               *  Sum: '<S232>/Sum1'
+              /* Selector: '<S227>/Selector' incorporates:
+               *  Sum: '<S233>/Sum1'
                */
-              if (rtb_Sum2_d > 2147483646 - s249_iter) {
+              if (rtb_Sum2_d > 2147483646 - s250_iter) {
                 i = MAX_int32_T;
               } else {
-                i = (s249_iter + rtb_Sum2_d) + 1;
+                i = (s250_iter + rtb_Sum2_d) + 1;
               }
 
-              /* Merge: '<S210>/Merge1' incorporates:
-               *  Constant: '<S226>/k[13][13]'
-               *  Product: '<S226>/Product'
-               *  Product: '<S226>/Product1'
-               *  Product: '<S226>/Product4'
-               *  Selector: '<S226>/Selector'
-               *  Selector: '<S226>/Selector1'
-               *  Selector: '<S226>/Selector2'
-               *  Sum: '<S226>/Sum'
-               *  Sum: '<S232>/Sum1'
-               *  Switch: '<S226>/Switch'
-               *  UnitDelay: '<S210>/Unit Delay'
-               *  UnitDelay: '<S210>/Unit Delay1'
+              /* Merge: '<S211>/Merge1' incorporates:
+               *  Constant: '<S227>/k[13][13]'
+               *  Product: '<S227>/Product'
+               *  Product: '<S227>/Product1'
+               *  Product: '<S227>/Product4'
+               *  Selector: '<S227>/Selector'
+               *  Selector: '<S227>/Selector1'
+               *  Selector: '<S227>/Selector2'
+               *  Sum: '<S227>/Sum'
+               *  Sum: '<S233>/Sum1'
+               *  Switch: '<S227>/Switch'
+               *  UnitDelay: '<S211>/Unit Delay'
+               *  UnitDelay: '<S211>/Unit Delay1'
                */
               autocodePlant_B->Merge1_i = (autocodePlant_DW->UnitDelay_DSTATE_o
-                [(13 * s249_iter + s208_iter) - 1] * autocodePlant_B->Product4 -
+                [(13 * s250_iter + s209_iter) - 1] * autocodePlant_B->Product4 -
                 autocodePlant_DW->UnitDelay1_DSTATE_c[i - 1] *
                 autocodePlant_B->sqrt_k) - rtCP__k1313_Value_j[Merge_b_tmp] *
                 rtb_Product2_e;
 
-              /* End of Outputs for SubSystem: '<S210>/If Action Subsystem2' */
+              /* End of Outputs for SubSystem: '<S211>/If Action Subsystem2' */
             }
 
-            /* End of If: '<S210>/if n == m elseif (n==1&m==0) elseif (n>1&m~=n)' */
+            /* End of If: '<S211>/if n == m elseif (n==1&m==0) elseif (n>1&m~=n)' */
 
-            /* Assignment: '<S210>/Assignment_snorm' */
+            /* Assignment: '<S211>/Assignment_snorm' */
             if (ForIterator_IterationMarker[3] < 2) {
               ForIterator_IterationMarker[3] = 2U;
 
-              /* Assignment: '<S210>/Assignment_snorm' incorporates:
-               *  UnitDelay: '<S210>/Unit Delay1'
+              /* Assignment: '<S211>/Assignment_snorm' incorporates:
+               *  UnitDelay: '<S211>/Unit Delay1'
                */
               memcpy(&autocodePlant_B->Assignment_snorm[0],
                      &autocodePlant_DW->UnitDelay1_DSTATE_c[0], 169U * sizeof
                      (real_T));
             }
 
-            /* Sum: '<S227>/Sum1' incorporates:
-             *  Gain: '<S227>/Gain'
-             *  Sum: '<S210>/Sum'
-             *  Sum: '<S227>/Sum2'
+            /* Sum: '<S228>/Sum1' incorporates:
+             *  Gain: '<S228>/Gain'
+             *  Sum: '<S211>/Sum'
+             *  Sum: '<S228>/Sum2'
              */
-            i = mul_s32_sat(13, s208_iter - 1);
-            if (i > 2147483645 - s249_iter) {
+            i = mul_s32_sat(13, s209_iter - 1);
+            if (i > 2147483645 - s250_iter) {
               i = MAX_int32_T;
             } else {
-              i = (s249_iter + i) + 2;
+              i = (s250_iter + i) + 2;
             }
 
-            /* Assignment: '<S210>/Assignment_snorm' incorporates:
-             *  Sum: '<S227>/Sum1'
+            /* Assignment: '<S211>/Assignment_snorm' incorporates:
+             *  Sum: '<S228>/Sum1'
              */
             autocodePlant_B->Assignment_snorm[i - 1] = autocodePlant_B->Merge_b;
 
-            /* Assignment: '<S210>/Assignment' incorporates:
-             *  Sum: '<S210>/Sum'
-             *  UnitDelay: '<S210>/Unit Delay'
+            /* Assignment: '<S211>/Assignment' incorporates:
+             *  Sum: '<S211>/Sum'
+             *  UnitDelay: '<S211>/Unit Delay'
              */
             if (ForIterator_IterationMarker[2] < 2) {
               ForIterator_IterationMarker[2] = 2U;
@@ -2890,107 +2960,107 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
                      (real_T));
             }
 
-            autocodePlant_B->Assignment_h[(s208_iter + 13 * (s249_iter + 1)) - 1]
+            autocodePlant_B->Assignment_h[(s209_iter + 13 * (s250_iter + 1)) - 1]
               = autocodePlant_B->Merge1_i;
 
-            /* End of Assignment: '<S210>/Assignment' */
+            /* End of Assignment: '<S211>/Assignment' */
 
-            /* Update for UnitDelay: '<S210>/Unit Delay' incorporates:
-             *  Assignment: '<S210>/Assignment'
+            /* Update for UnitDelay: '<S211>/Unit Delay' incorporates:
+             *  Assignment: '<S211>/Assignment'
              */
             memcpy(&autocodePlant_DW->UnitDelay_DSTATE_o[0],
                    &autocodePlant_B->Assignment_h[0], 169U * sizeof(real_T));
 
-            /* Update for UnitDelay: '<S210>/Unit Delay1' */
+            /* Update for UnitDelay: '<S211>/Unit Delay1' */
             memcpy(&autocodePlant_DW->UnitDelay1_DSTATE_c[0],
                    &autocodePlant_B->Assignment_snorm[0], 169U * sizeof(real_T));
           }
 
-          /* End of Outputs for SubSystem: '<S208>/Compute unnormalized associated  legendre polynomials and  derivatives via recursion relations' */
+          /* End of Outputs for SubSystem: '<S209>/Compute unnormalized associated  legendre polynomials and  derivatives via recursion relations' */
 
-          /* Selector: '<S209>/snorm[n+m*13]' incorporates:
-           *  Gain: '<S213>/Gain'
-           *  SignalConversion generated from: '<S210>/Enable'
-           *  Sum: '<S208>/Sum1'
-           *  Sum: '<S213>/Sum1'
+          /* Selector: '<S210>/snorm[n+m*13]' incorporates:
+           *  Gain: '<S214>/Gain'
+           *  SignalConversion generated from: '<S211>/Enable'
+           *  Sum: '<S209>/Sum1'
+           *  Sum: '<S214>/Sum1'
            */
-          i = mul_s32_sat(13, s208_iter - 1);
-          if (i > 2147483645 - s249_iter) {
+          i = mul_s32_sat(13, s209_iter - 1);
+          if (i > 2147483645 - s250_iter) {
             i = MAX_int32_T;
           } else {
-            i = (s249_iter + i) + 2;
+            i = (s250_iter + i) + 2;
           }
 
-          /* Product: '<S209>/par' incorporates:
-           *  Selector: '<S209>/snorm[n+m*13]'
-           *  Sum: '<S213>/Sum1'
-           *  UnitDelay: '<S200>/Unit Delay'
+          /* Product: '<S210>/par' incorporates:
+           *  Selector: '<S210>/snorm[n+m*13]'
+           *  Sum: '<S214>/Sum1'
+           *  UnitDelay: '<S201>/Unit Delay'
            */
           rtb_Product2_e = autocodePlant_B->Assignment_snorm[i - 1] *
             rtb_Switch_d_idx_2;
 
-          /* Sum: '<S209>/Sum2' incorporates:
-           *  Constant: '<S209>/fm'
-           *  Product: '<S209>/Product1'
-           *  Selector: '<S209>/fm[m]'
-           *  UnitDelay: '<S209>/Unit Delay3'
+          /* Sum: '<S210>/Sum2' incorporates:
+           *  Constant: '<S210>/fm'
+           *  Product: '<S210>/Product1'
+           *  Selector: '<S210>/fm[m]'
+           *  UnitDelay: '<S210>/Unit Delay3'
            */
-          autocodePlant_B->Sum2 = rtCP__fm_Value[s208_iter - 1] * rtb_Product2_e
+          autocodePlant_B->Sum2 = rtCP__fm_Value[s209_iter - 1] * rtb_Product2_e
             * rtb_Switch_d_idx_0 + rtb_Sum;
 
-          /* Sum: '<S209>/Sum3' incorporates:
-           *  Constant: '<S209>/fn'
-           *  Product: '<S209>/Product2'
-           *  Selector: '<S209>/fn[m]'
-           *  Sum: '<S209>/Sum4'
-           *  UnitDelay: '<S209>/Unit Delay2'
+          /* Sum: '<S210>/Sum3' incorporates:
+           *  Constant: '<S210>/fn'
+           *  Product: '<S210>/Product2'
+           *  Selector: '<S210>/fn[m]'
+           *  Sum: '<S210>/Sum4'
+           *  UnitDelay: '<S210>/Unit Delay2'
            */
-          autocodePlant_B->Sum3 = rtCP__fn_Value[s249_iter + 1] * rtb_Product2_e
+          autocodePlant_B->Sum3 = rtCP__fn_Value[s250_iter + 1] * rtb_Product2_e
             * rtb_ug_p_idx_0 + rtb_Product1_kn;
 
-          /* Outputs for Enabled SubSystem: '<S209>/Special case - North//South Geographic Pole' incorporates:
-           *  EnablePort: '<S212>/Enable'
+          /* Outputs for Enabled SubSystem: '<S210>/Special case - North//South Geographic Pole' incorporates:
+           *  EnablePort: '<S213>/Enable'
            */
-          /* Outputs for IfAction SubSystem: '<S212>/If Action Subsystem2' incorporates:
-           *  ActionPort: '<S217>/Action Port'
+          /* Outputs for IfAction SubSystem: '<S213>/If Action Subsystem2' incorporates:
+           *  ActionPort: '<S218>/Action Port'
            */
-          /* If: '<S212>/n ==1' incorporates:
-           *  Constant: '<S217>/k[13][13]'
-           *  Selector: '<S209>/dp[n][m]'
-           *  Selector: '<S217>/Selector2'
-           *  Sum: '<S209>/Sum'
+          /* If: '<S213>/n ==1' incorporates:
+           *  Constant: '<S218>/k[13][13]'
+           *  Selector: '<S210>/dp[n][m]'
+           *  Selector: '<S218>/Selector2'
+           *  Sum: '<S210>/Sum'
            */
-          rtb_Sum2_d = (s249_iter + 1) * 13;
+          rtb_Sum2_d = (s250_iter + 1) * 13;
 
-          /* End of Outputs for SubSystem: '<S212>/If Action Subsystem2' */
-          /* End of Outputs for SubSystem: '<S209>/Special case - North//South Geographic Pole' */
+          /* End of Outputs for SubSystem: '<S213>/If Action Subsystem2' */
+          /* End of Outputs for SubSystem: '<S210>/Special case - North//South Geographic Pole' */
 
-          /* Sum: '<S209>/Sum1' incorporates:
-           *  Assignment: '<S210>/Assignment'
-           *  Product: '<S209>/Product'
-           *  Selector: '<S209>/dp[n][m]'
-           *  UnitDelay: '<S200>/Unit Delay'
-           *  UnitDelay: '<S209>/Unit Delay1'
+          /* Sum: '<S210>/Sum1' incorporates:
+           *  Assignment: '<S211>/Assignment'
+           *  Product: '<S210>/Product'
+           *  Selector: '<S210>/dp[n][m]'
+           *  UnitDelay: '<S201>/Unit Delay'
+           *  UnitDelay: '<S210>/Unit Delay1'
            */
           autocodePlant_B->Sum1_p = rtb_Sum1_ox - autocodePlant_B->Assignment_h
-            [(rtb_Sum2_d + s208_iter) - 1] * rtb_ug_p_idx_0 * rtb_Switch_d_idx_2;
+            [(rtb_Sum2_d + s209_iter) - 1] * rtb_ug_p_idx_0 * rtb_Switch_d_idx_2;
 
-          /* Outputs for Enabled SubSystem: '<S209>/Special case - North//South Geographic Pole' incorporates:
-           *  EnablePort: '<S212>/Enable'
+          /* Outputs for Enabled SubSystem: '<S210>/Special case - North//South Geographic Pole' incorporates:
+           *  EnablePort: '<S213>/Enable'
            */
-          if ((autocodePlant_B->sqrt_k == 0.0) && (s208_iter - 1 == 1)) {
+          if ((autocodePlant_B->sqrt_k == 0.0) && (s209_iter - 1 == 1)) {
             autocodePlant_DW->SpecialcaseNorthSouthGeographic = true;
 
-            /* If: '<S212>/n ==1' incorporates:
-             *  Assignment: '<S217>/Assignment2'
+            /* If: '<S213>/n ==1' incorporates:
+             *  Assignment: '<S218>/Assignment2'
              */
-            if (s249_iter == 0) {
-              /* Outputs for IfAction SubSystem: '<S212>/If Action Subsystem1' incorporates:
-               *  ActionPort: '<S216>/Action Port'
+            if (s250_iter == 0) {
+              /* Outputs for IfAction SubSystem: '<S213>/If Action Subsystem1' incorporates:
+               *  ActionPort: '<S217>/Action Port'
                */
-              /* Assignment: '<S216>/Assignment2' incorporates:
-               *  Selector: '<S216>/pp[n-1]'
-               *  UnitDelay: '<S212>/Unit Delay1'
+              /* Assignment: '<S217>/Assignment2' incorporates:
+               *  Selector: '<S217>/pp[n-1]'
+               *  UnitDelay: '<S213>/Unit Delay1'
                */
               if (ForIterator_IterationMarker[0] < 2) {
                 ForIterator_IterationMarker[0] = 2U;
@@ -3002,95 +3072,95 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
               autocodePlant_B->Assignment2_m[1] =
                 autocodePlant_DW->UnitDelay1_DSTATE_b[0];
 
-              /* End of Assignment: '<S216>/Assignment2' */
-              /* End of Outputs for SubSystem: '<S212>/If Action Subsystem1' */
+              /* End of Assignment: '<S217>/Assignment2' */
+              /* End of Outputs for SubSystem: '<S213>/If Action Subsystem1' */
             } else {
-              /* Outputs for IfAction SubSystem: '<S212>/If Action Subsystem2' incorporates:
-               *  ActionPort: '<S217>/Action Port'
+              /* Outputs for IfAction SubSystem: '<S213>/If Action Subsystem2' incorporates:
+               *  ActionPort: '<S218>/Action Port'
                */
               if (ForIterator_IterationMarker[1] < 2) {
-                /* Assignment: '<S217>/Assignment2' */
+                /* Assignment: '<S218>/Assignment2' */
                 ForIterator_IterationMarker[1] = 2U;
 
-                /* Assignment: '<S217>/Assignment2' incorporates:
-                 *  UnitDelay: '<S212>/Unit Delay1'
+                /* Assignment: '<S218>/Assignment2' incorporates:
+                 *  UnitDelay: '<S213>/Unit Delay1'
                  */
                 memcpy(&autocodePlant_B->Assignment2_a[0],
                        &autocodePlant_DW->UnitDelay1_DSTATE_b[0], 13U * sizeof
                        (real_T));
               }
 
-              /* Assignment: '<S217>/Assignment2' incorporates:
-               *  Constant: '<S217>/k[13][13]'
-               *  Product: '<S217>/Product1'
-               *  Product: '<S217>/Product2'
-               *  Selector: '<S217>/Selector2'
-               *  Selector: '<S217>/pp[n-2] pp[n-1]'
-               *  Sum: '<S217>/Sum1'
-               *  Sum: '<S217>/Sum2'
-               *  UnitDelay: '<S212>/Unit Delay1'
+              /* Assignment: '<S218>/Assignment2' incorporates:
+               *  Constant: '<S218>/k[13][13]'
+               *  Product: '<S218>/Product1'
+               *  Product: '<S218>/Product2'
+               *  Selector: '<S218>/Selector2'
+               *  Selector: '<S218>/pp[n-2] pp[n-1]'
+               *  Sum: '<S218>/Sum1'
+               *  Sum: '<S218>/Sum2'
+               *  UnitDelay: '<S213>/Unit Delay1'
                */
-              autocodePlant_B->Assignment2_a[s249_iter + 1] =
+              autocodePlant_B->Assignment2_a[s250_iter + 1] =
                 autocodePlant_B->Product4 *
-                autocodePlant_DW->UnitDelay1_DSTATE_b[s249_iter] -
+                autocodePlant_DW->UnitDelay1_DSTATE_b[s250_iter] -
                 rtCP__k1313_Value[rtb_Sum2_d + 1] *
-                autocodePlant_DW->UnitDelay1_DSTATE_b[s249_iter - 1];
+                autocodePlant_DW->UnitDelay1_DSTATE_b[s250_iter - 1];
 
-              /* End of Outputs for SubSystem: '<S212>/If Action Subsystem2' */
+              /* End of Outputs for SubSystem: '<S213>/If Action Subsystem2' */
             }
 
-            /* SignalConversion generated from: '<S212>/pp[n]' */
+            /* SignalConversion generated from: '<S213>/pp[n]' */
             autocodePlant_DW->UnitDelay1_DSTATE_b[1] =
               autocodePlant_B->Assignment2_m[1];
             memcpy(&autocodePlant_DW->UnitDelay1_DSTATE_b[2],
                    &autocodePlant_B->Assignment2_a[2], 11U * sizeof(real_T));
 
-            /* Product: '<S212>/Product2' incorporates:
-             *  Selector: '<S212>/pp[n]'
-             *  UnitDelay: '<S200>/Unit Delay'
+            /* Product: '<S213>/Product2' incorporates:
+             *  Selector: '<S213>/pp[n]'
+             *  UnitDelay: '<S201>/Unit Delay'
              */
             autocodePlant_B->Product2 = autocodePlant_DW->
-              UnitDelay1_DSTATE_b[s249_iter + 1] * rtb_Switch_d_idx_2 *
+              UnitDelay1_DSTATE_b[s250_iter + 1] * rtb_Switch_d_idx_2 *
               rtb_Switch_d_idx_0;
           } else if (autocodePlant_DW->SpecialcaseNorthSouthGeographic) {
-            /* Disable for Product: '<S212>/Product2' incorporates:
-             *  Outport: '<S212>/bpp'
+            /* Disable for Product: '<S213>/Product2' incorporates:
+             *  Outport: '<S213>/bpp'
              */
             autocodePlant_B->Product2 = 0.0;
             autocodePlant_DW->SpecialcaseNorthSouthGeographic = false;
           }
 
-          /* End of Outputs for SubSystem: '<S209>/Special case - North//South Geographic Pole' */
+          /* End of Outputs for SubSystem: '<S210>/Special case - North//South Geographic Pole' */
 
-          /* Sum: '<S209>/Sum5' incorporates:
-           *  Constant: '<S215>/Constant'
-           *  Constant: '<S215>/Constant1'
-           *  Logic: '<S215>/Logical Operator'
-           *  RelationalOperator: '<S215>/Relational Operator'
-           *  RelationalOperator: '<S215>/Relational Operator1'
-           *  Sum: '<S208>/Sum1'
-           *  UnitDelay: '<S209>/Unit Delay4'
+          /* Sum: '<S210>/Sum5' incorporates:
+           *  Constant: '<S216>/Constant'
+           *  Constant: '<S216>/Constant1'
+           *  Logic: '<S216>/Logical Operator'
+           *  RelationalOperator: '<S216>/Relational Operator'
+           *  RelationalOperator: '<S216>/Relational Operator1'
+           *  Sum: '<S209>/Sum1'
+           *  UnitDelay: '<S210>/Unit Delay4'
            */
           autocodePlant_B->Sum5 = rtb_Product_kd + autocodePlant_B->Product2;
 
-          /* Update for UnitDelay: '<S209>/Unit Delay3' */
+          /* Update for UnitDelay: '<S210>/Unit Delay3' */
           rtb_Sum = autocodePlant_B->Sum2;
 
-          /* Update for UnitDelay: '<S209>/Unit Delay2' */
+          /* Update for UnitDelay: '<S210>/Unit Delay2' */
           rtb_Product1_kn = autocodePlant_B->Sum3;
 
-          /* Update for UnitDelay: '<S209>/Unit Delay1' */
+          /* Update for UnitDelay: '<S210>/Unit Delay1' */
           rtb_Sum1_ox = autocodePlant_B->Sum1_p;
 
-          /* Update for UnitDelay: '<S209>/Unit Delay4' */
+          /* Update for UnitDelay: '<S210>/Unit Delay4' */
           rtb_Product_kd = autocodePlant_B->Sum5;
         }
 
-        /* End of Sum: '<S200>/Sum' */
-        /* End of Outputs for SubSystem: '<S200>/For Iterator Subsystem' */
+        /* End of Sum: '<S201>/Sum' */
+        /* End of Outputs for SubSystem: '<S201>/For Iterator Subsystem' */
 
-        /* Sum: '<S200>/Sum1' incorporates:
-         *  UnitDelay: '<S200>/Unit Delay2'
+        /* Sum: '<S201>/Sum1' incorporates:
+         *  UnitDelay: '<S201>/Unit Delay2'
          */
         rtb_Product2_e = autocodePlant_DW->UnitDelay2_DSTATE[0];
         rtb_Sum = autocodePlant_DW->UnitDelay2_DSTATE[1];
@@ -3105,12 +3175,12 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
           autocodePlant_B->Sum5;
       }
 
-      /* End of Outputs for SubSystem: '<S189>/Compute magnetic vector in spherical coordinates' */
+      /* End of Outputs for SubSystem: '<S190>/Compute magnetic vector in spherical coordinates' */
     }
 
-    /* Switch: '<S252>/Switch' incorporates:
-     *  Product: '<S252>/Product'
-     *  UnitDelay: '<S200>/Unit Delay2'
+    /* Switch: '<S253>/Switch' incorporates:
+     *  Product: '<S253>/Product'
+     *  UnitDelay: '<S201>/Unit Delay2'
      */
     if (autocodePlant_B->sqrt_k != 0.0) {
       rtb_Sum1_ox = autocodePlant_DW->UnitDelay2_DSTATE[1] /
@@ -3119,24 +3189,24 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Sum1_ox = autocodePlant_DW->UnitDelay2_DSTATE[3];
     }
 
-    /* End of Switch: '<S252>/Switch' */
+    /* End of Switch: '<S253>/Switch' */
 
-    /* Sum: '<S251>/Sum1' incorporates:
-     *  Product: '<S251>/Product1'
-     *  Product: '<S251>/Product4'
-     *  UnitDelay: '<S200>/Unit Delay2'
+    /* Sum: '<S252>/Sum1' incorporates:
+     *  Product: '<S252>/Product1'
+     *  Product: '<S252>/Product4'
+     *  UnitDelay: '<S201>/Unit Delay2'
      */
     rtb_Switch_d_idx_2 = (0.0 - autocodePlant_B->Product11 *
                           autocodePlant_DW->UnitDelay2_DSTATE[0]) -
       autocodePlant_DW->UnitDelay2_DSTATE[2] * autocodePlant_B->Product12;
 
-    /* Trigonometry: '<S254>/Trigonometric Function1' */
+    /* Trigonometry: '<S255>/Trigonometric Function1' */
     rtb_Sum = rt_atan2d_snf(rtb_Sum1_ox, rtb_Switch_d_idx_2);
 
-    /* Sum: '<S253>/Sum1' incorporates:
-     *  Product: '<S253>/Product1'
-     *  Product: '<S253>/Product4'
-     *  UnitDelay: '<S200>/Unit Delay2'
+    /* Sum: '<S254>/Sum1' incorporates:
+     *  Product: '<S254>/Product1'
+     *  Product: '<S254>/Product4'
+     *  UnitDelay: '<S201>/Unit Delay2'
      */
     /* Unit Conversion - from: rad to: deg
        Expression: output = (57.2958*input) + (0) */
@@ -3144,18 +3214,18 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       autocodePlant_DW->UnitDelay2_DSTATE[0] -
       autocodePlant_DW->UnitDelay2_DSTATE[2] * autocodePlant_B->Product11;
 
-    /* Sum: '<S254>/Sum' incorporates:
-     *  Product: '<S254>/Product'
-     *  Product: '<S254>/Product1'
+    /* Sum: '<S255>/Sum' incorporates:
+     *  Product: '<S255>/Product'
+     *  Product: '<S255>/Product1'
      */
     rtb_Sum1_ox = rtb_Sum1_ox * rtb_Sum1_ox + rtb_Switch_d_idx_2 *
       rtb_Switch_d_idx_2;
 
-    /* UnitConversion: '<S190>/Unit Conversion' incorporates:
-     *  Sqrt: '<S254>/sqrt1'
-     *  Trigonometry: '<S254>/Trigonometric Function'
-     *  UnitConversion: '<S255>/Unit Conversion'
+    /* UnitConversion: '<S191>/Unit Conversion' incorporates:
+     *  Sqrt: '<S255>/sqrt1'
+     *  Trigonometry: '<S255>/Trigonometric Function'
      *  UnitConversion: '<S256>/Unit Conversion'
+     *  UnitConversion: '<S257>/Unit Conversion'
      */
     /* Unit Conversion - from: rad to: deg
        Expression: output = (57.2958*input) + (0) */
@@ -3165,75 +3235,75 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     rtb_Switch_d_idx_0 = 57.29577951308232 * rt_atan2d_snf(rtb_Product_kd, sqrt
       (rtb_Sum1_ox)) * 0.017453292519943295;
 
-    /* Sqrt: '<S254>/sqrt' incorporates:
-     *  Product: '<S254>/Product2'
-     *  Sum: '<S254>/Sum1'
+    /* Sqrt: '<S255>/sqrt' incorporates:
+     *  Product: '<S255>/Product2'
+     *  Sum: '<S255>/Sum1'
      */
     rtb_Sum1_ox = sqrt(rtb_Product_kd * rtb_Product_kd + rtb_Sum1_ox);
 
-    /* Product: '<S183>/h1' incorporates:
-     *  Trigonometry: '<S183>/sincos'
+    /* Product: '<S184>/h1' incorporates:
+     *  Trigonometry: '<S184>/sincos'
      */
     rtb_Switch_d_idx_2 = cos(rtb_Switch_d_idx_0) * rtb_Sum1_ox;
 
-    /* Product: '<S183>/x1' incorporates:
-     *  Trigonometry: '<S183>/sincos'
+    /* Product: '<S184>/x1' incorporates:
+     *  Trigonometry: '<S184>/sincos'
      */
     rtb_Sum = cos(rtb_ug_p_idx_0) * rtb_Switch_d_idx_2;
 
-    /* Sqrt: '<S178>/sqrt' incorporates:
-     *  Product: '<S179>/Product'
-     *  Product: '<S179>/Product1'
-     *  Product: '<S179>/Product2'
-     *  Product: '<S179>/Product3'
-     *  Sum: '<S179>/Sum'
+    /* Sqrt: '<S179>/sqrt' incorporates:
+     *  Product: '<S180>/Product'
+     *  Product: '<S180>/Product1'
+     *  Product: '<S180>/Product2'
+     *  Product: '<S180>/Product3'
+     *  Sum: '<S180>/Sum'
      */
     rtb_Product_kd = sqrt(((rtb_q_na_idx_0 * rtb_q_na_idx_0 + rtb_q_na_idx_1 *
       rtb_q_na_idx_1) + rtb_q_na_idx_2 * rtb_q_na_idx_2) + rtb_q_na_idx_3 *
                           rtb_q_na_idx_3);
 
-    /* Product: '<S174>/Product2' */
+    /* Product: '<S175>/Product2' */
     rtb_Product2_e = rtb_q_na_idx_2 / rtb_Product_kd;
 
-    /* Product: '<S174>/Product3' */
+    /* Product: '<S175>/Product3' */
     rtb_Product3_ax = rtb_q_na_idx_3 / rtb_Product_kd;
 
-    /* Product: '<S174>/Product1' */
+    /* Product: '<S175>/Product1' */
     rtb_Product1_kn = rtb_q_na_idx_1 / rtb_Product_kd;
 
-    /* Product: '<S174>/Product' */
+    /* Product: '<S175>/Product' */
     rtb_Product_kd = rtb_q_na_idx_0 / rtb_Product_kd;
 
-    /* Product: '<S183>/y1' incorporates:
-     *  Trigonometry: '<S183>/sincos'
+    /* Product: '<S184>/y1' incorporates:
+     *  Trigonometry: '<S184>/sincos'
      */
     rtb_Switch_d_idx_2 *= sin(rtb_ug_p_idx_0);
 
-    /* Product: '<S183>/z1' incorporates:
-     *  Trigonometry: '<S183>/sincos'
+    /* Product: '<S184>/z1' incorporates:
+     *  Trigonometry: '<S184>/sincos'
      */
     rtb_Sum1_ox *= sin(rtb_Switch_d_idx_0);
 
-    /* Product: '<S91>/Product2' incorporates:
-     *  Gain: '<S91>/P0'
+    /* Product: '<S92>/Product2' incorporates:
+     *  Gain: '<S92>/P0'
      */
     rtb_Product2_f *= 101325.0 * rtb_TT0gLR;
     if (tmp) {
-      /* Sum: '<S175>/Sum' incorporates:
-       *  Product: '<S175>/Product'
-       *  Product: '<S175>/Product1'
-       *  Product: '<S175>/Product2'
-       *  Product: '<S175>/Product3'
-       *  Product: '<S175>/Product6'
-       *  Product: '<S175>/Product7'
+      /* Sum: '<S176>/Sum' incorporates:
        *  Product: '<S176>/Product'
        *  Product: '<S176>/Product1'
+       *  Product: '<S176>/Product2'
+       *  Product: '<S176>/Product3'
+       *  Product: '<S176>/Product6'
        *  Product: '<S176>/Product7'
        *  Product: '<S177>/Product'
        *  Product: '<S177>/Product1'
        *  Product: '<S177>/Product7'
-       *  Sum: '<S176>/Sum'
+       *  Product: '<S178>/Product'
+       *  Product: '<S178>/Product1'
+       *  Product: '<S178>/Product7'
        *  Sum: '<S177>/Sum'
+       *  Sum: '<S178>/Sum'
        */
       rtb_TT0gLR = rtb_Product3_ax * rtb_Product3_ax;
       rtb_PreLookUpIndexSearchaltit_0 = rtb_Product1_kn * rtb_Product2_e;
@@ -3242,68 +3312,68 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_PreLookUpIndexSearchaltit_2 = rtb_Product_kd * rtb_Product2_e;
       rtb_PreLookUpIndexSearchaltit_3 = rtb_Product2_e * rtb_Product2_e;
 
-      /* SignalConversion generated from: '<S157>/Product' incorporates:
-       *  Constant: '<S175>/Constant'
-       *  Gain: '<S175>/Gain'
-       *  Gain: '<S175>/Gain1'
-       *  Gain: '<S175>/Gain2'
-       *  Product: '<S175>/Product'
-       *  Product: '<S175>/Product1'
-       *  Product: '<S175>/Product2'
-       *  Product: '<S175>/Product3'
-       *  Product: '<S175>/Product4'
-       *  Product: '<S175>/Product5'
-       *  Product: '<S175>/Product6'
-       *  Product: '<S175>/Product7'
-       *  Product: '<S175>/Product8'
-       *  Sum: '<S175>/Sum'
-       *  Sum: '<S175>/Sum1'
-       *  Sum: '<S175>/Sum2'
-       *  Sum: '<S175>/Sum3'
+      /* SignalConversion generated from: '<S158>/Product' incorporates:
+       *  Constant: '<S176>/Constant'
+       *  Gain: '<S176>/Gain'
+       *  Gain: '<S176>/Gain1'
+       *  Gain: '<S176>/Gain2'
+       *  Product: '<S176>/Product'
+       *  Product: '<S176>/Product1'
+       *  Product: '<S176>/Product2'
+       *  Product: '<S176>/Product3'
+       *  Product: '<S176>/Product4'
+       *  Product: '<S176>/Product5'
+       *  Product: '<S176>/Product6'
+       *  Product: '<S176>/Product7'
+       *  Product: '<S176>/Product8'
+       *  Sum: '<S176>/Sum'
+       *  Sum: '<S176>/Sum1'
+       *  Sum: '<S176>/Sum2'
+       *  Sum: '<S176>/Sum3'
        */
       rtb_Switch_d_idx_0 = (((0.5 - rtb_PreLookUpIndexSearchaltit_3) -
         rtb_TT0gLR) * 2.0 * rtb_Sum + (rtb_PreLookUpIndexSearchaltit_0 +
         rtb_PreLookUpIndexSearchaltit_1) * 2.0 * rtb_Switch_d_idx_2) +
         (rtb_ug_p_idx_0 - rtb_PreLookUpIndexSearchaltit_2) * 2.0 * rtb_Sum1_ox;
 
-      /* Sum: '<S176>/Sum' incorporates:
-       *  Constant: '<S176>/Constant'
-       *  Product: '<S176>/Product2'
-       *  Product: '<S176>/Product3'
-       *  Product: '<S176>/Product6'
+      /* Sum: '<S177>/Sum' incorporates:
+       *  Constant: '<S177>/Constant'
        *  Product: '<S177>/Product2'
        *  Product: '<S177>/Product3'
-       *  Sum: '<S176>/Sum3'
-       *  Sum: '<S177>/Sum'
+       *  Product: '<S177>/Product6'
+       *  Product: '<S178>/Product2'
+       *  Product: '<S178>/Product3'
        *  Sum: '<S177>/Sum3'
+       *  Sum: '<S178>/Sum'
+       *  Sum: '<S178>/Sum3'
        */
       rtb_Product2_e *= rtb_Product3_ax;
       rtb_Product3_ax = rtb_Product_kd * rtb_Product1_kn;
       rtb_Product1_kn = 0.5 - rtb_Product1_kn * rtb_Product1_kn;
 
-      /* SignalConversion generated from: '<S157>/Product' incorporates:
-       *  Gain: '<S176>/Gain'
-       *  Gain: '<S176>/Gain1'
-       *  Gain: '<S176>/Gain2'
+      /* SignalConversion generated from: '<S158>/Product' incorporates:
        *  Gain: '<S177>/Gain'
        *  Gain: '<S177>/Gain1'
        *  Gain: '<S177>/Gain2'
-       *  Product: '<S176>/Product2'
-       *  Product: '<S176>/Product3'
-       *  Product: '<S176>/Product4'
-       *  Product: '<S176>/Product5'
-       *  Product: '<S176>/Product8'
+       *  Gain: '<S178>/Gain'
+       *  Gain: '<S178>/Gain1'
+       *  Gain: '<S178>/Gain2'
+       *  Product: '<S177>/Product2'
+       *  Product: '<S177>/Product3'
        *  Product: '<S177>/Product4'
        *  Product: '<S177>/Product5'
        *  Product: '<S177>/Product8'
-       *  Sum: '<S176>/Sum'
-       *  Sum: '<S176>/Sum1'
-       *  Sum: '<S176>/Sum2'
-       *  Sum: '<S176>/Sum3'
+       *  Product: '<S178>/Product4'
+       *  Product: '<S178>/Product5'
+       *  Product: '<S178>/Product8'
        *  Sum: '<S177>/Sum'
        *  Sum: '<S177>/Sum1'
        *  Sum: '<S177>/Sum2'
        *  Sum: '<S177>/Sum3'
+       *  Sum: '<S178>/Sum'
+       *  Sum: '<S178>/Sum1'
+       *  Sum: '<S178>/Sum2'
+       *  Sum: '<S178>/Sum3'
        */
       rtb_Product_kd = ((rtb_Product1_kn - rtb_TT0gLR) * 2.0 *
                         rtb_Switch_d_idx_2 + (rtb_PreLookUpIndexSearchaltit_0 -
@@ -3314,11 +3384,11 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
                         rtb_Switch_d_idx_2) + (rtb_Product1_kn -
         rtb_PreLookUpIndexSearchaltit_3) * 2.0 * rtb_Sum1_ox;
 
-      /* ZeroOrderHold: '<S157>/Zero-Order Hold' incorporates:
-       *  Constant: '<S157>/hardironBdy_nT'
-       *  Constant: '<S157>/soft iron matrix'
-       *  Product: '<S157>/Product'
-       *  Sum: '<S157>/Sum'
+      /* ZeroOrderHold: '<S158>/Zero-Order Hold' incorporates:
+       *  Constant: '<S158>/hardironBdy_nT'
+       *  Constant: '<S158>/soft iron matrix'
+       *  Product: '<S158>/Product'
+       *  Sum: '<S158>/Sum'
        */
       for (i = 0; i < 3; i++) {
         Gdependent[i] = (((rtCP__softironmatrix_Value[i + 3] * rtb_Product_kd +
@@ -3328,18 +3398,18 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
           rtCP__hardironBdy_nT_Value[i];
       }
 
-      /* End of ZeroOrderHold: '<S157>/Zero-Order Hold' */
+      /* End of ZeroOrderHold: '<S158>/Zero-Order Hold' */
 
-      /* Gain: '<S168>/Output' incorporates:
-       *  RandomNumber: '<S168>/White Noise'
+      /* Gain: '<S169>/Output' incorporates:
+       *  RandomNumber: '<S169>/White Noise'
        */
       autocodePlant_B->Output_g = 0.19999999999999998 *
         autocodePlant_DW->NextOutput_e;
 
       /* BusCreator generated from: '<Root>/sensor_bus' incorporates:
-       *  DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn2'
+       *  DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn2'
        *  Outport: '<Root>/sensor_bus'
-       *  Sum: '<S155>/Sum1'
+       *  Sum: '<S156>/Sum1'
        */
       autocodePlant_Y_sensor_bus_i->truth_bus.gyroBiasTrue_rps[0] = rtb_w3;
       autocodePlant_Y_sensor_bus_i->truth_bus.accBiasTrue_mps2[0] =
@@ -3365,7 +3435,7 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         rtb_Product2_f) + autocodePlant_DW->DiscreteTransferFcn2_states_h;
     }
 
-    /* Product: '<S146>/Product' */
+    /* Product: '<S147>/Product' */
     autocodePlant_B->Product[0] = rtb_Add[0] * (real_T)rtb_max_relop_c;
     autocodePlant_B->Product[1] = rtb_Add[1] * (real_T)rtb_max_relop_c;
     autocodePlant_B->Product[2] = rtb_Add[2] * (real_T)rtb_max_relop_c;
@@ -3388,7 +3458,7 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     autocodePlant_Y_plant_bus_e->aero_bus.fin4_bus.liftSign_na = rtb_Sign1_b;
     autocodePlant_Y_plant_bus_e->aero_bus.body_bus.aoa_deg = rtb_Gain_ii;
 
-    /* Product: '<S145>/Matrix Multiply' incorporates:
+    /* Product: '<S146>/Matrix Multiply' incorporates:
      *  Constant: '<S5>/Constant1'
      */
     rtb_w3 = 0.0;
@@ -3446,8 +3516,8 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       autocodePlant_Y_plant_bus_e->eom_bus.posNed_m[i] = rtb_posNed_m[i];
     }
 
-    /* Product: '<S152>/Element Product' incorporates:
-     *  Product: '<S145>/Matrix Multiply'
+    /* Product: '<S153>/Element Product' incorporates:
+     *  Product: '<S146>/Matrix Multiply'
      */
     rtb_ElementProduct[0] = rtb_wBdy_rps[1] * rtb_LowAltitudeScaleLength;
     rtb_ElementProduct[1] = rtb_w3 * rtb_wBdy_rps[2];
@@ -3468,10 +3538,10 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       autocodePlant_Y_plant_bus_e->eom_bus.wBdy_rps[i] = rtb_wBdy_rps[i];
       autocodePlant_Y_plant_bus_e->eom_bus.accBdy_mps2[i] = rtb_MathFunction[i];
 
-      /* Sum: '<S145>/Subtract' incorporates:
-       *  Product: '<S145>/Matrix Multiply1'
-       *  Sum: '<S151>/Add'
-       *  Sum: '<S152>/Sum'
+      /* Sum: '<S146>/Subtract' incorporates:
+       *  Product: '<S146>/Matrix Multiply1'
+       *  Sum: '<S152>/Add'
+       *  Sum: '<S153>/Sum'
        */
       rtb_ZeroOrderHold_a[i] = (autocodePlant_B->Product[i] -
         (rtb_ElementProduct[i] - rtb_ElementProduct[i + 3])) -
@@ -3480,21 +3550,21 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
          autocodePlant_ConstB.dIdt[i + 6] * rtb_wBdy_rps[2]);
     }
 
-    /* Product: '<S145>/Product1' incorporates:
+    /* Product: '<S146>/Product1' incorporates:
      *  Constant: '<S5>/Constant1'
      *  Outport: '<Root>/plant_bus'
      */
     rt_mldivide_U1d3x3_U2d_9O8lG8ax(rtCP__Constant1_Value_fo,
       rtb_ZeroOrderHold_a, autocodePlant_Y_plant_bus_e->eom_bus.wDotBdy_rps2);
 
-    /* UnitConversion: '<S106>/Unit Conversion' incorporates:
-     *  UnaryMinus: '<S86>/Unary Minus'
+    /* UnitConversion: '<S107>/Unit Conversion' incorporates:
+     *  UnaryMinus: '<S87>/Unary Minus'
      */
     /* Unit Conversion - from: m to: ft
        Expression: output = (3.28084*input) + (0) */
     rtb_q_na_idx_0 = 3.280839895013123 * -rtb_posNed_m[2];
 
-    /* Saturate: '<S139>/Limit Function 10ft to 1000ft' */
+    /* Saturate: '<S140>/Limit Function 10ft to 1000ft' */
     if (rtb_q_na_idx_0 > 1000.0) {
       rtb_Switch_d_idx_2 = 1000.0;
     } else if (rtb_q_na_idx_0 < 10.0) {
@@ -3503,14 +3573,14 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Switch_d_idx_2 = rtb_q_na_idx_0;
     }
 
-    /* End of Saturate: '<S139>/Limit Function 10ft to 1000ft' */
+    /* End of Saturate: '<S140>/Limit Function 10ft to 1000ft' */
 
-    /* Gain: '<S111>/Lw' */
+    /* Gain: '<S112>/Lw' */
     rtb_q_na_idx_2 = autocodePlant_ConstB.UnitConversion_k;
 
-    /* Interpolation_n-D: '<S121>/Medium//High Altitude Intensity' incorporates:
-     *  PreLookup: '<S121>/PreLook-Up Index Search  (altitude)'
-     *  PreLookup: '<S121>/PreLook-Up Index Search  (prob of exceed)'
+    /* Interpolation_n-D: '<S122>/Medium//High Altitude Intensity' incorporates:
+     *  PreLookup: '<S122>/PreLook-Up Index Search  (altitude)'
+     *  PreLookup: '<S122>/PreLook-Up Index Search  (prob of exceed)'
      */
     bpIndex[0] = plook_bincpa(rtb_q_na_idx_0, rtCP__PreLookUpIndexSearchaltit,
       11U, &rtb_Sum, &autocodePlant_DW->PreLookUpIndexSearchaltitude_DW);
@@ -3521,8 +3591,8 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtCP__MediumHighAltitudeIntensi, 12U, rtCP__MediumHighAltitudeInten_o);
     if (rtmIsMajorTimeStep(autocodePlant_M) &&
         autocodePlant_M->Timing.TaskCounters.TID[2] == 0) {
-      /* Product: '<S114>/Product' incorporates:
-       *  RandomNumber: '<S114>/White Noise'
+      /* Product: '<S115>/Product' incorporates:
+       *  RandomNumber: '<S115>/White Noise'
        */
       autocodePlant_B->Product_d[0] = autocodePlant_ConstB.Divide[0] *
         autocodePlant_DW->NextOutput_d[0];
@@ -3534,9 +3604,9 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         autocodePlant_DW->NextOutput_d[3];
     }
 
-    /* UnitConversion: '<S112>/Unit Conversion' incorporates:
-     *  DotProduct: '<S86>/Dot Product'
-     *  Sqrt: '<S86>/Sqrt'
+    /* UnitConversion: '<S113>/Unit Conversion' incorporates:
+     *  DotProduct: '<S87>/Dot Product'
+     *  Sqrt: '<S87>/Sqrt'
      */
     /* Unit Conversion - from: m/s to: ft/s
        Expression: output = (3.28084*input) + (0) */
@@ -3544,141 +3614,141 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_velBdy_mps[1] * rtb_velBdy_mps[1]) + rtb_velBdy_mps[2] *
                           rtb_velBdy_mps[2]) * 3.280839895013123;
 
-    /* Outputs for Enabled SubSystem: '<S104>/Hpgw' incorporates:
-     *  EnablePort: '<S115>/Enable'
+    /* Outputs for Enabled SubSystem: '<S105>/Hpgw' incorporates:
+     *  EnablePort: '<S116>/Enable'
      */
     if (tmp && rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo) &&
         !autocodePlant_DW->Hpgw_MODE) {
       (void) memset(&(autocodePlant_XDis->pgw_p_CSTATE), 0,
                     2*sizeof(boolean_T));
 
-      /* InitializeConditions for Integrator: '<S115>/pgw_p' */
+      /* InitializeConditions for Integrator: '<S116>/pgw_p' */
       autocodePlant_X->pgw_p_CSTATE[0] = 0.0;
       autocodePlant_X->pgw_p_CSTATE[1] = 0.0;
       autocodePlant_DW->Hpgw_MODE = true;
     }
 
     if (autocodePlant_DW->Hpgw_MODE) {
-      /* Fcn: '<S115>/sqrt(0.8//V)' */
+      /* Fcn: '<S116>/sqrt(0.8//V)' */
       rtb_Product2_e = sqrt(0.8 / rtb_q_na_idx_1);
 
-      /* Product: '<S115>/w3' */
+      /* Product: '<S116>/w3' */
       rtb_w3 = rtb_q_na_idx_1 * autocodePlant_ConstB.w4;
 
-      /* Product: '<S115>/w' incorporates:
-       *  Fcn: '<S115>/sqrt(0.8//V)'
-       *  Gain: '<S111>/Lw'
-       *  Integrator: '<S115>/pgw_p'
-       *  Math: '<S115>/L^1//3'
-       *  Product: '<S115>/Lug//V1'
-       *  Product: '<S115>/w1'
-       *  Product: '<S115>/w2'
-       *  Sum: '<S115>/Sum'
+      /* Product: '<S116>/w' incorporates:
+       *  Fcn: '<S116>/sqrt(0.8//V)'
+       *  Gain: '<S112>/Lw'
+       *  Integrator: '<S116>/pgw_p'
+       *  Math: '<S116>/L^1//3'
+       *  Product: '<S116>/Lug//V1'
+       *  Product: '<S116>/w1'
+       *  Product: '<S116>/w2'
+       *  Sum: '<S116>/Sum'
        */
       autocodePlant_B->w_p[0] = (rtb_Product2_e / rt_powd_snf(rtb_Switch_d_idx_2,
         0.3333333333333333) * autocodePlant_ConstB.u16 *
         autocodePlant_B->Product_d[3] - autocodePlant_X->pgw_p_CSTATE[0]) *
         rtb_w3;
 
-      /* Math: '<S115>/L^1//3' */
+      /* Math: '<S116>/L^1//3' */
       if (rtb_q_na_idx_2 < 0.0) {
         rtb_sigma_ugsigma_vg = -rt_powd_snf(-rtb_q_na_idx_2, 0.3333333333333333);
       } else {
         rtb_sigma_ugsigma_vg = rt_powd_snf(rtb_q_na_idx_2, 0.3333333333333333);
       }
 
-      /* Product: '<S115>/w' incorporates:
-       *  Fcn: '<S115>/sqrt(0.8//V)'
-       *  Integrator: '<S115>/pgw_p'
-       *  Product: '<S115>/Lug//V1'
-       *  Product: '<S115>/w1'
-       *  Product: '<S115>/w2'
-       *  Sum: '<S115>/Sum'
+      /* Product: '<S116>/w' incorporates:
+       *  Fcn: '<S116>/sqrt(0.8//V)'
+       *  Integrator: '<S116>/pgw_p'
+       *  Product: '<S116>/Lug//V1'
+       *  Product: '<S116>/w1'
+       *  Product: '<S116>/w2'
+       *  Sum: '<S116>/Sum'
        */
       autocodePlant_B->w_p[1] = (rtb_Product2_e / rtb_sigma_ugsigma_vg *
         autocodePlant_ConstB.u16 * autocodePlant_B->Product_d[3] -
         autocodePlant_X->pgw_p_CSTATE[1]) * rtb_w3;
     }
 
-    /* End of Outputs for SubSystem: '<S104>/Hpgw' */
+    /* End of Outputs for SubSystem: '<S105>/Hpgw' */
 
-    /* Outputs for Enabled SubSystem: '<S105>/Hwgw(s)' incorporates:
-     *  EnablePort: '<S120>/Enable'
+    /* Outputs for Enabled SubSystem: '<S106>/Hwgw(s)' incorporates:
+     *  EnablePort: '<S121>/Enable'
      */
     if (tmp && rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo) &&
         !autocodePlant_DW->Hwgws_MODE) {
       (void) memset(&(autocodePlant_XDis->wg_p1_CSTATE), 0,
                     4*sizeof(boolean_T));
 
-      /* InitializeConditions for Integrator: '<S120>/wg_p1' */
+      /* InitializeConditions for Integrator: '<S121>/wg_p1' */
       autocodePlant_X->wg_p1_CSTATE[0] = 0.0;
 
-      /* InitializeConditions for Integrator: '<S120>/wg_p2' */
+      /* InitializeConditions for Integrator: '<S121>/wg_p2' */
       autocodePlant_X->wg_p2_CSTATE[0] = 0.0;
 
-      /* InitializeConditions for Integrator: '<S120>/wg_p1' */
+      /* InitializeConditions for Integrator: '<S121>/wg_p1' */
       autocodePlant_X->wg_p1_CSTATE[1] = 0.0;
 
-      /* InitializeConditions for Integrator: '<S120>/wg_p2' */
+      /* InitializeConditions for Integrator: '<S121>/wg_p2' */
       autocodePlant_X->wg_p2_CSTATE[1] = 0.0;
       autocodePlant_DW->Hwgws_MODE = true;
     }
 
     if (autocodePlant_DW->Hwgws_MODE) {
-      /* Product: '<S120>/Lwg//V' incorporates:
-       *  Gain: '<S111>/Lw'
+      /* Product: '<S121>/Lwg//V' incorporates:
+       *  Gain: '<S112>/Lw'
        */
       rtb_w3 = rtb_Switch_d_idx_2 / rtb_q_na_idx_1;
 
-      /* Product: '<S120>/w' incorporates:
-       *  Gain: '<S120>/1//pi'
-       *  Integrator: '<S120>/wg_p1'
-       *  Product: '<S120>/Lug//V1'
-       *  Sqrt: '<S120>/sqrt1'
-       *  Sum: '<S120>/Sum'
+      /* Product: '<S121>/w' incorporates:
+       *  Gain: '<S121>/1//pi'
+       *  Integrator: '<S121>/wg_p1'
+       *  Product: '<S121>/Lug//V1'
+       *  Sqrt: '<S121>/sqrt1'
+       *  Sum: '<S121>/Sum'
        */
       rtb_sigma_ugsigma_vg = (sqrt(0.3183098861837907 * rtb_w3) *
         autocodePlant_B->Product_d[2] - autocodePlant_X->wg_p1_CSTATE[0]) /
         rtb_w3;
       autocodePlant_B->w[0] = rtb_sigma_ugsigma_vg;
 
-      /* Product: '<S120>/w ' incorporates:
-       *  Integrator: '<S120>/wg_p1'
-       *  Integrator: '<S120>/wg_p2'
-       *  Product: '<S120>/Lwg//V '
-       *  Sum: '<S120>/Sum1'
+      /* Product: '<S121>/w ' incorporates:
+       *  Integrator: '<S121>/wg_p1'
+       *  Integrator: '<S121>/wg_p2'
+       *  Product: '<S121>/Lwg//V '
+       *  Sum: '<S121>/Sum1'
        */
       autocodePlant_B->w_h[0] = (rtb_sigma_ugsigma_vg *
         autocodePlant_ConstB.sqrt_g * rtb_w3 + (autocodePlant_X->wg_p1_CSTATE[0]
         - autocodePlant_X->wg_p2_CSTATE[0])) / rtb_w3;
 
-      /* Product: '<S120>/Lwg//V' */
+      /* Product: '<S121>/Lwg//V' */
       rtb_w3 = rtb_q_na_idx_2 / rtb_q_na_idx_1;
 
-      /* Product: '<S120>/w' incorporates:
-       *  Gain: '<S120>/1//pi'
-       *  Integrator: '<S120>/wg_p1'
-       *  Product: '<S120>/Lug//V1'
-       *  Sqrt: '<S120>/sqrt1'
-       *  Sum: '<S120>/Sum'
+      /* Product: '<S121>/w' incorporates:
+       *  Gain: '<S121>/1//pi'
+       *  Integrator: '<S121>/wg_p1'
+       *  Product: '<S121>/Lug//V1'
+       *  Sqrt: '<S121>/sqrt1'
+       *  Sum: '<S121>/Sum'
        */
       rtb_sigma_ugsigma_vg = (sqrt(0.3183098861837907 * rtb_w3) *
         autocodePlant_B->Product_d[2] - autocodePlant_X->wg_p1_CSTATE[1]) /
         rtb_w3;
       autocodePlant_B->w[1] = rtb_sigma_ugsigma_vg;
 
-      /* Product: '<S120>/w ' incorporates:
-       *  Integrator: '<S120>/wg_p1'
-       *  Integrator: '<S120>/wg_p2'
-       *  Product: '<S120>/Lwg//V '
-       *  Sum: '<S120>/Sum1'
+      /* Product: '<S121>/w ' incorporates:
+       *  Integrator: '<S121>/wg_p1'
+       *  Integrator: '<S121>/wg_p2'
+       *  Product: '<S121>/Lwg//V '
+       *  Sum: '<S121>/Sum1'
        */
       autocodePlant_B->w_h[1] = (rtb_sigma_ugsigma_vg *
         autocodePlant_ConstB.sqrt_g * rtb_w3 + (autocodePlant_X->wg_p1_CSTATE[1]
         - autocodePlant_X->wg_p2_CSTATE[1])) / rtb_w3;
 
-      /* Product: '<S120>/Lwg//V 1' incorporates:
-       *  Integrator: '<S120>/wg_p2'
+      /* Product: '<S121>/Lwg//V 1' incorporates:
+       *  Integrator: '<S121>/wg_p2'
        */
       autocodePlant_B->LwgV1[0] = autocodePlant_ConstB.sigma_wg *
         autocodePlant_X->wg_p2_CSTATE[0];
@@ -3686,30 +3756,30 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         wg_p2_CSTATE[1];
     }
 
-    /* End of Outputs for SubSystem: '<S105>/Hwgw(s)' */
+    /* End of Outputs for SubSystem: '<S106>/Hwgw(s)' */
 
-    /* Outputs for Enabled SubSystem: '<S104>/Hqgw' incorporates:
-     *  EnablePort: '<S116>/Enable'
+    /* Outputs for Enabled SubSystem: '<S105>/Hqgw' incorporates:
+     *  EnablePort: '<S117>/Enable'
      */
     if (tmp && rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo) &&
         !autocodePlant_DW->Hqgw_MODE) {
       (void) memset(&(autocodePlant_XDis->qgw_p_CSTATE), 0,
                     2*sizeof(boolean_T));
 
-      /* InitializeConditions for Integrator: '<S116>/qgw_p' */
+      /* InitializeConditions for Integrator: '<S117>/qgw_p' */
       autocodePlant_X->qgw_p_CSTATE[0] = 0.0;
       autocodePlant_X->qgw_p_CSTATE[1] = 0.0;
       autocodePlant_DW->Hqgw_MODE = true;
     }
 
     if (autocodePlant_DW->Hqgw_MODE) {
-      /* Gain: '<S116>/pi//4' */
+      /* Gain: '<S117>/pi//4' */
       rtb_q_na_idx_2 = 0.7853981633974483 * rtb_q_na_idx_1;
 
-      /* Product: '<S116>/w' incorporates:
-       *  Integrator: '<S116>/qgw_p'
-       *  Product: '<S116>/wg//V'
-       *  Sum: '<S116>/Sum'
+      /* Product: '<S117>/w' incorporates:
+       *  Integrator: '<S117>/qgw_p'
+       *  Product: '<S117>/wg//V'
+       *  Sum: '<S117>/Sum'
        */
       autocodePlant_B->w_j5[0] = (autocodePlant_B->LwgV1[0] / rtb_q_na_idx_1 -
         autocodePlant_X->qgw_p_CSTATE[0]) * (rtb_q_na_idx_2 /
@@ -3719,9 +3789,9 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         autocodePlant_ConstB.UnitConversion_e);
     }
 
-    /* End of Outputs for SubSystem: '<S104>/Hqgw' */
+    /* End of Outputs for SubSystem: '<S105>/Hqgw' */
 
-    /* Saturate: '<S122>/Limit Height h<1000ft' */
+    /* Saturate: '<S123>/Limit Height h<1000ft' */
     if (rtb_q_na_idx_0 > 1000.0) {
       rtb_Product2_e = 1000.0;
     } else if (rtb_q_na_idx_0 < 0.0) {
@@ -3730,129 +3800,129 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
       rtb_Product2_e = rtb_q_na_idx_0;
     }
 
-    /* Product: '<S122>/sigma_ug, sigma_vg' incorporates:
-     *  Fcn: '<S122>/Low Altitude Intensity'
-     *  Saturate: '<S122>/Limit Height h<1000ft'
+    /* Product: '<S123>/sigma_ug, sigma_vg' incorporates:
+     *  Fcn: '<S123>/Low Altitude Intensity'
+     *  Saturate: '<S123>/Limit Height h<1000ft'
      */
     rtb_sigma_ugsigma_vg = 1.0 / rt_powd_snf(0.000823 * rtb_Product2_e + 0.177,
       0.4) * autocodePlant_ConstB.sigma_wg;
 
-    /* Fcn: '<S139>/Low Altitude Scale Length' */
+    /* Fcn: '<S140>/Low Altitude Scale Length' */
     rtb_LowAltitudeScaleLength = rtb_Switch_d_idx_2 / rt_powd_snf(0.000823 *
       rtb_Switch_d_idx_2 + 0.177, 1.2);
 
-    /* Gain: '<S111>/Lv' */
+    /* Gain: '<S112>/Lv' */
     rtb_q_na_idx_2 = autocodePlant_ConstB.UnitConversion_k;
 
-    /* Outputs for Enabled SubSystem: '<S105>/Hvgw(s)' incorporates:
-     *  EnablePort: '<S119>/Enable'
+    /* Outputs for Enabled SubSystem: '<S106>/Hvgw(s)' incorporates:
+     *  EnablePort: '<S120>/Enable'
      */
     if (tmp && rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo) &&
         !autocodePlant_DW->Hvgws_MODE) {
       (void) memset(&(autocodePlant_XDis->vg_p1_CSTATE), 0,
                     4*sizeof(boolean_T));
 
-      /* InitializeConditions for Integrator: '<S119>/vg_p1' */
+      /* InitializeConditions for Integrator: '<S120>/vg_p1' */
       autocodePlant_X->vg_p1_CSTATE[0] = 0.0;
 
-      /* InitializeConditions for Integrator: '<S119>/vgw_p2' */
+      /* InitializeConditions for Integrator: '<S120>/vgw_p2' */
       autocodePlant_X->vgw_p2_CSTATE[0] = 0.0;
 
-      /* InitializeConditions for Integrator: '<S119>/vg_p1' */
+      /* InitializeConditions for Integrator: '<S120>/vg_p1' */
       autocodePlant_X->vg_p1_CSTATE[1] = 0.0;
 
-      /* InitializeConditions for Integrator: '<S119>/vgw_p2' */
+      /* InitializeConditions for Integrator: '<S120>/vgw_p2' */
       autocodePlant_X->vgw_p2_CSTATE[1] = 0.0;
       autocodePlant_DW->Hvgws_MODE = true;
     }
 
     if (autocodePlant_DW->Hvgws_MODE) {
-      /* Product: '<S119>/Lvg//V' incorporates:
-       *  Gain: '<S111>/Lv'
+      /* Product: '<S120>/Lvg//V' incorporates:
+       *  Gain: '<S112>/Lv'
        */
       rtb_w3 = rtb_LowAltitudeScaleLength / rtb_q_na_idx_1;
 
-      /* Product: '<S119>/w' incorporates:
-       *  Gain: '<S119>/(1//pi)'
-       *  Integrator: '<S119>/vg_p1'
-       *  Product: '<S119>/Lug//V1'
-       *  Sqrt: '<S119>/sqrt'
-       *  Sum: '<S119>/Sum'
+      /* Product: '<S120>/w' incorporates:
+       *  Gain: '<S120>/(1//pi)'
+       *  Integrator: '<S120>/vg_p1'
+       *  Product: '<S120>/Lug//V1'
+       *  Sqrt: '<S120>/sqrt'
+       *  Sum: '<S120>/Sum'
        */
       rtb_truth_bus_accBiasTrue_mps2_ = (sqrt(0.3183098861837907 * rtb_w3) *
         autocodePlant_B->Product_d[1] - autocodePlant_X->vg_p1_CSTATE[0]) /
         rtb_w3;
       autocodePlant_B->w_c[0] = rtb_truth_bus_accBiasTrue_mps2_;
 
-      /* Product: '<S119>/w ' incorporates:
-       *  Gain: '<S119>/sqrt(3)'
-       *  Integrator: '<S119>/vg_p1'
-       *  Integrator: '<S119>/vgw_p2'
-       *  Product: '<S119>/Lvg//V '
-       *  Sum: '<S119>/Sum1'
+      /* Product: '<S120>/w ' incorporates:
+       *  Gain: '<S120>/sqrt(3)'
+       *  Integrator: '<S120>/vg_p1'
+       *  Integrator: '<S120>/vgw_p2'
+       *  Product: '<S120>/Lvg//V '
+       *  Sum: '<S120>/Sum1'
        */
       autocodePlant_B->w_j[0] = (rtb_truth_bus_accBiasTrue_mps2_ * rtb_w3 *
         1.7320508075688772 + (autocodePlant_X->vg_p1_CSTATE[0] -
         autocodePlant_X->vgw_p2_CSTATE[0])) / rtb_w3;
 
-      /* Product: '<S119>/Lvg//V' */
+      /* Product: '<S120>/Lvg//V' */
       rtb_w3 = rtb_q_na_idx_2 / rtb_q_na_idx_1;
 
-      /* Product: '<S119>/w' incorporates:
-       *  Gain: '<S119>/(1//pi)'
-       *  Integrator: '<S119>/vg_p1'
-       *  Product: '<S119>/Lug//V1'
-       *  Sqrt: '<S119>/sqrt'
-       *  Sum: '<S119>/Sum'
+      /* Product: '<S120>/w' incorporates:
+       *  Gain: '<S120>/(1//pi)'
+       *  Integrator: '<S120>/vg_p1'
+       *  Product: '<S120>/Lug//V1'
+       *  Sqrt: '<S120>/sqrt'
+       *  Sum: '<S120>/Sum'
        */
       rtb_truth_bus_accBiasTrue_mps2_ = (sqrt(0.3183098861837907 * rtb_w3) *
         autocodePlant_B->Product_d[1] - autocodePlant_X->vg_p1_CSTATE[1]) /
         rtb_w3;
       autocodePlant_B->w_c[1] = rtb_truth_bus_accBiasTrue_mps2_;
 
-      /* Product: '<S119>/w ' incorporates:
-       *  Gain: '<S119>/sqrt(3)'
-       *  Integrator: '<S119>/vg_p1'
-       *  Integrator: '<S119>/vgw_p2'
-       *  Product: '<S119>/Lvg//V '
-       *  Sum: '<S119>/Sum1'
+      /* Product: '<S120>/w ' incorporates:
+       *  Gain: '<S120>/sqrt(3)'
+       *  Integrator: '<S120>/vg_p1'
+       *  Integrator: '<S120>/vgw_p2'
+       *  Product: '<S120>/Lvg//V '
+       *  Sum: '<S120>/Sum1'
        */
       autocodePlant_B->w_j[1] = (rtb_truth_bus_accBiasTrue_mps2_ * rtb_w3 *
         1.7320508075688772 + (autocodePlant_X->vg_p1_CSTATE[1] -
         autocodePlant_X->vgw_p2_CSTATE[1])) / rtb_w3;
 
-      /* Product: '<S119>/w 1' incorporates:
-       *  Integrator: '<S119>/vgw_p2'
+      /* Product: '<S120>/w 1' incorporates:
+       *  Integrator: '<S120>/vgw_p2'
        */
       autocodePlant_B->w1[0] = rtb_sigma_ugsigma_vg *
         autocodePlant_X->vgw_p2_CSTATE[0];
       autocodePlant_B->w1[1] = rtb_q_na_idx_3 * autocodePlant_X->vgw_p2_CSTATE[1];
     }
 
-    /* End of Outputs for SubSystem: '<S105>/Hvgw(s)' */
+    /* End of Outputs for SubSystem: '<S106>/Hvgw(s)' */
 
-    /* Outputs for Enabled SubSystem: '<S104>/Hrgw' incorporates:
-     *  EnablePort: '<S117>/Enable'
+    /* Outputs for Enabled SubSystem: '<S105>/Hrgw' incorporates:
+     *  EnablePort: '<S118>/Enable'
      */
     if (tmp && rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo) &&
         !autocodePlant_DW->Hrgw_MODE) {
       (void) memset(&(autocodePlant_XDis->rgw_p_CSTATE), 0,
                     2*sizeof(boolean_T));
 
-      /* InitializeConditions for Integrator: '<S117>/rgw_p' */
+      /* InitializeConditions for Integrator: '<S118>/rgw_p' */
       autocodePlant_X->rgw_p_CSTATE[0] = 0.0;
       autocodePlant_X->rgw_p_CSTATE[1] = 0.0;
       autocodePlant_DW->Hrgw_MODE = true;
     }
 
     if (autocodePlant_DW->Hrgw_MODE) {
-      /* Gain: '<S117>/pi//3' */
+      /* Gain: '<S118>/pi//3' */
       rtb_q_na_idx_2 = 1.0471975511965976 * rtb_q_na_idx_1;
 
-      /* Product: '<S117>/w' incorporates:
-       *  Integrator: '<S117>/rgw_p'
-       *  Product: '<S117>/vg//V'
-       *  Sum: '<S117>/Sum'
+      /* Product: '<S118>/w' incorporates:
+       *  Integrator: '<S118>/rgw_p'
+       *  Product: '<S118>/vg//V'
+       *  Sum: '<S118>/Sum'
        */
       autocodePlant_B->w_g[0] = (autocodePlant_B->w1[0] / rtb_q_na_idx_1 -
         autocodePlant_X->rgw_p_CSTATE[0]) * (rtb_q_na_idx_2 /
@@ -3862,33 +3932,33 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         autocodePlant_ConstB.UnitConversion_e);
     }
 
-    /* End of Outputs for SubSystem: '<S104>/Hrgw' */
+    /* End of Outputs for SubSystem: '<S105>/Hrgw' */
 
-    /* Outputs for Enabled SubSystem: '<S105>/Hugw(s)' incorporates:
-     *  EnablePort: '<S118>/Enable'
+    /* Outputs for Enabled SubSystem: '<S106>/Hugw(s)' incorporates:
+     *  EnablePort: '<S119>/Enable'
      */
     if (tmp && rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo) &&
         !autocodePlant_DW->Hugws_MODE) {
       (void) memset(&(autocodePlant_XDis->ug_p_CSTATE), 0,
                     2*sizeof(boolean_T));
 
-      /* InitializeConditions for Integrator: '<S118>/ug_p' */
+      /* InitializeConditions for Integrator: '<S119>/ug_p' */
       autocodePlant_X->ug_p_CSTATE[0] = 0.0;
       autocodePlant_X->ug_p_CSTATE[1] = 0.0;
       autocodePlant_DW->Hugws_MODE = true;
     }
 
     if (autocodePlant_DW->Hugws_MODE) {
-      /* Product: '<S118>/Lug//V' */
+      /* Product: '<S119>/Lug//V' */
       rtb_q_na_idx_3 = rtb_LowAltitudeScaleLength / rtb_q_na_idx_1;
       rtb_q_na_idx_2 = autocodePlant_ConstB.UnitConversion_k / rtb_q_na_idx_1;
 
-      /* Product: '<S118>/w' incorporates:
-       *  Gain: '<S118>/(2//pi)'
-       *  Integrator: '<S118>/ug_p'
-       *  Product: '<S118>/Lug//V1'
-       *  Sqrt: '<S118>/sqrt'
-       *  Sum: '<S118>/Sum'
+      /* Product: '<S119>/w' incorporates:
+       *  Gain: '<S119>/(2//pi)'
+       *  Integrator: '<S119>/ug_p'
+       *  Product: '<S119>/Lug//V1'
+       *  Sqrt: '<S119>/sqrt'
+       *  Sum: '<S119>/Sum'
        */
       autocodePlant_B->w_d[0] = (sqrt(0.6366197723675814 * rtb_q_na_idx_3) *
         autocodePlant_B->Product_d[0] - autocodePlant_X->ug_p_CSTATE[0]) /
@@ -3898,9 +3968,9 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         rtb_q_na_idx_2;
     }
 
-    /* End of Outputs for SubSystem: '<S105>/Hugw(s)' */
+    /* End of Outputs for SubSystem: '<S106>/Hugw(s)' */
 
-    /* If: '<S109>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
+    /* If: '<S110>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
     rtPrevAction = autocodePlant_DW->ifHeightMaxlowaltitudeelseifHei;
     if (rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo)) {
       if (rtb_q_na_idx_0 <= 1000.0) {
@@ -3917,9 +3987,9 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         true);
     }
 
-    /* End of If: '<S109>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
+    /* End of If: '<S110>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
 
-    /* If: '<S110>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
+    /* If: '<S111>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
     rtPrevAction = autocodePlant_DW->ifHeightMaxlowaltitudeelseifH_f;
     if (rtsiIsModeUpdateTimeStep(&autocodePlant_M->solverInfo)) {
       if (rtb_q_na_idx_0 <= 1000.0) {
@@ -3936,71 +4006,61 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
         true);
     }
 
-    /* End of If: '<S110>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
+    /* End of If: '<S111>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
     if (tmp) {
       /* Lookup_n-D: '<S6>/1-D Lookup Table' incorporates:
-       *  UnitDelay: '<S153>/Unit Delay'
+       *  UnitDelay: '<S154>/Unit Delay'
        */
       rtb_uDLookupTable = look1_binlcpw(autocodePlant_DW->UnitDelay_DSTATE_i,
         rtCP__uDLookupTable_bp01Data, rtCP__uDLookupTable_tableData, 25U);
 
-      /* Sum: '<S153>/Sum' incorporates:
-       *  Constant: '<S153>/Constant'
-       *  UnitDelay: '<S153>/Unit Delay'
+      /* Sum: '<S154>/Sum' incorporates:
+       *  Constant: '<S154>/Constant'
+       *  UnitDelay: '<S154>/Unit Delay'
        */
       autocodePlant_DW->UnitDelay_DSTATE_i += 0.01;
 
-      /* Gain: '<S167>/Output' incorporates:
-       *  RandomNumber: '<S167>/White Noise'
+      /* Gain: '<S168>/Output' incorporates:
+       *  RandomNumber: '<S168>/White Noise'
        */
       autocodePlant_B->Output_n = 3.7947521660754644 *
         autocodePlant_DW->NextOutput_m;
 
-      /* Gain: '<S159>/Output' incorporates:
-       *  RandomNumber: '<S159>/White Noise'
+      /* Gain: '<S160>/Output' incorporates:
+       *  RandomNumber: '<S160>/White Noise'
        */
       autocodePlant_B->Output_o[0] = 0.0019620245256641326 *
         autocodePlant_DW->NextOutput_k;
 
-      /* Gain: '<S169>/Output' incorporates:
-       *  RandomNumber: '<S169>/White Noise'
+      /* Gain: '<S170>/Output' incorporates:
+       *  RandomNumber: '<S170>/White Noise'
        */
       autocodePlant_B->Output_e[0] = 0.0004848060601641038 *
         autocodePlant_DW->NextOutput_a;
 
-      /* Gain: '<S159>/Output' incorporates:
-       *  RandomNumber: '<S159>/White Noise'
+      /* Gain: '<S160>/Output' incorporates:
+       *  RandomNumber: '<S160>/White Noise'
        */
       autocodePlant_B->Output_o[1] = 0.0019620245256641326 *
         autocodePlant_DW->NextOutput_k;
 
-      /* Gain: '<S169>/Output' incorporates:
-       *  RandomNumber: '<S169>/White Noise'
+      /* Gain: '<S170>/Output' incorporates:
+       *  RandomNumber: '<S170>/White Noise'
        */
       autocodePlant_B->Output_e[1] = 0.0004848060601641038 *
         autocodePlant_DW->NextOutput_a;
 
-      /* Gain: '<S159>/Output' incorporates:
-       *  RandomNumber: '<S159>/White Noise'
+      /* Gain: '<S160>/Output' incorporates:
+       *  RandomNumber: '<S160>/White Noise'
        */
       autocodePlant_B->Output_o[2] = 0.0019620245256641326 *
         autocodePlant_DW->NextOutput_k;
 
-      /* Gain: '<S169>/Output' incorporates:
-       *  RandomNumber: '<S169>/White Noise'
+      /* Gain: '<S170>/Output' incorporates:
+       *  RandomNumber: '<S170>/White Noise'
        */
       autocodePlant_B->Output_e[2] = 0.0004848060601641038 *
         autocodePlant_DW->NextOutput_a;
-
-      /* Assertion: '<S180>/Assertion' incorporates:
-       *  Constant: '<S180>/max_val'
-       *  Constant: '<S180>/min_val'
-       *  Logic: '<S180>/conjunction'
-       *  RelationalOperator: '<S180>/max_relop'
-       *  RelationalOperator: '<S180>/min_relop'
-       */
-      utAssert((rtb_Switch_d_idx_1 >= -1000.0) && (rtb_Switch_d_idx_1 <=
-                850000.0));
 
       /* Assertion: '<S181>/Assertion' incorporates:
        *  Constant: '<S181>/max_val'
@@ -4009,8 +4069,8 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
        *  RelationalOperator: '<S181>/max_relop'
        *  RelationalOperator: '<S181>/min_relop'
        */
-      utAssert((rtb_TmpSignalConversionAtProd_0 >= -90.0) &&
-               (rtb_TmpSignalConversionAtProd_0 <= 90.0));
+      utAssert((rtb_Switch_d_idx_1 >= -1000.0) && (rtb_Switch_d_idx_1 <=
+                850000.0));
 
       /* Assertion: '<S182>/Assertion' incorporates:
        *  Constant: '<S182>/max_val'
@@ -4019,9 +4079,19 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
        *  RelationalOperator: '<S182>/max_relop'
        *  RelationalOperator: '<S182>/min_relop'
        */
+      utAssert((rtb_TmpSignalConversionAtProd_0 >= -90.0) &&
+               (rtb_TmpSignalConversionAtProd_0 <= 90.0));
+
+      /* Assertion: '<S183>/Assertion' incorporates:
+       *  Constant: '<S183>/max_val'
+       *  Constant: '<S183>/min_val'
+       *  Logic: '<S183>/conjunction'
+       *  RelationalOperator: '<S183>/max_relop'
+       *  RelationalOperator: '<S183>/min_relop'
+       */
       utAssert((rtb_UnaryMinus_a >= -180.0) && (rtb_UnaryMinus_a <= 180.0));
 
-      /* Assertion: '<S184>/Assertion' */
+      /* Assertion: '<S185>/Assertion' */
       utAssert(autocodePlant_ConstB.conjunction);
     }
   }
@@ -4032,78 +4102,110 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     tmp = (rtmIsMajorTimeStep(autocodePlant_M) &&
            autocodePlant_M->Timing.TaskCounters.TID[1] == 0);
     if (tmp) {
-      /* Update for DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn' */
+      /* Update for DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn' */
       autocodePlant_DW->DiscreteTransferFcn_states = autocodePlant_B->Output_e[0]
         - 0.99995 * autocodePlant_DW->DiscreteTransferFcn_states;
 
-      /* Update for DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn1' */
+      /* Update for DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn1' */
       autocodePlant_DW->DiscreteTransferFcn1_states = autocodePlant_B->Output_e
         [1] - 0.99995 * autocodePlant_DW->DiscreteTransferFcn1_states;
 
-      /* Update for DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn2' */
+      /* Update for DiscreteTransferFcn: '<S157>/Discrete Transfer Fcn2' */
       autocodePlant_DW->DiscreteTransferFcn2_states = autocodePlant_B->Output_e
         [2] - 0.99995 * autocodePlant_DW->DiscreteTransferFcn2_states;
 
-      /* Update for DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn2' */
+      /* Update for DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn2' */
       autocodePlant_DW->DiscreteTransferFcn2_states_k =
         autocodePlant_B->Output_o[0] - 0.99995 *
         autocodePlant_DW->DiscreteTransferFcn2_states_k;
 
-      /* Update for DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn1' */
+      /* Update for DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn1' */
       autocodePlant_DW->DiscreteTransferFcn1_states_a =
         autocodePlant_B->Output_o[1] - 0.99995 *
         autocodePlant_DW->DiscreteTransferFcn1_states_a;
 
-      /* Update for DiscreteTransferFcn: '<S154>/Discrete Transfer Fcn3' */
+      /* Update for DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn3' */
       autocodePlant_DW->DiscreteTransferFcn3_states = autocodePlant_B->Output_o
         [2] - 0.99995 * autocodePlant_DW->DiscreteTransferFcn3_states;
 
-      /* Update for RandomNumber: '<S160>/White Noise' */
+      /* Update for RandomNumber: '<S161>/White Noise' */
       autocodePlant_DW->NextOutput = rt_nrand_Upu32_Yd_f_pw_snf
         (&autocodePlant_DW->RandSeed);
 
       /* Update for Delay: '<S6>/Delay' */
-      for (idxDelay = 0; idxDelay < 499; idxDelay++) {
+      for (idxDelay = 0; idxDelay < 1999; idxDelay++) {
         autocodePlant_DW->Delay_DSTATE[idxDelay] =
           autocodePlant_DW->Delay_DSTATE[idxDelay + 1];
       }
 
-      autocodePlant_DW->Delay_DSTATE[499] = rtb_uDLookupTable;
+      autocodePlant_DW->Delay_DSTATE[1999] = rtb_uDLookupTable;
 
       /* End of Update for Delay: '<S6>/Delay' */
 
-      /* Update for RandomNumber: '<S170>/White Noise' */
+      /* Update for UnitDelay: '<S7>/Unit Delay' incorporates:
+       *  Inport: '<Root>/control_deg'
+       */
+      autocodePlant_DW->UnitDelay_DSTATE[0] = autocodePlant_U_control_deg[0];
+
+      /* Update for Backlash: '<S7>/Backlash' */
+      autocodePlant_DW->PrevY[0] = autocodePlant_B->Backlash[0];
+
+      /* Update for UnitDelay: '<S7>/Unit Delay' incorporates:
+       *  Inport: '<Root>/control_deg'
+       */
+      autocodePlant_DW->UnitDelay_DSTATE[1] = autocodePlant_U_control_deg[1];
+
+      /* Update for Backlash: '<S7>/Backlash' */
+      autocodePlant_DW->PrevY[1] = autocodePlant_B->Backlash[1];
+
+      /* Update for UnitDelay: '<S7>/Unit Delay' incorporates:
+       *  Inport: '<Root>/control_deg'
+       */
+      autocodePlant_DW->UnitDelay_DSTATE[2] = autocodePlant_U_control_deg[2];
+
+      /* Update for Backlash: '<S7>/Backlash' */
+      autocodePlant_DW->PrevY[2] = autocodePlant_B->Backlash[2];
+
+      /* Update for UnitDelay: '<S7>/Unit Delay' incorporates:
+       *  Inport: '<Root>/control_deg'
+       */
+      autocodePlant_DW->UnitDelay_DSTATE[3] = autocodePlant_U_control_deg[3];
+
+      /* Update for Backlash: '<S7>/Backlash' */
+      autocodePlant_DW->PrevY[3] = autocodePlant_B->Backlash[3];
+
+      /* Update for RandomNumber: '<S171>/White Noise' */
       autocodePlant_DW->NextOutput_i = rt_nrand_Upu32_Yd_f_pw_snf
         (&autocodePlant_DW->RandSeed_l);
 
-      /* Update for UnitDelay: '<S156>/Unit Delay' */
-      autocodePlant_DW->UnitDelay_DSTATE[0] = autocodePlant_B->fBdy_mps2[0];
-      autocodePlant_DW->UnitDelay_DSTATE[1] = autocodePlant_B->fBdy_mps2[1];
-      autocodePlant_DW->UnitDelay_DSTATE[2] = autocodePlant_B->fBdy_mps2[2];
+      /* Update for UnitDelay: '<S157>/Unit Delay' */
+      autocodePlant_DW->UnitDelay_DSTATE_c[0] = autocodePlant_B->fBdy_mps2[0];
+      autocodePlant_DW->UnitDelay_DSTATE_c[1] = autocodePlant_B->fBdy_mps2[1];
+      autocodePlant_DW->UnitDelay_DSTATE_c[2] = autocodePlant_B->fBdy_mps2[2];
 
-      /* Update for RandomNumber: '<S173>/White Noise' */
+      /* Update for RandomNumber: '<S174>/White Noise' */
       autocodePlant_DW->NextOutput_b = rt_nrand_Upu32_Yd_f_pw_snf
         (&autocodePlant_DW->RandSeed_a);
 
-      /* Update for Memory: '<S206>/otime' incorporates:
-       *  Constant: '<S157>/decimal year'
+      /* Update for Memory: '<S207>/otime' incorporates:
+       *  Constant: '<S158>/decimal year'
        */
       autocodePlant_DW->otime_PreviousInput = 2026.6657534246576;
 
-      /* Update for Memory: '<S205>/olon' */
+      /* Update for Memory: '<S206>/olon' */
       autocodePlant_DW->olon_PreviousInput = autocodePlant_B->Switch;
 
-      /* Update for Memory: '<S204>/olat' */
+      /* Update for Memory: '<S205>/olat' */
       autocodePlant_DW->olat_PreviousInput = autocodePlant_B->Switch_l;
 
-      /* Update for Memory: '<S204>/oalt' */
+      /* Update for Memory: '<S205>/oalt' */
       autocodePlant_DW->oalt_PreviousInput = autocodePlant_B->Gain;
 
-      /* Update for RandomNumber: '<S168>/White Noise' */
+      /* Update for RandomNumber: '<S169>/White Noise' */
       autocodePlant_DW->NextOutput_e = rt_nrand_Upu32_Yd_f_pw_snf
         (&autocodePlant_DW->RandSeed_b);
 
-      /* Update for DiscreteTransferFcn: '<S155>/Discrete Transfer Fcn2' */
+      /* Update for DiscreteTransferFcn: '<S156>/Discrete Transfer Fcn2' */
       autocodePlant_DW->DiscreteTransferFcn2_states_h =
         autocodePlant_B->Output_n - 0.99998 *
         autocodePlant_DW->DiscreteTransferFcn2_states_h;
@@ -4111,7 +4213,7 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
 
     if (rtmIsMajorTimeStep(autocodePlant_M) &&
         autocodePlant_M->Timing.TaskCounters.TID[2] == 0) {
-      /* Update for RandomNumber: '<S114>/White Noise' */
+      /* Update for RandomNumber: '<S115>/White Noise' */
       autocodePlant_DW->NextOutput_d[0] = rt_nrand_Upu32_Yd_f_pw_snf
         (&autocodePlant_DW->RandSeed_i[0]);
       autocodePlant_DW->NextOutput_d[1] = rt_nrand_Upu32_Yd_f_pw_snf
@@ -4123,15 +4225,15 @@ void autocodePlant_step(RT_MODEL_autocodePlant_T *const autocodePlant_M, real_T
     }
 
     if (tmp) {
-      /* Update for RandomNumber: '<S159>/White Noise' */
+      /* Update for RandomNumber: '<S160>/White Noise' */
       autocodePlant_DW->NextOutput_k = rt_nrand_Upu32_Yd_f_pw_snf
         (&autocodePlant_DW->RandSeed_p);
 
-      /* Update for RandomNumber: '<S167>/White Noise' */
+      /* Update for RandomNumber: '<S168>/White Noise' */
       autocodePlant_DW->NextOutput_m = rt_nrand_Upu32_Yd_f_pw_snf
         (&autocodePlant_DW->RandSeed_pb);
 
-      /* Update for RandomNumber: '<S169>/White Noise' */
+      /* Update for RandomNumber: '<S170>/White Noise' */
       autocodePlant_DW->NextOutput_a = rt_nrand_Upu32_Yd_f_pw_snf
         (&autocodePlant_DW->RandSeed_pa);
     }
@@ -4189,17 +4291,17 @@ void autocodePlant_derivatives(RT_MODEL_autocodePlant_T *const autocodePlant_M)
 
   /* Derivatives for EOM6DOFBodyQuat: '<S5>/6DOF (Quaternion)' */
   memset(&_rtXdot->uDOFQuaternion_CSTATE[0], 0, 13U * sizeof(real_T));
-  _rtXdot->uDOFQuaternion_CSTATE[0] = autocodePlant_B->Sum[0] / 18.0 -
+  _rtXdot->uDOFQuaternion_CSTATE[0] = autocodePlant_B->Sum[0] / 17.5 -
     (autocodePlant_X->uDOFQuaternion_CSTATE[2] *
      autocodePlant_X->uDOFQuaternion_CSTATE[7] -
      autocodePlant_X->uDOFQuaternion_CSTATE[1] *
      autocodePlant_X->uDOFQuaternion_CSTATE[8]);
-  _rtXdot->uDOFQuaternion_CSTATE[1] = autocodePlant_B->Sum[1] / 18.0 -
+  _rtXdot->uDOFQuaternion_CSTATE[1] = autocodePlant_B->Sum[1] / 17.5 -
     (autocodePlant_X->uDOFQuaternion_CSTATE[0] *
      autocodePlant_X->uDOFQuaternion_CSTATE[8] -
      autocodePlant_X->uDOFQuaternion_CSTATE[2] *
      autocodePlant_X->uDOFQuaternion_CSTATE[6]);
-  _rtXdot->uDOFQuaternion_CSTATE[2] = autocodePlant_B->Sum[2] / 18.0 -
+  _rtXdot->uDOFQuaternion_CSTATE[2] = autocodePlant_B->Sum[2] / 17.5 -
     (autocodePlant_X->uDOFQuaternion_CSTATE[1] *
      autocodePlant_X->uDOFQuaternion_CSTATE[6] -
      autocodePlant_X->uDOFQuaternion_CSTATE[0] *
@@ -4334,9 +4436,9 @@ void autocodePlant_derivatives(RT_MODEL_autocodePlant_T *const autocodePlant_M)
     autocodePlant_X->uDOFQuaternion_CSTATE[11]) + 0.0 *
     autocodePlant_X->uDOFQuaternion_CSTATE[12]) * 0.5;
 
-  /* Derivatives for Enabled SubSystem: '<S104>/Hpgw' */
+  /* Derivatives for Enabled SubSystem: '<S105>/Hpgw' */
   if (autocodePlant_DW->Hpgw_MODE) {
-    /* Derivatives for Integrator: '<S115>/pgw_p' */
+    /* Derivatives for Integrator: '<S116>/pgw_p' */
     _rtXdot->pgw_p_CSTATE[0] = autocodePlant_B->w_p[0];
     _rtXdot->pgw_p_CSTATE[1] = autocodePlant_B->w_p[1];
   } else {
@@ -4350,20 +4452,20 @@ void autocodePlant_derivatives(RT_MODEL_autocodePlant_T *const autocodePlant_M)
     }
   }
 
-  /* End of Derivatives for SubSystem: '<S104>/Hpgw' */
+  /* End of Derivatives for SubSystem: '<S105>/Hpgw' */
 
-  /* Derivatives for Enabled SubSystem: '<S105>/Hwgw(s)' */
+  /* Derivatives for Enabled SubSystem: '<S106>/Hwgw(s)' */
   if (autocodePlant_DW->Hwgws_MODE) {
-    /* Derivatives for Integrator: '<S120>/wg_p1' */
+    /* Derivatives for Integrator: '<S121>/wg_p1' */
     _rtXdot->wg_p1_CSTATE[0] = autocodePlant_B->w[0];
 
-    /* Derivatives for Integrator: '<S120>/wg_p2' */
+    /* Derivatives for Integrator: '<S121>/wg_p2' */
     _rtXdot->wg_p2_CSTATE[0] = autocodePlant_B->w_h[0];
 
-    /* Derivatives for Integrator: '<S120>/wg_p1' */
+    /* Derivatives for Integrator: '<S121>/wg_p1' */
     _rtXdot->wg_p1_CSTATE[1] = autocodePlant_B->w[1];
 
-    /* Derivatives for Integrator: '<S120>/wg_p2' */
+    /* Derivatives for Integrator: '<S121>/wg_p2' */
     _rtXdot->wg_p2_CSTATE[1] = autocodePlant_B->w_h[1];
   } else {
     {
@@ -4376,11 +4478,11 @@ void autocodePlant_derivatives(RT_MODEL_autocodePlant_T *const autocodePlant_M)
     }
   }
 
-  /* End of Derivatives for SubSystem: '<S105>/Hwgw(s)' */
+  /* End of Derivatives for SubSystem: '<S106>/Hwgw(s)' */
 
-  /* Derivatives for Enabled SubSystem: '<S104>/Hqgw' */
+  /* Derivatives for Enabled SubSystem: '<S105>/Hqgw' */
   if (autocodePlant_DW->Hqgw_MODE) {
-    /* Derivatives for Integrator: '<S116>/qgw_p' */
+    /* Derivatives for Integrator: '<S117>/qgw_p' */
     _rtXdot->qgw_p_CSTATE[0] = autocodePlant_B->w_j5[0];
     _rtXdot->qgw_p_CSTATE[1] = autocodePlant_B->w_j5[1];
   } else {
@@ -4394,20 +4496,20 @@ void autocodePlant_derivatives(RT_MODEL_autocodePlant_T *const autocodePlant_M)
     }
   }
 
-  /* End of Derivatives for SubSystem: '<S104>/Hqgw' */
+  /* End of Derivatives for SubSystem: '<S105>/Hqgw' */
 
-  /* Derivatives for Enabled SubSystem: '<S105>/Hvgw(s)' */
+  /* Derivatives for Enabled SubSystem: '<S106>/Hvgw(s)' */
   if (autocodePlant_DW->Hvgws_MODE) {
-    /* Derivatives for Integrator: '<S119>/vg_p1' */
+    /* Derivatives for Integrator: '<S120>/vg_p1' */
     _rtXdot->vg_p1_CSTATE[0] = autocodePlant_B->w_c[0];
 
-    /* Derivatives for Integrator: '<S119>/vgw_p2' */
+    /* Derivatives for Integrator: '<S120>/vgw_p2' */
     _rtXdot->vgw_p2_CSTATE[0] = autocodePlant_B->w_j[0];
 
-    /* Derivatives for Integrator: '<S119>/vg_p1' */
+    /* Derivatives for Integrator: '<S120>/vg_p1' */
     _rtXdot->vg_p1_CSTATE[1] = autocodePlant_B->w_c[1];
 
-    /* Derivatives for Integrator: '<S119>/vgw_p2' */
+    /* Derivatives for Integrator: '<S120>/vgw_p2' */
     _rtXdot->vgw_p2_CSTATE[1] = autocodePlant_B->w_j[1];
   } else {
     {
@@ -4420,11 +4522,11 @@ void autocodePlant_derivatives(RT_MODEL_autocodePlant_T *const autocodePlant_M)
     }
   }
 
-  /* End of Derivatives for SubSystem: '<S105>/Hvgw(s)' */
+  /* End of Derivatives for SubSystem: '<S106>/Hvgw(s)' */
 
-  /* Derivatives for Enabled SubSystem: '<S104>/Hrgw' */
+  /* Derivatives for Enabled SubSystem: '<S105>/Hrgw' */
   if (autocodePlant_DW->Hrgw_MODE) {
-    /* Derivatives for Integrator: '<S117>/rgw_p' */
+    /* Derivatives for Integrator: '<S118>/rgw_p' */
     _rtXdot->rgw_p_CSTATE[0] = autocodePlant_B->w_g[0];
     _rtXdot->rgw_p_CSTATE[1] = autocodePlant_B->w_g[1];
   } else {
@@ -4438,11 +4540,11 @@ void autocodePlant_derivatives(RT_MODEL_autocodePlant_T *const autocodePlant_M)
     }
   }
 
-  /* End of Derivatives for SubSystem: '<S104>/Hrgw' */
+  /* End of Derivatives for SubSystem: '<S105>/Hrgw' */
 
-  /* Derivatives for Enabled SubSystem: '<S105>/Hugw(s)' */
+  /* Derivatives for Enabled SubSystem: '<S106>/Hugw(s)' */
   if (autocodePlant_DW->Hugws_MODE) {
-    /* Derivatives for Integrator: '<S118>/ug_p' */
+    /* Derivatives for Integrator: '<S119>/ug_p' */
     _rtXdot->ug_p_CSTATE[0] = autocodePlant_B->w_d[0];
     _rtXdot->ug_p_CSTATE[1] = autocodePlant_B->w_d[1];
   } else {
@@ -4456,7 +4558,7 @@ void autocodePlant_derivatives(RT_MODEL_autocodePlant_T *const autocodePlant_M)
     }
   }
 
-  /* End of Derivatives for SubSystem: '<S105>/Hugw(s)' */
+  /* End of Derivatives for SubSystem: '<S106>/Hugw(s)' */
 }
 
 /* Model initialize function */
@@ -4544,16 +4646,16 @@ void autocodePlant_initialize(RT_MODEL_autocodePlant_T *const autocodePlant_M,
   {
     int32_T i;
 
-    /* Start for If: '<S194>/If' */
+    /* Start for If: '<S195>/If' */
     autocodePlant_DW->If_ActiveSubsystem = -1;
 
-    /* Start for If: '<S109>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
+    /* Start for If: '<S110>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
     autocodePlant_DW->ifHeightMaxlowaltitudeelseifHei = -1;
 
-    /* Start for If: '<S110>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
+    /* Start for If: '<S111>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
     autocodePlant_DW->ifHeightMaxlowaltitudeelseifH_f = -1;
 
-    /* InitializeConditions for RandomNumber: '<S160>/White Noise' */
+    /* InitializeConditions for RandomNumber: '<S161>/White Noise' */
     autocodePlant_DW->RandSeed = 1529675776U;
     autocodePlant_DW->NextOutput = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed);
@@ -4568,39 +4670,45 @@ void autocodePlant_initialize(RT_MODEL_autocodePlant_T *const autocodePlant_M,
     autocodePlant_X->uDOFQuaternion_CSTATE[2] = 0.0;
     autocodePlant_X->uDOFQuaternion_CSTATE[5] = 0.0;
     autocodePlant_X->uDOFQuaternion_CSTATE[8] = 0.0;
-    autocodePlant_X->uDOFQuaternion_CSTATE[9] = 0.6700440439317529;
-    autocodePlant_X->uDOFQuaternion_CSTATE[10] = 0.033530148645199376;
-    autocodePlant_X->uDOFQuaternion_CSTATE[11] = 0.7406369298317471;
-    autocodePlant_X->uDOFQuaternion_CSTATE[12] = 0.037062737254794836;
+    autocodePlant_X->uDOFQuaternion_CSTATE[9] = 0.6708824723277448;
+    autocodePlant_X->uDOFQuaternion_CSTATE[10] = 4.32797643155616E-18;
+    autocodePlant_X->uDOFQuaternion_CSTATE[11] = 0.7415636913464768;
+    autocodePlant_X->uDOFQuaternion_CSTATE[12] = 4.32797643155616E-18;
 
-    /* InitializeConditions for RandomNumber: '<S170>/White Noise' */
+    /* InitializeConditions for Backlash: '<S7>/Backlash' */
+    autocodePlant_DW->PrevY[0] = 0.0;
+    autocodePlant_DW->PrevY[1] = 0.0;
+    autocodePlant_DW->PrevY[2] = 0.0;
+    autocodePlant_DW->PrevY[3] = 0.0;
+
+    /* InitializeConditions for RandomNumber: '<S171>/White Noise' */
     autocodePlant_DW->RandSeed_l = 1529675776U;
     autocodePlant_DW->NextOutput_i = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed_l);
 
-    /* InitializeConditions for RandomNumber: '<S173>/White Noise' */
+    /* InitializeConditions for RandomNumber: '<S174>/White Noise' */
     autocodePlant_DW->RandSeed_a = 1529675776U;
     autocodePlant_DW->NextOutput_b = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed_a);
 
-    /* InitializeConditions for Memory: '<S206>/otime' */
+    /* InitializeConditions for Memory: '<S207>/otime' */
     autocodePlant_DW->otime_PreviousInput = -1000.0;
 
-    /* InitializeConditions for Memory: '<S205>/olon' */
+    /* InitializeConditions for Memory: '<S206>/olon' */
     autocodePlant_DW->olon_PreviousInput = -1000.0;
 
-    /* InitializeConditions for Memory: '<S204>/olat' */
+    /* InitializeConditions for Memory: '<S205>/olat' */
     autocodePlant_DW->olat_PreviousInput = -1000.0;
 
-    /* InitializeConditions for Memory: '<S204>/oalt' */
+    /* InitializeConditions for Memory: '<S205>/oalt' */
     autocodePlant_DW->oalt_PreviousInput = -1000.0;
 
-    /* InitializeConditions for RandomNumber: '<S168>/White Noise' */
+    /* InitializeConditions for RandomNumber: '<S169>/White Noise' */
     autocodePlant_DW->RandSeed_b = 1529675776U;
     autocodePlant_DW->NextOutput_e = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed_b);
 
-    /* InitializeConditions for RandomNumber: '<S114>/White Noise' */
+    /* InitializeConditions for RandomNumber: '<S115>/White Noise' */
     autocodePlant_DW->RandSeed_i[0] = 1529675776U;
     autocodePlant_DW->NextOutput_d[0] = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed_i[0]);
@@ -4614,201 +4722,201 @@ void autocodePlant_initialize(RT_MODEL_autocodePlant_T *const autocodePlant_M,
     autocodePlant_DW->NextOutput_d[3] = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed_i[3]);
 
-    /* InitializeConditions for RandomNumber: '<S159>/White Noise' */
+    /* InitializeConditions for RandomNumber: '<S160>/White Noise' */
     autocodePlant_DW->RandSeed_p = 1529675776U;
     autocodePlant_DW->NextOutput_k = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed_p);
 
-    /* InitializeConditions for RandomNumber: '<S167>/White Noise' */
+    /* InitializeConditions for RandomNumber: '<S168>/White Noise' */
     autocodePlant_DW->RandSeed_pb = 1529675776U;
     autocodePlant_DW->NextOutput_m = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed_pb);
 
-    /* InitializeConditions for RandomNumber: '<S169>/White Noise' */
+    /* InitializeConditions for RandomNumber: '<S170>/White Noise' */
     autocodePlant_DW->RandSeed_pa = 1529675776U;
     autocodePlant_DW->NextOutput_a = rt_nrand_Upu32_Yd_f_pw_snf
       (&autocodePlant_DW->RandSeed_pa);
 
-    /* SystemInitialize for Merge: '<S194>/Merge' */
+    /* SystemInitialize for Merge: '<S195>/Merge' */
     autocodePlant_B->Merge = 1.0;
 
-    /* SystemInitialize for Enabled SubSystem: '<S189>/Convert from geodetic to  spherical coordinates ' */
-    /* SystemInitialize for Iterator SubSystem: '<S202>/For Iterator Subsystem' */
-    /* SystemInitialize for Assignment: '<S249>/Assignment' incorporates:
-     *  Outport: '<S249>/sp[11]'
+    /* SystemInitialize for Enabled SubSystem: '<S190>/Convert from geodetic to  spherical coordinates ' */
+    /* SystemInitialize for Iterator SubSystem: '<S203>/For Iterator Subsystem' */
+    /* SystemInitialize for Assignment: '<S250>/Assignment' incorporates:
+     *  Outport: '<S250>/sp[11]'
      */
     memcpy(&autocodePlant_B->Assignment[0], &rtCP__sp11_Y0[0], 11U * sizeof
            (real_T));
 
-    /* SystemInitialize for Assignment: '<S249>/Assignment1' incorporates:
-     *  Outport: '<S249>/cp[11]'
+    /* SystemInitialize for Assignment: '<S250>/Assignment1' incorporates:
+     *  Outport: '<S250>/cp[11]'
      */
     memcpy(&autocodePlant_B->Assignment1[0], &rtCP__cp11_Y0[0], 11U * sizeof
            (real_T));
 
-    /* End of SystemInitialize for SubSystem: '<S202>/For Iterator Subsystem' */
+    /* End of SystemInitialize for SubSystem: '<S203>/For Iterator Subsystem' */
 
-    /* SystemInitialize for SignalConversion generated from: '<S202>/sp[13]' incorporates:
-     *  Outport: '<S202>/sp[13]'
+    /* SystemInitialize for SignalConversion generated from: '<S203>/sp[13]' incorporates:
+     *  Outport: '<S203>/sp[13]'
      */
     memcpy(&autocodePlant_B->OutportBufferForsp13[0], &rtCP__sp13_Y0[0], 13U *
            sizeof(real_T));
 
-    /* SystemInitialize for SignalConversion generated from: '<S202>/cp[13]' incorporates:
-     *  Outport: '<S202>/cp[13]'
+    /* SystemInitialize for SignalConversion generated from: '<S203>/cp[13]' incorporates:
+     *  Outport: '<S203>/cp[13]'
      */
     memcpy(&autocodePlant_B->OutportBufferForcp13[0], &rtCP__cp13_Y0[0], 13U *
            sizeof(real_T));
 
-    /* End of SystemInitialize for SubSystem: '<S189>/Convert from geodetic to  spherical coordinates ' */
+    /* End of SystemInitialize for SubSystem: '<S190>/Convert from geodetic to  spherical coordinates ' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S189>/Convert from geodetic to  spherical coordinates' */
-    /* SystemInitialize for Sqrt: '<S201>/sqrt' incorporates:
-     *  Outport: '<S201>/r'
+    /* SystemInitialize for Enabled SubSystem: '<S190>/Convert from geodetic to  spherical coordinates' */
+    /* SystemInitialize for Sqrt: '<S202>/sqrt' incorporates:
+     *  Outport: '<S202>/r'
      */
     autocodePlant_B->sqrt_b = 6378.137;
 
-    /* SystemInitialize for Product: '<S242>/Product4' incorporates:
-     *  Outport: '<S201>/ct'
+    /* SystemInitialize for Product: '<S243>/Product4' incorporates:
+     *  Outport: '<S202>/ct'
      */
     autocodePlant_B->Product4 = 1.0;
 
-    /* End of SystemInitialize for SubSystem: '<S189>/Convert from geodetic to  spherical coordinates' */
+    /* End of SystemInitialize for SubSystem: '<S190>/Convert from geodetic to  spherical coordinates' */
 
-    /* SystemInitialize for Iterator SubSystem: '<S189>/Compute magnetic vector in spherical coordinates' */
-    /* InitializeConditions for UnitDelay: '<S200>/Unit Delay2' */
+    /* SystemInitialize for Iterator SubSystem: '<S190>/Compute magnetic vector in spherical coordinates' */
+    /* InitializeConditions for UnitDelay: '<S201>/Unit Delay2' */
     autocodePlant_DW->UnitDelay2_DSTATE[0] = 0.0;
     autocodePlant_DW->UnitDelay2_DSTATE[1] = 0.0;
     autocodePlant_DW->UnitDelay2_DSTATE[2] = 0.0;
     autocodePlant_DW->UnitDelay2_DSTATE[3] = 0.0;
 
-    /* SystemInitialize for Iterator SubSystem: '<S200>/For Iterator Subsystem' */
-    /* SystemInitialize for Enabled SubSystem: '<S208>/Compute unnormalized associated  legendre polynomials and  derivatives via recursion relations' */
-    /* SystemInitialize for Merge: '<S210>/Merge' */
+    /* SystemInitialize for Iterator SubSystem: '<S201>/For Iterator Subsystem' */
+    /* SystemInitialize for Enabled SubSystem: '<S209>/Compute unnormalized associated  legendre polynomials and  derivatives via recursion relations' */
+    /* SystemInitialize for Merge: '<S211>/Merge' */
     autocodePlant_B->Merge_b = 0.0;
 
-    /* SystemInitialize for Merge: '<S210>/Merge1' */
+    /* SystemInitialize for Merge: '<S211>/Merge1' */
     autocodePlant_B->Merge1_i = 0.0;
 
-    /* InitializeConditions for UnitDelay: '<S210>/Unit Delay1' */
+    /* InitializeConditions for UnitDelay: '<S211>/Unit Delay1' */
     memcpy(&autocodePlant_DW->UnitDelay1_DSTATE_c[0],
            &rtCP__UnitDelay1_InitialCondi_n[0], 169U * sizeof(real_T));
 
-    /* SystemInitialize for Assignment: '<S210>/Assignment_snorm' incorporates:
-     *  Outport: '<S210>/snorm[169]'
+    /* SystemInitialize for Assignment: '<S211>/Assignment_snorm' incorporates:
+     *  Outport: '<S211>/snorm[169]'
      */
     memcpy(&autocodePlant_B->Assignment_snorm[0], &rtCP__snorm169_Y0[0], 169U *
            sizeof(real_T));
 
-    /* End of SystemInitialize for SubSystem: '<S208>/Compute unnormalized associated  legendre polynomials and  derivatives via recursion relations' */
+    /* End of SystemInitialize for SubSystem: '<S209>/Compute unnormalized associated  legendre polynomials and  derivatives via recursion relations' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S209>/Special case - North//South Geographic Pole' */
-    /* SystemInitialize for IfAction SubSystem: '<S212>/If Action Subsystem2' */
-    /* SystemInitialize for IfAction SubSystem: '<S212>/If Action Subsystem1' */
+    /* SystemInitialize for Enabled SubSystem: '<S210>/Special case - North//South Geographic Pole' */
+    /* SystemInitialize for IfAction SubSystem: '<S213>/If Action Subsystem2' */
+    /* SystemInitialize for IfAction SubSystem: '<S213>/If Action Subsystem1' */
     for (i = 0; i < 13; i++) {
-      /* InitializeConditions for UnitDelay: '<S212>/Unit Delay1' */
+      /* InitializeConditions for UnitDelay: '<S213>/Unit Delay1' */
       autocodePlant_DW->UnitDelay1_DSTATE_b[i] = 1.0;
-
-      /* SystemInitialize for Assignment: '<S216>/Assignment2' incorporates:
-       *  Outport: '<S216>/pp[13]'
-       */
-      autocodePlant_B->Assignment2_m[i] = 1.0;
 
       /* SystemInitialize for Assignment: '<S217>/Assignment2' incorporates:
        *  Outport: '<S217>/pp[13]'
        */
+      autocodePlant_B->Assignment2_m[i] = 1.0;
+
+      /* SystemInitialize for Assignment: '<S218>/Assignment2' incorporates:
+       *  Outport: '<S218>/pp[13]'
+       */
       autocodePlant_B->Assignment2_a[i] = 1.0;
     }
 
-    /* End of SystemInitialize for SubSystem: '<S212>/If Action Subsystem1' */
-    /* End of SystemInitialize for SubSystem: '<S212>/If Action Subsystem2' */
-    /* End of SystemInitialize for SubSystem: '<S209>/Special case - North//South Geographic Pole' */
-    /* End of SystemInitialize for SubSystem: '<S200>/For Iterator Subsystem' */
-    /* End of SystemInitialize for SubSystem: '<S189>/Compute magnetic vector in spherical coordinates' */
+    /* End of SystemInitialize for SubSystem: '<S213>/If Action Subsystem1' */
+    /* End of SystemInitialize for SubSystem: '<S213>/If Action Subsystem2' */
+    /* End of SystemInitialize for SubSystem: '<S210>/Special case - North//South Geographic Pole' */
+    /* End of SystemInitialize for SubSystem: '<S201>/For Iterator Subsystem' */
+    /* End of SystemInitialize for SubSystem: '<S190>/Compute magnetic vector in spherical coordinates' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S104>/Hpgw' */
-    /* InitializeConditions for Integrator: '<S115>/pgw_p' */
+    /* SystemInitialize for Enabled SubSystem: '<S105>/Hpgw' */
+    /* InitializeConditions for Integrator: '<S116>/pgw_p' */
     autocodePlant_X->pgw_p_CSTATE[0] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S104>/Hpgw' */
+    /* End of SystemInitialize for SubSystem: '<S105>/Hpgw' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S105>/Hwgw(s)' */
-    /* InitializeConditions for Integrator: '<S120>/wg_p1' */
+    /* SystemInitialize for Enabled SubSystem: '<S106>/Hwgw(s)' */
+    /* InitializeConditions for Integrator: '<S121>/wg_p1' */
     autocodePlant_X->wg_p1_CSTATE[0] = 0.0;
 
-    /* InitializeConditions for Integrator: '<S120>/wg_p2' */
+    /* InitializeConditions for Integrator: '<S121>/wg_p2' */
     autocodePlant_X->wg_p2_CSTATE[0] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S105>/Hwgw(s)' */
+    /* End of SystemInitialize for SubSystem: '<S106>/Hwgw(s)' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S104>/Hqgw' */
-    /* InitializeConditions for Integrator: '<S116>/qgw_p' */
+    /* SystemInitialize for Enabled SubSystem: '<S105>/Hqgw' */
+    /* InitializeConditions for Integrator: '<S117>/qgw_p' */
     autocodePlant_X->qgw_p_CSTATE[0] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S104>/Hqgw' */
+    /* End of SystemInitialize for SubSystem: '<S105>/Hqgw' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S105>/Hvgw(s)' */
-    /* InitializeConditions for Integrator: '<S119>/vg_p1' */
+    /* SystemInitialize for Enabled SubSystem: '<S106>/Hvgw(s)' */
+    /* InitializeConditions for Integrator: '<S120>/vg_p1' */
     autocodePlant_X->vg_p1_CSTATE[0] = 0.0;
 
-    /* InitializeConditions for Integrator: '<S119>/vgw_p2' */
+    /* InitializeConditions for Integrator: '<S120>/vgw_p2' */
     autocodePlant_X->vgw_p2_CSTATE[0] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S105>/Hvgw(s)' */
+    /* End of SystemInitialize for SubSystem: '<S106>/Hvgw(s)' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S104>/Hrgw' */
-    /* InitializeConditions for Integrator: '<S117>/rgw_p' */
+    /* SystemInitialize for Enabled SubSystem: '<S105>/Hrgw' */
+    /* InitializeConditions for Integrator: '<S118>/rgw_p' */
     autocodePlant_X->rgw_p_CSTATE[0] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S104>/Hrgw' */
+    /* End of SystemInitialize for SubSystem: '<S105>/Hrgw' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S105>/Hugw(s)' */
-    /* InitializeConditions for Integrator: '<S118>/ug_p' */
+    /* SystemInitialize for Enabled SubSystem: '<S106>/Hugw(s)' */
+    /* InitializeConditions for Integrator: '<S119>/ug_p' */
     autocodePlant_X->ug_p_CSTATE[0] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S105>/Hugw(s)' */
+    /* End of SystemInitialize for SubSystem: '<S106>/Hugw(s)' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S104>/Hpgw' */
-    /* InitializeConditions for Integrator: '<S115>/pgw_p' */
+    /* SystemInitialize for Enabled SubSystem: '<S105>/Hpgw' */
+    /* InitializeConditions for Integrator: '<S116>/pgw_p' */
     autocodePlant_X->pgw_p_CSTATE[1] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S104>/Hpgw' */
+    /* End of SystemInitialize for SubSystem: '<S105>/Hpgw' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S105>/Hwgw(s)' */
-    /* InitializeConditions for Integrator: '<S120>/wg_p1' */
+    /* SystemInitialize for Enabled SubSystem: '<S106>/Hwgw(s)' */
+    /* InitializeConditions for Integrator: '<S121>/wg_p1' */
     autocodePlant_X->wg_p1_CSTATE[1] = 0.0;
 
-    /* InitializeConditions for Integrator: '<S120>/wg_p2' */
+    /* InitializeConditions for Integrator: '<S121>/wg_p2' */
     autocodePlant_X->wg_p2_CSTATE[1] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S105>/Hwgw(s)' */
+    /* End of SystemInitialize for SubSystem: '<S106>/Hwgw(s)' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S104>/Hqgw' */
-    /* InitializeConditions for Integrator: '<S116>/qgw_p' */
+    /* SystemInitialize for Enabled SubSystem: '<S105>/Hqgw' */
+    /* InitializeConditions for Integrator: '<S117>/qgw_p' */
     autocodePlant_X->qgw_p_CSTATE[1] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S104>/Hqgw' */
+    /* End of SystemInitialize for SubSystem: '<S105>/Hqgw' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S105>/Hvgw(s)' */
-    /* InitializeConditions for Integrator: '<S119>/vg_p1' */
+    /* SystemInitialize for Enabled SubSystem: '<S106>/Hvgw(s)' */
+    /* InitializeConditions for Integrator: '<S120>/vg_p1' */
     autocodePlant_X->vg_p1_CSTATE[1] = 0.0;
 
-    /* InitializeConditions for Integrator: '<S119>/vgw_p2' */
+    /* InitializeConditions for Integrator: '<S120>/vgw_p2' */
     autocodePlant_X->vgw_p2_CSTATE[1] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S105>/Hvgw(s)' */
+    /* End of SystemInitialize for SubSystem: '<S106>/Hvgw(s)' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S104>/Hrgw' */
-    /* InitializeConditions for Integrator: '<S117>/rgw_p' */
+    /* SystemInitialize for Enabled SubSystem: '<S105>/Hrgw' */
+    /* InitializeConditions for Integrator: '<S118>/rgw_p' */
     autocodePlant_X->rgw_p_CSTATE[1] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S104>/Hrgw' */
+    /* End of SystemInitialize for SubSystem: '<S105>/Hrgw' */
 
-    /* SystemInitialize for Enabled SubSystem: '<S105>/Hugw(s)' */
-    /* InitializeConditions for Integrator: '<S118>/ug_p' */
+    /* SystemInitialize for Enabled SubSystem: '<S106>/Hugw(s)' */
+    /* InitializeConditions for Integrator: '<S119>/ug_p' */
     autocodePlant_X->ug_p_CSTATE[1] = 0.0;
 
-    /* End of SystemInitialize for SubSystem: '<S105>/Hugw(s)' */
+    /* End of SystemInitialize for SubSystem: '<S106>/Hugw(s)' */
   }
 }
 

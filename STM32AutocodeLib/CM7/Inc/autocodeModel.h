@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Oct 14 21:16:34 2026
+ * C/C++ source code generated on : Tue Oct 27 19:09:50 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -127,9 +127,9 @@ typedef struct {
   real_T xAccEst_mps2;
   real_T yAccEst_mps2;
   real_T zAccEst_mps2;
-  real_T dynPressureEst_Pa;
   real_T accelBias_mps2[3];
   real_T gyroBias_rps[3];
+  real_T dynPressureEst_Pa;
   real_T xVelEst_mps;
   real_T yVelEst_mps;
   real_T zVelEst_mps;
@@ -181,22 +181,25 @@ typedef struct {
 typedef struct {
   real_T qEst_na[4];                   /* '<S423>/Merge' */
   real_T UnitDelay_2_DSTATE[4];        /* '<S406>/Unit Delay' */
-  real_T UnitDelay_14_DSTATE[3];       /* '<S406>/Unit Delay' */
+  real_T UnitDelay_13_DSTATE[3];       /* '<S406>/Unit Delay' */
   real_T DiscreteTransferFcn1_states[6];/* '<S407>/Discrete Transfer Fcn1' */
-  real_T GyroFilter_states[6];         /* '<S424>/Gyro Filter' */
-  real_T Delay_3_DSTATE[30];           /* '<S422>/Delay' */
-  real_T UnitDelay1_DSTATE[3];         /* '<S422>/Unit Delay1' */
-  real_T DiscreteFIRFilter1_states[297];/* '<S422>/Discrete FIR Filter1' */
-  real_T Delay_4_DSTATE[30];           /* '<S422>/Delay' */
+  real_T GyroFilter_states[3];         /* '<S424>/Gyro Filter' */
+  real_T UnitDelay_12_DSTATE[3];       /* '<S406>/Unit Delay' */
+  real_T AccelFilter_states[3];        /* '<S407>/Accel Filter' */
+  real_T AccelFilter_states_l[3];      /* '<S424>/Accel Filter' */
+  real_T Delay_4_DSTATE[1500];         /* '<S422>/Delay' */
   real_T UnitDelay_DSTATE[3];          /* '<S422>/Unit Delay' */
   real_T DiscreteFIRFilter_states[297];/* '<S422>/Discrete FIR Filter' */
-  real_T UnitDelay_13_DSTATE[3];       /* '<S406>/Unit Delay' */
-  real_T AccelFilter_states[3];        /* '<S424>/Accel Filter' */
-  real_T AccelFilter_states_p[3];      /* '<S407>/Accel Filter' */
-  real_T Delay_3_DSTATE_e[30];         /* '<S429>/Delay' */
+  real_T Delay_3_DSTATE[1500];         /* '<S422>/Delay' */
+  real_T UnitDelay1_DSTATE[3];         /* '<S422>/Unit Delay1' */
+  real_T DiscreteFIRFilter1_states[297];/* '<S422>/Discrete FIR Filter1' */
+  real_T Delay_3_DSTATE_e[1500];       /* '<S429>/Delay' */
   real_T Integrator_DSTATE;            /* '<S324>/Integrator' */
   real_T Filter_DSTATE;                /* '<S319>/Filter' */
   real_T Delay_DSTATE;                 /* '<S343>/Delay' */
+  real_T UnitDelay_15_DSTATE;          /* '<S406>/Unit Delay' */
+  real_T UnitDelay_16_DSTATE;          /* '<S406>/Unit Delay' */
+  real_T UnitDelay_17_DSTATE;          /* '<S406>/Unit Delay' */
   real_T Integrator_DSTATE_b;          /* '<S122>/Integrator' */
   real_T Filter_DSTATE_p;              /* '<S117>/Filter' */
   real_T Delay_DSTATE_p;               /* '<S149>/Delay' */
@@ -212,20 +215,17 @@ typedef struct {
   real_T Integrator_DSTATE_e;          /* '<S192>/Integrator' */
   real_T Filter_DSTATE_g;              /* '<S187>/Filter' */
   real_T Delay_DSTATE_e;               /* '<S219>/Delay' */
-  real_T UnitDelay_15_DSTATE;          /* '<S406>/Unit Delay' */
-  real_T UnitDelay_16_DSTATE;          /* '<S406>/Unit Delay' */
-  real_T UnitDelay_17_DSTATE;          /* '<S406>/Unit Delay' */
   real_T UnitDelay_18_DSTATE;          /* '<S406>/Unit Delay' */
   real_T UnitDelay_19_DSTATE;          /* '<S406>/Unit Delay' */
   real_T UnitDelay_20_DSTATE;          /* '<S406>/Unit Delay' */
-  real_T UD_DSTATE;                    /* '<S282>/UD' */
+  real_T UD_DSTATE;                    /* '<S218>/UD' */
+  real_T UD_DSTATE_k;                  /* '<S78>/UD' */
+  real_T UD_DSTATE_n;                  /* '<S148>/UD' */
+  real_T UD_DSTATE_g;                  /* '<S282>/UD' */
   real_T UD_DSTATE_p;                  /* '<S402>/UD' */
   real_T UD_DSTATE_a;                  /* '<S342>/UD' */
-  real_T UD_DSTATE_k;                  /* '<S78>/UD' */
-  real_T UD_DSTATE_l;                  /* '<S218>/UD' */
-  real_T UD_DSTATE_n;                  /* '<S148>/UD' */
-  int32_T DiscreteFIRFilter1_circBuf;  /* '<S422>/Discrete FIR Filter1' */
   int32_T DiscreteFIRFilter_circBuf;   /* '<S422>/Discrete FIR Filter' */
+  int32_T DiscreteFIRFilter1_circBuf;  /* '<S422>/Discrete FIR Filter1' */
   uint32_T temporalCounter_i1;         /* '<S409>/State Transition Table' */
   flightMode flightMode_enum;          /* '<S409>/State Transition Table' */
   flightMode UnitDelay_1_DSTATE;       /* '<S406>/Unit Delay' */
@@ -787,7 +787,8 @@ extern void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e
  * '<S447>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q2'
  * '<S448>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q3'
  * '<S449>' : 'autocodeModel/Navigation/Navigation/flightMode/State Transition Table'
- * '<S450>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/gravityCalculation'
+ * '<S450>' : 'autocodeModel/Navigation/Navigation/navBusCreator/dynPressureEstimation'
+ * '<S451>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/gravityCalculation'
  */
 #endif                                 /* autocodeModel_h_ */
 
