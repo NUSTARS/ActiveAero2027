@@ -116,6 +116,21 @@ B.complementaryFilter_bus = makeBus_local({
     'posEst_m',          3, 'double'
 });
 
+% Kalman Filter/Update and Kalman Filter/Pass Through -- both feed Merge2,
+% so their Bus Creators output this nonvirtual type with the same element
+% order. Pass Through fills everything but kf_gnssFlag with placeholder
+% values; only samples with kf_gnssFlag true are real (plotFilterResults.m).
+B.kf_bus = makeBus_local({
+    'kf_Pplus',          [15 15], 'double'   % posterior covariance
+    'kf_Pminus',         [15 15], 'double'   % prior covariance
+    'kf_errxPlus',       15,      'double'   % posterior error state
+    'kf_innov',          6,       'double'   % innovation errz
+    'kf_K',              [15 6],  'double'   % Kalman gain
+    'kf_H',              [6 15],  'double'   % measurement matrix
+    'kf_S',              [6 6],   'double'   % innovation covariance
+    'kf_gnssFlag',       1,       'boolean'  % measurement update ran
+});
+
 B.filter_bus = makeBus_local({
     'eulerAnglesEst_rad', 3, 'double'
     'qEst_na',           4, 'double'
@@ -125,15 +140,7 @@ B.filter_bus = makeBus_local({
     'gyroFilt_rps',      3, 'double'
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
-    % Kalman filter internals for scripts/plotFilterResults.m
-    'kf_Pplus',          [15 15], 'double'   % posterior covariance
-    'kf_Pminus',         [15 15], 'double'   % prior covariance
-    'kf_errxPlus',       15,      'double'   % posterior error state
-    'kf_innov',          6,       'double'   % innovation errz
-    'kf_H',              [6 15],  'double'   % measurement matrix
-    'kf_K',              [15 6],  'double'   % Kalman gain
-    'kf_S',              [6 6],   'double'   % innovation covariance
-    'kf_gnssFlag',       1,       'double'   % measurement-update flag
+    'kf_bus',            1, 'Bus: kf_bus'
 });
 
 B.deadReckoning_bus = makeBus_local({

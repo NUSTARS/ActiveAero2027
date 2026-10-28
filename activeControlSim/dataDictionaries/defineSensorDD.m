@@ -5,7 +5,7 @@ rng(42);
 biasOn = false;
 
 % Lever Arm (relative to CG
-S.sensorParams.imuPosBdy_m = [0, 0, 0];
+S.sensorParams.imuPosBdy_m = [0, 0, 0.1];
 
 %% Accelerometer %%
 
