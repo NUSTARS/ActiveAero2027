@@ -43,6 +43,7 @@ S.sensorParams.accPSDWhite = accnoiseDensity_mps2psqHz .* accnoiseDensity_mps2ps
 
 % Misc
 S.sensorParams.accScaleCoupling_na = eye(3) + accScaleCoupling_na;
+S.sensorParams.accScaleCouplingInv_na = inv(S.sensorParams.accScaleCoupling_na);
 S.sensorParams.accSampleTime_s = 1 / accRate_Hz;
 
 %% Gyroscope %%
@@ -84,6 +85,7 @@ S.sensorParams.gyroPSDGM = 2 * S.sensorParams.gyroSigmaBias_rps .* S.sensorParam
 % Misc
 S.sensorParams.gyroG = gyroG * 0.01745 / 9.8065; % [rad / s / (m/s)]
 S.sensorParams.gyroScaleCoupling_na = eye(3) + gyroScaleCoupling_na;
+S.sensorParams.gyroScaleCouplingInv_na = inv(S.sensorParams.gyroScaleCoupling_na);
 S.sensorParams.gyroSampleTime_s = 1 / gyroRate_Hz;
 
 %% Magnetometer %%

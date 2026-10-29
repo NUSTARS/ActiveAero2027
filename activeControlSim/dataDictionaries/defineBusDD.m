@@ -120,7 +120,18 @@ B.complementaryFilter_bus = makeBus_local({
 % so their Bus Creators output this nonvirtual type with the same element
 % order. Pass Through fills everything but kf_gnssFlag with placeholder
 % values; only samples with kf_gnssFlag true are real (plotFilterResults.m).
-B.kf_bus = makeBus_local({
+B.kf_bus_quest = makeBus_local({
+    'kf_Pplus',          [15 15], 'double'   % posterior covariance
+    'kf_Pminus',         [15 15], 'double'   % prior covariance
+    'kf_errxPlus',       15,      'double'   % posterior error state
+    'kf_innov',          3,       'double'   % innovation errz
+    'kf_K',              [15 3],  'double'   % Kalman gain
+    'kf_H',              [3 15],  'double'   % measurement matrix
+    'kf_S',              [3 3],   'double'   % innovation covariance
+    'kf_questFlag',       1,       'boolean'  % measurement update ran
+});
+
+B.kf_bus_gnss = makeBus_local({
     'kf_Pplus',          [15 15], 'double'   % posterior covariance
     'kf_Pminus',         [15 15], 'double'   % prior covariance
     'kf_errxPlus',       15,      'double'   % posterior error state
@@ -129,7 +140,7 @@ B.kf_bus = makeBus_local({
     'kf_H',              [6 15],  'double'   % measurement matrix
     'kf_S',              [6 6],   'double'   % innovation covariance
     'kf_gnssFlag',       1,       'boolean'  % measurement update ran
-});
+    });
 
 B.filter_bus = makeBus_local({
     'eulerAnglesEst_rad', 3, 'double'
@@ -140,7 +151,8 @@ B.filter_bus = makeBus_local({
     'gyroFilt_rps',      3, 'double'
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
-    'kf_bus',            1, 'Bus: kf_bus'
+    'kf_bus_quest',      1, 'Bus: kf_bus_quest'
+    'kf_bus_gnss',       1, 'Bus: kf_bus_gnss'
 });
 
 B.deadReckoning_bus = makeBus_local({

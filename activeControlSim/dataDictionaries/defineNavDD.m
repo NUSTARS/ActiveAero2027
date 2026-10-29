@@ -4,7 +4,7 @@ function N = defineNavDD()
 %
 
 N.navControl.useNav_b = true;
-N.navControl.useKalman_b = false;
+N.navControl.useKalman_b = true;
 N.navControl.dt_s = 1/100;
 N.navControl.navIC_bus = struct('qEst_na', [0.7071, 0, 0.7071, 0]);
 N.navControl.posNed0_m = [0 0 0];
