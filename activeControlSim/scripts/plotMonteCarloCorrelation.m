@@ -63,10 +63,10 @@ outputNames  = {};
 nTop         = 15;
 scatterPairs = {
     % input                          output
-    'windParams.constantNed_mps(1)',  'activeControlTime_s'
-    'aeroParams.finControlScale_na',  'activeControlTime_s'
-    'aeroParams.finControlInputScale_na',  'ilPitchErrMax_pct'
-    'aeroParams.finControlScale_na',  'ilPitchErrMax_pct'
+    'icParams.eulIC_rad(2)',  'olPitchErrMax_pct'
+    'icParams.eulIC_rad(2)',  'olPitchErrAvg_pct'
+    'icParams.eulIC_rad(2)',  'olYawErrMax_pct'
+    'icParams.eulIC_rad(2)',  'olYawErrAvg_pct'
 };
 
 % ------------------------------------------------------------- load
