@@ -44,7 +44,7 @@ P.windParams.lowAltWindDir_deg = 180; % CW from north
 
 % Motor Parameters
 P.motorParams.thrustDataFile = 'AeroTech_M1315W.csv'; % [N] Motor thrust data file name
-P.motorParams.startUpDelay = 20; % [s] Motor start up delay 
+P.motorParams.startUpDelay = 12; % [s] Motor start up delay 
 P.motorParams.thrustData = readmatrix(P.motorParams.thrustDataFile);
 P.motorParams.time = P.motorParams.thrustData(:,1);
 P.motorParams.thrustScaling_na = 1.0;

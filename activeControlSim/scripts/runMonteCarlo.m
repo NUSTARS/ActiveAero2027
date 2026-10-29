@@ -1,7 +1,7 @@
 %RUNMONTECARLO  Run a batch of sims with dispersed parameters and save the results.
 
 modelName = 'activeControlSim';
-nRuns = 250;
+nRuns = 1500;
 rngSeed = 1;
 
 % Any numeric parameter in plantParams.sldd (definePlantDD +
