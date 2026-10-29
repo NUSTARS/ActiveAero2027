@@ -22,8 +22,9 @@ dispersions = {
     %'vehicleParams.mass_kg',             1.0
     %'vehicleParams.inertia_kgm2',        diag([0.005, 1.0, 1.0])
     'vehicleParams.cg_m',                0.06
-    'icParams.eulIC_rad',                [0.0, 0.2, 0.2]   % [roll pitch yaw]
-    'windParams.constantNed_mps',        [5; 5; 0]
+    'icParams.eulIC_rad',                [1.0, 0.2, 0.2]   % [roll pitch yaw]
+    'windParams.lowAltWindSpeed_mps',    5
+    'windParams.lowAltWindDir_deg',      180
     'aeroParams.finStaticScale_na'       0.1
     %'aeroParams.finControlScale_na'      0.2
     'aeroParams.finStaticInputScale_na'  0.1

@@ -39,7 +39,7 @@ P.envParams.date_y = decyear('01-September-2026','dd-mmm-yyyy'); % [y] year + fr
 P.windParams.useWindShear_b = true;
 P.windParams.useWindTurbulence_b = true;
 P.windParams.constantNed_mps = [0; 0; 0];
-P.windParams.lowAltWindSpeed_mps = 10;
+P.windParams.lowAltWindSpeed_mps = 5;
 P.windParams.lowAltWindDir_deg = 180; % CW from north
 
 % Motor Parameters
