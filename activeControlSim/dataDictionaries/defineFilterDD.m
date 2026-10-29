@@ -1,7 +1,8 @@
 function F = defineFilterDD()
 
 % ICs
-F.filterParams.P0 = 1e-4 * eye(15,15);%[0 0 0; 0 0 0; 0 0 0];
+
+F.filterParams.P0 = blkdiag(1e-2*eye(3), 2e-3*eye(3), 2e-2*eye(3), 4e-4*eye(3), 1e-4*eye(3));
 errEuler0 = [0 0 0];
 errVel0 = [0 0 0];
 errPos0 = [0 0 0];
@@ -9,6 +10,8 @@ errAccBias0 = [0 0 0];
 errGyroBias0 = [0 0 0];
 F.filterParams.errx0 = [errEuler0, errVel0, errPos0, errAccBias0, errGyroBias0];
 F.filterParams.order = 1;
+% Make Qc dependent on flight mode
+F.filterParams.Qc = blkdiag(1e-8*eye(3), 1e-4*eye(3), 1e-7*eye(3), 1e-7*eye(3), 5e-9*eye(3));
 
 % GNSS measurement model
 sigDummyPosNE_m = 0.1; % [m]

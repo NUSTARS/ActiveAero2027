@@ -22,7 +22,7 @@ P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
 % Rail angle. icParams.eul_rad is derived from this in derivePlantDD.m.
-P.icParams.eulIC_rad = [0.0, 0.1, 0.0];
+P.icParams.eulIC_rad = [0.0, 0.01, 0.0];
 %P.icParams.eulIC_rad = [-0.5395 0.2640 0.2240];   % [rad], [roll pitch yaw] (3-2-1), in the rotated frame (not bdy or NED)
 
 %% Enviornment

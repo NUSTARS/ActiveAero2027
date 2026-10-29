@@ -32,22 +32,29 @@
 %     Everything involving the filter's covariance or measurements also
 %     needs filter_bus in out.logsout (Simulink signal logging on the
 %     filter subsystem's output line in navigation.slx, named kfLogName
-%     below). Its kf_bus sub-bus (defineBusDD.m) carries:
+%     below). It carries one sub-bus per measurement update
+%     (defineBusDD.m), listed in `sensors` below:
+%       kf_bus_gnss   GNSS position + velocity, nz = 6, flag kf_gnssFlag
+%       kf_bus_quest  QUEST attitude,          nz = 3, flag kf_questFlag
+%     each with
 %       kf_Pplus     15x15  posterior covariance
 %       kf_Pminus    15x15  prior covariance
 %       kf_errxPlus  15x1   posterior error state
-%       kf_innov     6x1    innovation errz
-%       kf_K         15x6   Kalman gain
-%       kf_H         6x15   measurement matrix
-%       kf_S         6x6    innovation covariance
-%       kf_gnssFlag  1x1    true on steps where the Update branch ran
-%     kf_bus comes out of Merge2, which takes Kalman Filter/Update on
-%     measurement steps and Kalman Filter/Pass Through (placeholder
-%     values) otherwise, so every kf_bus quantity -- including P for the
-%     sigma envelopes and NEES -- is only used at the kf_gnssFlag epochs.
-%     A missing kf_bus field is skipped with a warning; S is rebuilt as
-%     H*P-*H' + R when kf_S is absent. R comes from filterParams.R
-%     (defineFilterDD.m) unless measR is set.
+%       kf_innov     nz x1  innovation errz
+%       kf_K         15xnz  Kalman gain
+%       kf_H         nzx15  measurement matrix
+%       kf_S         nzxnz  innovation covariance
+%       <flag>       1x1    true on steps where that update ran
+%     Each sub-bus comes out of a Merge that takes the update branch on
+%     its measurement steps and Pass Through (placeholder values)
+%     otherwise, so a sub-bus is only used at its own flag epochs. The
+%     covariance (sigma envelopes, NEES, covariance health) is taken at
+%     the union of every sensor's epochs; where two updates share a step,
+%     the smaller P+ (the later of the sequential updates) is kept. A
+%     missing field is skipped with a warning; S is rebuilt as
+%     H*P-*H' + R when kf_S is absent. R comes from
+%     filterParams.R_GNSS / R_QUEST (defineFilterDD.m) unless measR
+%     overrides it.
 %
 %   OUTPUT
 %     Figure 108: KF State Errors -- truth - estimate per error state with
@@ -59,18 +66,21 @@
 %     Figure 110: KF NEES -- full-state and per-block NEES with chi-square
 %                 bounds, running average NEES, Monte Carlo average.
 %     Figure 111: KF Innovations -- pre-fit residuals (innovations) and
-%                 post-fit residuals per measurement with +/-sqrt(S_ii)
-%                 envelopes.
+%                 post-fit residuals per measurement channel (GNSS
+%                 position, GNSS velocity, QUEST attitude rows) with
+%                 +/-sqrt(S_ii) envelopes.
 %     Figure 112: KF Residual Ratios -- innovation / sqrt(S_ii) (pre-fit)
-%                 and post-fit residual ratios, histograms vs N(0,1),
-%                 per-channel mean / std.
-%     Figure 113: KF NIS & Whiteness -- full and per-block NIS with
-%                 chi-square bounds, running average NIS, innovation
-%                 autocorrelation with white-noise bounds.
+%                 and post-fit residual ratios, histograms vs N(0,1) per
+%                 block, per-channel mean / std.
+%     Figure 113: KF NIS & Whiteness -- per-sensor NIS and per-block NIS
+%                 with chi-square bounds, running average NIS,
+%                 innovation autocorrelation per block with white-noise
+%                 bounds.
 %     Figure 114: KF Covariance Health -- per-state sigma (log), P
 %                 symmetry error, min eigenvalue, condition numbers of P
 %                 and S, trace(P), trace reduction per update, Kalman
-%                 gain row norms.
+%                 gain row norms (S, trace reduction and gains marked
+%                 per sensor).
 %     Figure 115: KF Consistency Summary -- % of samples inside 1/2/3
 %                 sigma per state vs the Gaussian 68.3/95.4/99.7 %, and
 %                 RMS error / RMS sigma per state (1 = consistent).
@@ -100,9 +110,9 @@ forwardAxis = [1;0;0];
 confLevel   = 0.95;             % two-sided confidence for chi-square / whiteness bounds
 attErrFrame = 'nav';            % 'nav' (psi-angle, NED) or 'body'
 maxLag      = 25;               % autocorrelation lags (in measurement updates)
-measR       = [];               % [] = filterParams.R from defineFilterDD.m
+measR       = struct();         % R overrides by sensor name, e.g. measR.GNSS = eye(6); unset = filterParams.R_<name>
 
-kfLogName   = 'filter_bus';     % logged bus holding the kf_bus sub-bus (or kf_bus itself)
+kfLogName   = 'filter_bus';     % logged bus holding the kf_bus_* sub-buses
 
 % ------------------------------------------------------------ load runs
 outs = {};
@@ -129,16 +139,6 @@ else
     end
 end
 
-if isempty(measR)
-    try
-        F = defineFilterDD();
-        measR = F.filterParams.R;
-    catch
-        warning('plotFilterResults:noR', ...
-            'Could not read filterParams.R from defineFilterDD.m -- S can only come from kf_S.');
-    end
-end
-
 % ------------------------------------------------------- state metadata
 grpNames = {'Attitude', 'Velocity', 'Position', 'Accel Bias', 'Gyro Bias'};
 grpUnits = {'deg', 'm/s', 'm', 'm/s^2', 'deg/s'};
@@ -157,17 +157,65 @@ for g = 1:5
         stateScale((g-1)*3 + j) = grpScale(g);
     end
 end
-measLbl   = {'Pos N','Pos E','Pos D','Vel N','Vel E','Vel D'};
-measUnits = {'m','m','m','m/s','m/s','m/s'};
+% Measurement updates, one per kf_bus_* sub-bus of filter_bus. Each is
+% found by its flag element, not its name. scale converts the innovation
+% to plotting units; blocks group channels into 3-vectors for the
+% per-block NIS, histograms and autocorrelation.
+sensors = struct( ...
+    'name',   {'GNSS', 'QUEST'}, ...
+    'flag',   {'kf_gnssFlag', 'kf_questFlag'}, ...
+    'rField', {'R_GNSS', 'R_QUEST'}, ...
+    'lbl',    {{'Pos N','Pos E','Pos D','Vel N','Vel E','Vel D'}, strcat('Att', {' '}, attLbl)}, ...
+    'units',  {{'m','m','m','m/s','m/s','m/s'}, {'deg','deg','deg'}}, ...
+    'scale',  {ones(1, 6), (180/pi) * ones(1, 3)}, ...
+    'blocks', {{'Position', 1:3; 'Velocity', 4:6}, {'Attitude', 1:3}}, ...
+    'R',      {[], []});
+nSens = numel(sensors);
+
+try
+    F = defineFilterDD();
+catch
+    F = [];
+end
+for s = 1:nSens
+    if isfield(measR, sensors(s).name)
+        sensors(s).R = measR.(sensors(s).name);
+    elseif ~isempty(F) && isfield(F.filterParams, sensors(s).rField)
+        sensors(s).R = F.filterParams.(sensors(s).rField);
+    else
+        warning('plotFilterResults:noR', ...
+            'Could not read filterParams.%s from defineFilterDD.m -- %s S can only come from kf_S.', ...
+            sensors(s).rField, sensors(s).name);
+    end
+end
+
+% Every measurement channel and 3-channel block, in plotting order
+% (k = the block's index within its sensor).
+chan = struct('s', {}, 'm', {}, 'lbl', {});
+blk  = struct('s', {}, 'k', {}, 'name', {}, 'idx', {});
+for s = 1:nSens
+    for m = 1:numel(sensors(s).lbl)
+        chan(end+1) = struct('s', s, 'm', m, 'lbl', sensors(s).lbl{m}); %#ok<SAGROW>
+    end
+    for b = 1:size(sensors(s).blocks, 1)
+        blk(end+1) = struct('s', s, 'k', b, 'name', sensors(s).blocks{b,1}, ...
+            'idx', sensors(s).blocks{b,2}); %#ok<SAGROW>
+    end
+end
+nChan = numel(chan);
+nBlk  = numel(blk);
+sensMk = {'o', '^', 's', 'd'};   % per-sensor marker where sensors share an axes
+sensMk = sensMk(1 + mod(0:nSens-1, numel(sensMk)));
+sensKey = strjoin(strcat(sensMk, {' '}, {sensors.name}), ', ');
 
 % ------------------------------------------------------------ evaluate
 nRuns = numel(outs);
 kfRuns = cell(1, nRuns);
 for k = 1:nRuns
     kfRuns{k} = evalRun_local(outs{k}, labels{k}, forwardAxis, kfLogName, ...
-        measR, attErrFrame, maxLag);
+        sensors, attErrFrame, maxLag);
 end
-noPMsg = 'no covariance at update epochs (kf_bus not logged, or no updates)';
+noPMsg = 'no covariance at update epochs (no kf_bus_* sub-bus logged, or no updates)';
 
 % Negative NEES/NIS on log axes warn while plotting; fixLogAxes_local
 % switches those axes to linear afterwards, so the warning is noise.
@@ -298,163 +346,187 @@ addColorKeyLegend_local(kfRuns, runColors);
 
 % ========================================================= INNOVATIONS
 fig4 = figure(111); clf(fig4); set(fig4, 'Name', 'KF Innovations', 'Color', 'w');
-tInn = tiledlayout(fig4, 3, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
+tInn = tiledlayout(fig4, nBlk + 1, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
 title(tInn, 'Pre-fit (o) and post-fit (x) residuals  (dotted \pm1\surdS_{ii}, dashed \pm3\surdS_{ii})');
-axInn = gobjects(2, 3);
-for m = 1:6
-    row = ceil(m/3); col = m - 3*(row-1);
-    axInn(row,col) = nexttile(tInn); hold(axInn(row,col), 'on'); grid(axInn(row,col), 'on');
-    title(axInn(row,col), measLbl{m}, 'FontWeight', 'normal', 'FontSize', 8);
-    if col == 1
-        ylabel(axInn(row,col), {'Residual', ['[' measUnits{m} ']']}, 'FontSize', 8);
-    end
-end
+axInn = chanTiles_local(tInn, sensors, blk, @(u) {'Residual', ['[' u ']']});
 axInnMode = addModeAxis_local(tInn, [1 3]);
 
-anyInnov = false;
 for k = 1:nRuns
     kf = kfRuns{k};
     c = runColors{k};
     stairs(axInnMode, kf.t, kf.flightMode_int, '-', 'Color', c, 'LineWidth', 1.5);
-    if ~kf.hasInnov, continue; end
-    anyInnov = true;
-    for m = 1:min(6, kf.nz)
-        row = ceil(m/3); col = m - 3*(row-1);
-        ax = axInn(row,col);
-        plot(ax, kf.tu, kf.nu(:,m), updStyle_local(kf.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
-        if kf.hasPost
-            plot(ax, kf.tu, kf.post(:,m), 'x', 'Color', c * 0.6, 'MarkerSize', 4);
-        end
-        if kf.hasS
-            plotEnvelope_local(ax, kf.tu, kf.sigS(:,m), c);
+    for s = 1:nSens
+        mz = kf.meas{s};
+        if ~mz.hasInnov, continue; end
+        sc = sensors(s).scale;
+        for m = 1:min(numel(axInn{s}), mz.nz)
+            ax = axInn{s}(m);
+            plot(ax, mz.tu, mz.nu(:,m) * sc(m), updStyle_local(mz.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
+            if mz.hasPost
+                plot(ax, mz.tu, mz.post(:,m) * sc(m), 'x', 'Color', c * 0.6, 'MarkerSize', 4);
+            end
+            if mz.hasS
+                plotEnvelope_local(ax, mz.tu, mz.sigS(:,m) * sc(m), c);
+            end
         end
     end
 end
-if ~anyInnov
-    for ax = axInn(:)'
-        noData_local(ax, innovMissingMsg_local(kfRuns));
+for s = 1:nSens
+    if ~any(cellfun(@(r) r.meas{s}.hasInnov, kfRuns))
+        for ax = axInn{s}
+            noData_local(ax, measMissingMsg_local(kfRuns, s));
+        end
     end
 end
-linkaxes([axInn(:)', axInnMode], 'x');
+linkaxes([axInn{:}, axInnMode], 'x');
 addColorKeyLegend_local(kfRuns, runColors);
 
 % ===================================================== RESIDUAL RATIOS
 fig5 = figure(112); clf(fig5); set(fig5, 'Name', 'KF Residual Ratios', 'Color', 'w');
-tRat = tiledlayout(fig5, 3, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
+tRat = tiledlayout(fig5, nBlk + ceil(nBlk/3) + 1, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
 title(tRat, 'Residual ratio  \nu_i / \surdS_{ii}  (o pre-fit, x post-fit / \surd(R - HP^+H^T)_{ii})');
-axRat = gobjects(2, 3);
-for m = 1:6
-    row = ceil(m/3); col = m - 3*(row-1);
-    axRat(row,col) = nexttile(tRat); hold(axRat(row,col), 'on'); grid(axRat(row,col), 'on');
-    title(axRat(row,col), measLbl{m}, 'FontWeight', 'normal', 'FontSize', 8);
-    if col == 1, ylabel(axRat(row,col), {'Ratio', '[\sigma]'}, 'FontSize', 8); end
-    addLevels_local(axRat(row,col), [1 3]);
+axRat = chanTiles_local(tRat, sensors, blk, @(u) {'Ratio', '[\sigma]'});
+for ax = [axRat{:}]
+    addLevels_local(ax, [1 3]);
 end
-axHistPos = nexttile(tRat); hold(axHistPos, 'on'); grid(axHistPos, 'on');
-title(axHistPos, 'Position ratios vs N(0,1)', 'FontWeight', 'normal', 'FontSize', 8);
-axHistVel = nexttile(tRat); hold(axHistVel, 'on'); grid(axHistVel, 'on');
-title(axHistVel, 'Velocity ratios vs N(0,1)', 'FontWeight', 'normal', 'FontSize', 8);
-axRatStat = nexttile(tRat); hold(axRatStat, 'on'); grid(axRatStat, 'on');
+axHist = gobjects(1, nBlk);
+for b = 1:nBlk
+    axHist(b) = nexttile(tRat, 3*nBlk + b); hold(axHist(b), 'on'); grid(axHist(b), 'on');
+    title(axHist(b), sprintf('%s %s ratios vs N(0,1)', sensors(blk(b).s).name, blk(b).name), ...
+        'FontWeight', 'normal', 'FontSize', 8);
+end
+axRatStat = nexttile(tRat, [1 3]); hold(axRatStat, 'on'); grid(axRatStat, 'on');
 title(axRatStat, 'Pre-fit ratio mean / std per channel', 'FontWeight', 'normal', 'FontSize', 8);
 
-ratPool = [];
+ratPool = cell(1, nSens);
 for k = 1:nRuns
     kf = kfRuns{k};
     c = runColors{k};
-    if ~(kf.hasInnov && kf.hasS), continue; end
-    for m = 1:min(6, kf.nz)
-        row = ceil(m/3); col = m - 3*(row-1);
-        plot(axRat(row,col), kf.tu, kf.ratio(:,m), updStyle_local(kf.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
-        if kf.hasPostSig
-            plot(axRat(row,col), kf.tu, kf.postRatio(:,m), 'x', 'Color', c * 0.6, 'MarkerSize', 4);
+    for s = 1:nSens
+        mz = kf.meas{s};
+        if ~(mz.hasInnov && mz.hasS), continue; end
+        nm = min(numel(axRat{s}), mz.nz);
+        for m = 1:nm
+            plot(axRat{s}(m), mz.tu, mz.ratio(:,m), updStyle_local(mz.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
+            if mz.hasPostSig
+                plot(axRat{s}(m), mz.tu, mz.postRatio(:,m), 'x', 'Color', c * 0.6, 'MarkerSize', 4);
+            end
+        end
+        ratPool{s} = [ratPool{s}; mz.ratio(:, 1:nm)];
+    end
+end
+for b = 1:nBlk
+    pool = ratPool{blk(b).s};
+    if size(pool, 2) >= max(blk(b).idx)
+        plotHistVsNormal_local(axHist(b), pool(:, blk(b).idx));
+    else
+        noData_local(axHist(b), measMissingMsg_local(kfRuns, blk(b).s));
+    end
+end
+for s = 1:nSens
+    if isempty(ratPool{s})
+        for ax = axRat{s}
+            noData_local(ax, measMissingMsg_local(kfRuns, s));
         end
     end
-    ratPool = [ratPool; kf.ratio(:, 1:min(6, kf.nz))]; %#ok<AGROW>
 end
-if ~isempty(ratPool)
-    plotHistVsNormal_local(axHistPos, ratPool(:, 1:min(3, end)));
-    if size(ratPool, 2) >= 6
-        plotHistVsNormal_local(axHistVel, ratPool(:, 4:6));
+mu = nan(1, nChan);
+sd = nan(1, nChan);
+for i = 1:nChan
+    pool = ratPool{chan(i).s};
+    if size(pool, 2) >= chan(i).m
+        mu(i) = mean(pool(:, chan(i).m), 'omitnan');
+        sd(i) = std(pool(:, chan(i).m), 0, 'omitnan');
     end
-    mu = mean(ratPool, 1, 'omitnan');
-    sd = std(ratPool, 0, 1, 'omitnan');
-    plot(axRatStat, 1:numel(mu), mu, 's', 'MarkerSize', 7, 'MarkerFaceColor', [0 0.447 0.741], 'Color', [0 0.447 0.741]);
-    plot(axRatStat, 1:numel(sd), sd, 'o', 'MarkerSize', 7, 'MarkerFaceColor', [0.85 0.325 0.098], 'Color', [0.85 0.325 0.098]);
-    xlim(axRatStat, [0.5, numel(mu) + 0.5]);
+end
+if any(isfinite(mu))
+    plot(axRatStat, 1:nChan, mu, 's', 'MarkerSize', 7, 'MarkerFaceColor', [0 0.447 0.741], 'Color', [0 0.447 0.741]);
+    plot(axRatStat, 1:nChan, sd, 'o', 'MarkerSize', 7, 'MarkerFaceColor', [0.85 0.325 0.098], 'Color', [0.85 0.325 0.098]);
     yline(axRatStat, 1, 'k--', 'HandleVisibility', 'off');
     yline(axRatStat, 0, 'k-', 'HandleVisibility', 'off');
-    xticks(axRatStat, 1:numel(mu)); xticklabels(axRatStat, measLbl(1:numel(mu)));
     legend(axRatStat, {'mean (want 0)', 'std (want 1)'}, 'Location', 'best', 'FontSize', 7);
 else
-    for ax = [axRat(:)', axHistPos, axHistVel, axRatStat]
-        noData_local(ax, innovMissingMsg_local(kfRuns));
-    end
+    noData_local(axRatStat, 'no measurement updates with innovations and S');
 end
-for ax = axRat(:)'
+xlim(axRatStat, [0.5, nChan + 0.5]);
+xticks(axRatStat, 1:nChan); xticklabels(axRatStat, {chan.lbl});
+for ax = [axRat{:}]
     xlabel(ax, 'Time [s]');
 end
-linkaxes(axRat(:)', 'x');
+linkaxes([axRat{:}], 'x');
 addColorKeyLegend_local(kfRuns, runColors);
 
 % ===================================================== NIS & WHITENESS
 fig6 = figure(113); clf(fig6); set(fig6, 'Name', 'KF NIS & Whiteness', 'Color', 'w');
-tNis = tiledlayout(fig6, 3, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
+tNis = tiledlayout(fig6, 3, nBlk, 'TileSpacing', 'compact', 'Padding', 'compact');
 title(tNis, sprintf('NIS with %.0f%% chi-square bounds, innovation whiteness', 100*confLevel));
 
-axNisAll = nexttile(tNis, [1 2]); hold(axNisAll, 'on'); grid(axNisAll, 'on');
-set(axNisAll, 'YScale', 'log'); ylabel(axNisAll, {'Full NIS'}, 'FontSize', 8);
-axNisPos = nexttile(tNis); hold(axNisPos, 'on'); grid(axNisPos, 'on'); set(axNisPos, 'YScale', 'log');
-title(axNisPos, 'Position NIS (dof 3)', 'FontWeight', 'normal', 'FontSize', 8);
-axNisVel = nexttile(tNis); hold(axNisVel, 'on'); grid(axNisVel, 'on'); set(axNisVel, 'YScale', 'log');
-title(axNisVel, 'Velocity NIS (dof 3)', 'FontWeight', 'normal', 'FontSize', 8);
-axAcPos = nexttile(tNis); hold(axAcPos, 'on'); grid(axAcPos, 'on');
-title(axAcPos, 'Position innovation autocorrelation', 'FontWeight', 'normal', 'FontSize', 8);
-xlabel(axAcPos, 'Lag [updates]');
-axAcVel = nexttile(tNis); hold(axAcVel, 'on'); grid(axAcVel, 'on');
-title(axAcVel, 'Velocity innovation autocorrelation', 'FontWeight', 'normal', 'FontSize', 8);
-xlabel(axAcVel, 'Lag [updates]');
+% One NIS tile per sensor, spanning the columns of its blocks below
+axNisS = gobjects(1, nSens);
+for s = 1:nSens
+    axNisS(s) = nexttile(tNis, [1 sum([blk.s] == s)]); hold(axNisS(s), 'on'); grid(axNisS(s), 'on');
+    set(axNisS(s), 'YScale', 'log');
+    title(axNisS(s), sprintf('%s NIS (dof %d)', sensors(s).name, numel(sensors(s).lbl)), ...
+        'FontWeight', 'normal', 'FontSize', 8);
+end
+axNisB = gobjects(1, nBlk);
+for b = 1:nBlk
+    axNisB(b) = nexttile(tNis); hold(axNisB(b), 'on'); grid(axNisB(b), 'on');
+    set(axNisB(b), 'YScale', 'log'); xlabel(axNisB(b), 'Time [s]');
+    title(axNisB(b), sprintf('%s %s NIS (dof %d)', sensors(blk(b).s).name, blk(b).name, numel(blk(b).idx)), ...
+        'FontWeight', 'normal', 'FontSize', 8);
+end
+axAc = gobjects(1, nBlk);
+for b = 1:nBlk
+    axAc(b) = nexttile(tNis); hold(axAc(b), 'on'); grid(axAc(b), 'on');
+    title(axAc(b), sprintf('%s %s innovation autocorrelation', sensors(blk(b).s).name, blk(b).name), ...
+        'FontWeight', 'normal', 'FontSize', 8);
+    xlabel(axAc(b), 'Lag [updates]');
+end
 
 compStyles = {'-', '--', ':'};
-anyNis = false;
 for k = 1:nRuns
     kf = kfRuns{k};
     c = runColors{k};
-    if ~(kf.hasInnov && kf.hasS), continue; end
-    anyNis = true;
-    plot(axNisAll, kf.tu, kf.nis, updStyle_local(kf.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
-    plot(axNisAll, kf.tu, runningMean_local(kf.nis), '--', 'Color', c, 'LineWidth', 1.6);
-    plot(axNisPos, kf.tu, kf.nisBlk(:,1), updStyle_local(kf.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
-    plot(axNisVel, kf.tu, kf.nisBlk(:,2), updStyle_local(kf.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
-    for j = 1:3
-        if size(kf.acf, 2) >= j
-            plot(axAcPos, 0:size(kf.acf,1)-1, kf.acf(:,j), compStyles{j}, 'Color', c, 'LineWidth', 1.1, ...
-                'DisplayName', dispName_local(measLbl{j}, kf.label, nRuns > 1));
-        end
-        if size(kf.acf, 2) >= j + 3
-            plot(axAcVel, 0:size(kf.acf,1)-1, kf.acf(:,j+3), compStyles{j}, 'Color', c, 'LineWidth', 1.1, ...
-                'DisplayName', dispName_local(measLbl{j+3}, kf.label, nRuns > 1));
+    for s = 1:nSens
+        mz = kf.meas{s};
+        if ~(mz.hasInnov && mz.hasS), continue; end
+        plot(axNisS(s), mz.tu, mz.nis, updStyle_local(mz.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
+        plot(axNisS(s), mz.tu, runningMean_local(mz.nis), '--', 'Color', c, 'LineWidth', 1.6);
+        for b = find([blk.s] == s)
+            plot(axNisB(b), mz.tu, mz.nisBlk(:, blk(b).k), updStyle_local(mz.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
+            for j = 1:numel(blk(b).idx)
+                m = blk(b).idx(j);
+                if size(mz.acf, 2) >= m
+                    plot(axAc(b), 0:size(mz.acf,1)-1, mz.acf(:,m), compStyles{j}, 'Color', c, 'LineWidth', 1.1, ...
+                        'DisplayName', dispName_local(sensors(s).lbl{m}, kf.label, nRuns > 1));
+                end
+            end
         end
     end
 end
-if anyNis
-    kf1 = kfRuns{find(cellfun(@(r) r.hasInnov && r.hasS, kfRuns), 1)};
-    addBounds_local(axNisAll, chi2Bounds_local(kf1.nz, 1, alpha), kf1.nz);
-    addBounds_local(axNisPos, chi2Bounds_local(3, 1, alpha), 3);
-    addBounds_local(axNisVel, chi2Bounds_local(3, 1, alpha), 3);
-    legend(axNisAll, {'NIS', 'Running avg'}, 'Location', 'best');
-    for ax = [axAcPos, axAcVel]
-        acBound = zConf / sqrt(max(kf1.M, 1));
-        yline(ax, acBound, 'k--', 'HandleVisibility', 'off');
-        yline(ax, -acBound, 'k--', 'HandleVisibility', 'off');
-        legend(ax, 'Location', 'best', 'FontSize', 7);
+for s = 1:nSens
+    iRun = find(cellfun(@(r) r.meas{s}.hasInnov && r.meas{s}.hasS, kfRuns), 1);
+    bs = find([blk.s] == s);
+    if isempty(iRun)
+        for ax = [axNisS(s), axNisB(bs), axAc(bs)]
+            noData_local(ax, measMissingMsg_local(kfRuns, s));
+        end
+        continue
     end
-else
-    for ax = [axNisAll, axNisPos, axNisVel, axAcPos, axAcVel]
-        noData_local(ax, innovMissingMsg_local(kfRuns));
+    mz1 = kfRuns{iRun}.meas{s};
+    addBounds_local(axNisS(s), chi2Bounds_local(mz1.nz, 1, alpha), mz1.nz);
+    legend(axNisS(s), {'NIS', 'Running avg'}, 'Location', 'best');
+    for b = bs
+        dof = numel(blk(b).idx);
+        addBounds_local(axNisB(b), chi2Bounds_local(dof, 1, alpha), dof);
+        acBound = zConf / sqrt(max(mz1.M, 1));
+        yline(axAc(b), acBound, 'k--', 'HandleVisibility', 'off');
+        yline(axAc(b), -acBound, 'k--', 'HandleVisibility', 'off');
+        legend(axAc(b), 'Location', 'best', 'FontSize', 7);
     end
 end
-linkaxes([axNisAll, axNisPos, axNisVel], 'x');
-xlabel(axNisPos, 'Time [s]'); xlabel(axNisVel, 'Time [s]');
+linkaxes([axNisS, axNisB], 'x');
 addColorKeyLegend_local(kfRuns, runColors);
 
 % =================================================== COVARIANCE HEALTH
@@ -472,9 +544,9 @@ axSym   = newTile_local(tCov, '||P - P^T|| / ||P||', true);
 axEig   = newTile_local(tCov, 'min eig(P)  (must stay > 0)', false);
 axCondP = newTile_local(tCov, 'cond(P)', true);
 axTrace = newTile_local(tCov, 'trace(P^-) dashed, trace(P^+) solid', true);
-axCondS = newTile_local(tCov, 'cond(S)', true);
-axTrRed = newTile_local(tCov, 'trace(P^-) - trace(P^+) at updates', false);
-axKn    = newTile_local(tCov, 'Kalman gain row norm ||K_{i,:}|| (per state)', true);
+axCondS = newTile_local(tCov, sprintf('cond(S)  (%s)', sensKey), true);
+axTrRed = newTile_local(tCov, sprintf('trace(P^-) - trace(P^+) at updates  (%s)', sensKey), false);
+axKn    = newTile_local(tCov, sprintf('Kalman gain row norm ||K_{i,:}|| per state  (%s)', sensKey), true);
 
 for k = 1:nRuns
     kf = kfRuns{k};
@@ -494,15 +566,19 @@ for k = 1:nRuns
     if kf.hasPm
         plot(axTrace, kf.tP, kf.traceM, '--', 'Color', c, 'LineWidth', 1.1);
     end
-    if kf.hasInnov && kf.hasS
-        plot(axCondS, kf.tu, kf.condS, updStyle_local(kf.M), 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
-    end
-    if kf.hasInnov && kf.hasPm && kf.hasPp
-        stem(axTrRed, kf.tu, kf.traceRed, 'Color', c, 'Marker', '.');
-    end
-    if kf.hasK
-        for i = 1:15
-            plot(axKn, kf.tu, kf.Knorm(:,i), '-', 'Color', c, 'LineWidth', 0.8);
+    for s = 1:nSens
+        mz = kf.meas{s};
+        mk = measStyle_local(mz.M, sensMk{s});
+        if mz.hasInnov && mz.hasS
+            plot(axCondS, mz.tu, mz.condS, mk, 'Color', c, 'MarkerSize', 4, 'LineWidth', 0.8);
+        end
+        if mz.hasTrRed
+            stem(axTrRed, mz.tu, mz.traceRed, 'Color', c, 'Marker', sensMk{s}, 'MarkerSize', 4);
+        end
+        if mz.hasK
+            for i = 1:15
+                plot(axKn, mz.tu, mz.Knorm(:,i), mk, 'Color', c, 'MarkerSize', 3, 'LineWidth', 0.8);
+            end
         end
     end
 end
@@ -512,11 +588,12 @@ if ~any(cellfun(@(r) r.hasP, kfRuns))
         noData_local(ax, noPMsg);
     end
 end
-if ~any(cellfun(@(r) r.hasInnov && r.hasS, kfRuns)), noData_local(axCondS, innovMissingMsg_local(kfRuns)); end
-if ~any(cellfun(@(r) r.hasInnov && r.hasPm && r.hasPp, kfRuns))
+anyMeas_local = @(fld) any(cellfun(@(r) any(cellfun(@(mz) mz.(fld), r.meas)), kfRuns));
+if ~anyMeas_local('hasS'), noData_local(axCondS, 'needs kf_innov and S from at least one update'); end
+if ~anyMeas_local('hasTrRed')
     noData_local(axTrRed, 'needs kf_Pminus, kf_Pplus and update epochs');
 end
-if ~any(cellfun(@(r) r.hasK, kfRuns)), noData_local(axKn, 'no gain logged (kf_K) or no updates'); end
+if ~anyMeas_local('hasK'), noData_local(axKn, 'no gain logged (kf_K) or no updates'); end
 linkaxes([axSig, axSym, axEig, axCondP, axTrace, axCondS, axTrRed, axKn], 'x');
 addColorKeyLegend_local(kfRuns, runColors);
 
@@ -559,7 +636,7 @@ warning(logWarn);
 
 % ======================================================== TEXT SUMMARY
 for k = 1:nRuns
-    printSummary_local(kfRuns{k}, stateLbl, stateScale, measLbl, alpha, zConf);
+    printSummary_local(kfRuns{k}, stateLbl, stateScale, sensors, alpha, zConf);
 end
 if ~isempty(mc)
     b = chi2Bounds_local(mode(kfRuns{1}.neesDof), mc.n, alpha);
@@ -568,11 +645,13 @@ if ~isempty(mc)
 end
 
 % ======================================================================
-function kf = evalRun_local(out, label, forwardAxis, busName, R, attErrFrame, maxLag)
-    % Truth errors for one run on the simout time grid t, plus every
-    % kf_bus statistic at the measurement-update epochs only. On all
-    % other steps Merge2 passes Kalman Filter/Pass Through's placeholder
-    % values, so those samples are dropped rather than held or plotted.
+function kf = evalRun_local(out, label, forwardAxis, busName, sensors, attErrFrame, maxLag)
+    % Truth errors for one run on the simout time grid t, each
+    % measurement update's statistics at its own update epochs
+    % (kf.meas{s}), and the filter covariance at the union of those
+    % epochs. On all other steps each sub-bus's Merge passes Pass
+    % Through's placeholder values, so those samples are dropped rather
+    % than held or plotted.
     r = extractSimRun(out, label, forwardAxis);
     t = r.t;
     N = numel(t);
@@ -585,70 +664,70 @@ function kf = evalRun_local(out, label, forwardAxis, busName, R, attErrFrame, ma
           r.accelBiasTrue_mps2 - r.accelBiasEst_mps2, ...
           r.gyroBiasTrue_rps - r.gyroBiasEst_rps];
 
-    kb = getKfBus_local(out, busName);
-    if isempty(kb)
+    fb = getFilterBus_local(out, busName);
+    nS = numel(sensors);
+    meas = cell(1, nS);
+    found = false(1, nS);
+    for s = 1:nS
+        kb = findSubBus_local(fb, sensors(s).flag);
+        found(s) = ~isempty(kb);
+        meas{s} = evalMeas_local(kb, sensors(s), maxLag, label);
+    end
+    if ~any(found)
         warning('plotFilterResults:noKfBus', ...
-            ['%s: no kf_bus found -- only truth errors are plotted. out.logsout must have ', ...
+            ['%s: no kf_bus_* sub-bus found -- only truth errors are plotted. out.logsout must have ', ...
              'a signal named ''%s'' (navigation.slx: name the filter subsystem''s output line ', ...
              'and Log Selected Signals; if the model is open, the in-memory copy is what runs) ', ...
-             'containing kf_bus. Logged: %s'], ...
-            label, busName, strjoin(loggedNames_local(out), ', '));
-    else
-        fn = {'kf_Pplus', 'kf_Pminus', 'kf_errxPlus', 'kf_innov', 'kf_K', 'kf_H', 'kf_S', 'kf_gnssFlag'};
-        missing = fn(~isfield(kb, fn));
-        if ~isempty(missing)
-            warning('plotFilterResults:missingKfFields', ...
-                '%s: not in kf_bus (skipped): %s', label, strjoin(missing, ', '));
+             'containing sub-buses with %s. Logged: %s'], ...
+            label, busName, strjoin({sensors.flag}, ' / '), strjoin(loggedNames_local(out), ', '));
+    elseif ~all(found)
+        warning('plotFilterResults:noMeasBus', '%s: no sub-bus with %s in %s -- skipped.', ...
+            label, strjoin({sensors(~found).flag}, ', '), busName);
+    end
+
+    % Covariance at every sensor's update epochs. Where two updates share
+    % a step they ran one after the other, so keep the smaller P+ (the
+    % one after both). Posterior covariance is the one that matches the
+    % corrected estimate; fall back to the prior if that is all there is.
+    upd = cellfun(@(mz) mz.M > 0, meas);
+    hasPp = any(upd) && all(cellfun(@(mz) mz.hasPp, meas(upd)));
+    hasPm = any(upd) && all(cellfun(@(mz) mz.hasPm, meas(upd)));
+    hasP = hasPp || (any(upd) && all(cellfun(@(mz) mz.hasPp || mz.hasPm, meas(upd))));
+    tP = zeros(0, 1); P = zeros(15, 15, 0); Pm = zeros(15, 15, 0);
+    if hasP
+        for s = find(upd)
+            mz = meas{s};
+            if hasPp, Ps = mz.Pp; else, Ps = mz.Pm; end
+            if hasPm, Pms = mz.Pm; else, Pms = nan(15, 15, mz.M); end
+            tP = [tP; mz.tu]; %#ok<AGROW>
+            P = cat(3, P, Ps);
+            Pm = cat(3, Pm, Pms);
+        end
+        Pd = reshape(P, 225, []);
+        trP = sum(Pd(1:16:225, :), 1).';
+        [~, ord] = sortrows([tP, trP], [1, -2]);   % by time, larger trace first
+        [tP, keep] = unique(tP(ord), 'last');
+        P = P(:, :, ord(keep));
+        Pm = Pm(:, :, ord(keep));
+        if ~hasPp
+            warning('plotFilterResults:priorOnly', ...
+                '%s: kf_Pplus not logged -- NEES uses the prior covariance.', label);
         end
     end
-
-    % Update epochs: logged samples where the Update branch drove Merge2.
-    % Without the flag there is no way to tell real values from
-    % placeholders, so nothing from kf_bus is used.
-    iuLog = [];
-    tu = zeros(0, 1);
-    if isfield(kb, 'kf_gnssFlag')
-        [fl, tLog] = busSignal_local(kb.kf_gnssFlag);
-        iuLog = find(squeeze(fl(1,1,:)) > 0.5);
-        tu = tLog(iuLog);
-    end
-    M = numel(tu);
-    iu = discretize(tu, [t; inf]);   % simout sample at or before each update
-    iu(isnan(iu)) = 1;
-
-    [Pp, hasPp] = busAtUpdates_local(kb, 'kf_Pplus', iuLog);
-    [Pm, hasPm] = busAtUpdates_local(kb, 'kf_Pminus', iuLog);
-    [ex, hasEx] = busAtUpdates_local(kb, 'kf_errxPlus', iuLog);
-    [nuA, hasNu] = busAtUpdates_local(kb, 'kf_innov', iuLog);
-    [K, hasK]   = busAtUpdates_local(kb, 'kf_K', iuLog);
-    [H, hasH]   = busAtUpdates_local(kb, 'kf_H', iuLog);
-    [Sl, hasSl] = busAtUpdates_local(kb, 'kf_S', iuLog);
-    hasPp = hasPp && M > 0; hasPm = hasPm && M > 0;
-
-    % Posterior covariance is the one that matches the corrected estimate;
-    % fall back to the prior if that is all there is.
-    hasP = hasPp || hasPm;
-    if hasPp
-        P = Pp;
-    elseif hasPm
-        P = Pm;
-        warning('plotFilterResults:priorOnly', ...
-            '%s: kf_Pplus not logged -- NEES uses the prior covariance.', label);
-    else
-        P = [];
-    end
+    M = numel(tP);
 
     % Covariance-based quantities live on tP; with no covariance, fall
     % back to the full grid so the summary still reports the raw errors.
     if hasP
-        tP = tu; dxP = dx(iu, :);
+        iu = discretize(tP, [t; inf]);   % simout sample at or before each update
+        iu(isnan(iu)) = 1;
+        dxP = dx(iu, :);
     else
         tP = t; dxP = dx;
     end
     kf = struct('label', label, 't', t, 'flightMode_int', r.flightMode_int, 'dx', dx, ...
-        'tP', tP, 'dxP', dxP, 'hasP', hasP, 'hasPp', hasPp, 'hasPm', hasPm, 'hasK', false, ...
-        'hasInnov', false, 'hasS', false, 'hasPost', false, 'hasPostSig', false, 'nz', 0, 'M', M, ...
-        'tu', tu);
+        'tP', tP, 'dxP', dxP, 'hasP', hasP, 'hasPp', hasPp, 'hasPm', hasPm, 'M', M, ...
+        'meas', {meas});
 
     % ------------------------------------------- covariance-based metrics
     if hasP
@@ -698,76 +777,114 @@ function kf = evalRun_local(out, label, forwardAxis, busName, R, attErrFrame, ma
         PmD = reshape(Pm, 225, M);
         kf.traceM = sum(PmD(1:16:225, :), 1).';
     end
+end
 
-    % ----------------------------------------------- measurement updates
-    if ~hasNu || M == 0
+% ======================================================================
+function mz = evalMeas_local(kb, sen, maxLag, label)
+    % One measurement update's sub-bus (kf_bus_gnss, kf_bus_quest, ...)
+    % at the samples where its flag is true. Without the flag there is no
+    % way to tell real values from Pass Through's placeholders, so
+    % nothing from the sub-bus is used.
+    mz = struct('name', sen.name, 'M', 0, 'tu', zeros(0, 1), 'nz', 0, ...
+        'hasPp', false, 'hasPm', false, 'hasInnov', false, 'hasS', false, ...
+        'hasPost', false, 'hasPostSig', false, 'hasK', false, 'hasTrRed', false);
+    if isempty(kb), return; end
+    fn = {'kf_Pplus', 'kf_Pminus', 'kf_errxPlus', 'kf_innov', 'kf_K', 'kf_H', 'kf_S'};
+    missing = fn(~isfield(kb, fn));
+    if ~isempty(missing)
+        warning('plotFilterResults:missingKfFields', ...
+            '%s: not in the %s sub-bus (skipped): %s', label, sen.name, strjoin(missing, ', '));
+    end
+
+    [fl, tLog] = busSignal_local(kb.(sen.flag));
+    iuLog = find(squeeze(fl(1,1,:)) > 0.5);
+    M = numel(iuLog);
+    mz.M = M;
+    mz.tu = tLog(iuLog);
+    if M == 0, return; end
+
+    [Pp, mz.hasPp] = busAtUpdates_local(kb, 'kf_Pplus', iuLog);
+    [Pm, mz.hasPm] = busAtUpdates_local(kb, 'kf_Pminus', iuLog);
+    [ex, hasEx]    = busAtUpdates_local(kb, 'kf_errxPlus', iuLog);
+    [nuA, hasNu]   = busAtUpdates_local(kb, 'kf_innov', iuLog);
+    [K, hasK]      = busAtUpdates_local(kb, 'kf_K', iuLog);
+    [H, hasH]      = busAtUpdates_local(kb, 'kf_H', iuLog);
+    [Sl, hasSl]    = busAtUpdates_local(kb, 'kf_S', iuLog);
+    mz.Pp = Pp; mz.Pm = Pm;
+
+    if mz.hasPm && mz.hasPp
+        mz.hasTrRed = true;
+        mz.traceRed = arrayfun(@(k) trace(Pm(:,:,k)) - trace(Pp(:,:,k)), (1:M).');
+    end
+    if hasK
+        mz.hasK = true;
+        Kn = zeros(M, size(K, 1));
+        for j = 1:M
+            Kn(j,:) = vecnorm(K(:,:,j), 2, 2).';
+        end
+        mz.Knorm = Kn;
+    end
+    if ~hasNu
         return
     end
 
     nu = reshape(nuA, [], M).';
     nz = size(nu, 2);
-    kf.hasInnov = true; kf.nz = nz; kf.nu = nu;
+    mz.hasInnov = true; mz.nz = nz; mz.nu = nu;
+    R = sen.R;
+    hasR = ~isempty(R) && isequal(size(R), [nz nz]);
 
     % Innovation covariance: logged S, else H*P-*H' + R
     S = [];
     if hasSl
         S = Sl;
-    elseif hasH && hasPm && ~isempty(R) && isequal(size(R), [nz nz])
+    elseif hasH && mz.hasPm && hasR
         S = zeros(nz, nz, M);
         for j = 1:M
             S(:,:,j) = H(:,:,j) * Pm(:,:,j) * H(:,:,j).' + R;
         end
     end
     if ~isempty(S)
-        kf.hasS = true;
-        sigS = zeros(M, nz); nis = zeros(M, 1); nisBlk = nan(M, 2); condS = zeros(M, 1);
+        mz.hasS = true;
+        nBk = size(sen.blocks, 1);
+        sigS = zeros(M, nz); nis = zeros(M, 1); nisBlk = nan(M, nBk); condS = zeros(M, 1);
         for j = 1:M
             Sj = (S(:,:,j) + S(:,:,j).') / 2;
             sigS(j,:) = sqrt(max(diag(Sj), 0)).';
             nis(j) = quadForm_local(Sj, nu(j,:).');
             condS(j) = cond(Sj);
-            if nz >= 6
-                nisBlk(j,1) = quadForm_local(Sj(1:3,1:3), nu(j,1:3).');
-                nisBlk(j,2) = quadForm_local(Sj(4:6,4:6), nu(j,4:6).');
+            for b = 1:nBk
+                ib = sen.blocks{b,2};
+                if max(ib) <= nz
+                    nisBlk(j,b) = quadForm_local(Sj(ib,ib), nu(j,ib).');
+                end
             end
         end
-        kf.sigS = sigS; kf.nis = nis; kf.nisBlk = nisBlk; kf.condS = condS;
+        mz.sigS = sigS; mz.nis = nis; mz.nisBlk = nisBlk; mz.condS = condS;
         ratio = nu ./ sigS;
         ratio(~isfinite(ratio)) = NaN;   % S_ii <= 0 (indefinite P) has no meaningful ratio
-        kf.ratio = ratio;
-        kf.acf = autocorr_local(kf.ratio, maxLag);
+        mz.ratio = ratio;
+        mz.acf = autocorr_local(ratio, maxLag);
     end
 
     % Post-fit residuals: nu - H*errx+ (errx- is reset to zero each step)
     if hasEx && hasH
-        kf.hasPost = true;
+        mz.hasPost = true;
         post = zeros(M, nz);
         for j = 1:M
             post(j,:) = (nu(j,:).' - H(:,:,j) * reshape(ex(:,:,j), [], 1)).';
         end
-        kf.post = post;
-        if hasPp && ~isempty(R) && isequal(size(R), [nz nz])
-            kf.hasPostSig = true;
+        mz.post = post;
+        if mz.hasPp && hasR
+            mz.hasPostSig = true;
             postSig = zeros(M, nz);
             for j = 1:M
                 postSig(j,:) = sqrt(max(diag(R - H(:,:,j) * Pp(:,:,j) * H(:,:,j).'), 0)).';
             end
             r0 = post ./ postSig;
             r0(~isfinite(r0)) = NaN;
-            kf.postRatio = r0;
+            mz.postRatio = r0;
         end
-    end
-
-    if hasPm && hasPp
-        kf.traceRed = arrayfun(@(k) trace(Pm(:,:,k)) - trace(Pp(:,:,k)), (1:M).');
-    end
-    if hasK
-        kf.hasK = true;
-        Kn = zeros(M, size(K, 1));
-        for j = 1:M
-            Kn(j,:) = vecnorm(K(:,:,j), 2, 2).';
-        end
-        kf.Knorm = Kn;
     end
 end
 
@@ -797,11 +914,10 @@ function dAtt = attError_local(qTrue, qEst, frame)
 end
 
 % ======================================================================
-function kb = getKfBus_local(out, name)
-    % The kf_bus struct of timeseries from logged signal `name` in
-    % out.logsout: either filter_bus (kf_bus is its sub-bus) or kf_bus
-    % logged on its own. Empty when neither is there.
-    kb = [];
+function v = getFilterBus_local(out, name)
+    % The logged bus `name` in out.logsout as a struct of timeseries, or
+    % empty when it is not there.
+    v = [];
     try
         ds = out.logsout;
     catch
@@ -814,17 +930,26 @@ function kb = getKfBus_local(out, name)
     if isa(el, 'Simulink.SimulationData.Dataset')
         el = el.getElement(1);
     end
-    v = el.Values;
+    if isstruct(el.Values)
+        v = el.Values;
+    end
+end
+
+% ======================================================================
+function kb = findSubBus_local(v, flag)
+    % The sub-bus of v that carries the element `flag` (or v itself when
+    % that sub-bus was logged on its own). Found by contents, not name:
+    % an unnamed line into filter_bus's Bus Creator logs as signal<N>.
+    % Empty when absent.
+    kb = [];
     if ~isstruct(v), return; end
-    if isfield(v, 'kf_gnssFlag')
+    if isfield(v, flag)
         kb = v;
         return;
     end
-    % Find the sub-bus by its contents, not its name: an unnamed line
-    % into filter_bus's Bus Creator logs it as signal<N>, not kf_bus.
     f = fieldnames(v);
     for i = 1:numel(f)
-        if isstruct(v.(f{i})) && isfield(v.(f{i}), 'kf_gnssFlag')
+        if isstruct(v.(f{i})) && isfield(v.(f{i}), flag)
             kb = v.(f{i});
             return;
         end
@@ -995,7 +1120,7 @@ function p = poolStates_local(kfRuns)
 end
 
 % ======================================================================
-function printSummary_local(kf, stateLbl, stateScale, measLbl, alpha, zConf)
+function printSummary_local(kf, stateLbl, stateScale, sensors, alpha, zConf)
     fprintf('\n================ Kalman filter evaluation: %s ================\n', kf.label);
     fprintf('%-22s %11s %11s %11s %8s %6s %6s %6s\n', 'State', 'Mean err', 'RMS err', ...
         'RMS sigma', 'RMS/sig', '<1s%', '<2s%', '<3s%');
@@ -1036,29 +1161,38 @@ function printSummary_local(kf, stateLbl, stateScale, measLbl, alpha, zConf)
         fprintf('\nNEES: no covariance logged.\n');
     end
 
-    if kf.hasInnov && kf.hasS
-        b = chi2Bounds_local(kf.nz, kf.M, alpha);
-        fprintf('\nNIS (dof %d, %d updates): ANIS = %.3g, bounds [%.3g, %.3g] -> %s\n', ...
-            kf.nz, kf.M, mean(kf.nis), b(1), b(2), verdict_local(mean(kf.nis), b));
-        fprintf('%-8s %10s %10s %12s %14s\n', 'Channel', 'ratio mean', 'ratio std', '|ratio|>3 %', 'ACF out of bnd');
-        acB = zConf / sqrt(kf.M);
-        for m = 1:kf.nz
-            rm = kf.ratio(:,m);
-            rm = rm(isfinite(rm));
-            if size(kf.acf, 1) > 1
-                acOut = 100 * mean(abs(kf.acf(2:end, m)) > acB);
-            else
-                acOut = NaN;
+    anyNis = false;
+    for s = 1:numel(kf.meas)
+        mz = kf.meas{s};
+        sen = sensors(s);
+        if mz.hasInnov && mz.hasS
+            anyNis = true;
+            b = chi2Bounds_local(mz.nz, mz.M, alpha);
+            fprintf('\n%s NIS (dof %d, %d updates): ANIS = %.3g, bounds [%.3g, %.3g] -> %s\n', ...
+                sen.name, mz.nz, mz.M, mean(mz.nis), b(1), b(2), verdict_local(mean(mz.nis), b));
+            fprintf('%-8s %10s %10s %12s %14s\n', 'Channel', 'ratio mean', 'ratio std', '|ratio|>3 %', 'ACF out of bnd');
+            acB = zConf / sqrt(mz.M);
+            for m = 1:mz.nz
+                rm = mz.ratio(:,m);
+                rm = rm(isfinite(rm));
+                if size(mz.acf, 1) > 1
+                    acOut = 100 * mean(abs(mz.acf(2:end, m)) > acB);
+                else
+                    acOut = NaN;
+                end
+                nm = sprintf('z%d', m);
+                if m <= numel(sen.lbl), nm = sen.lbl{m}; end
+                fprintf('%-8s %10.3g %10.3g %12.1f %13.1f%%\n', nm, mean(rm), std(rm), 100 * mean(abs(rm) > 3), acOut);
             end
-            nm = sprintf('z%d', m);
-            if m <= numel(measLbl), nm = measLbl{m}; end
-            fprintf('%-8s %10.3g %10.3g %12.1f %13.1f%%\n', nm, mean(rm), std(rm), 100 * mean(abs(rm) > 3), acOut);
+        elseif mz.hasInnov
+            fprintf('\n%s NIS: innovations logged but no S (log kf_S, or kf_H + kf_Pminus with filterParams.%s).\n', ...
+                sen.name, sen.rField);
+        else
+            fprintf('\n%s NIS: no measurement updates in this run.\n', sen.name);
         end
+    end
+    if anyNis
         fprintf('(want ratio mean ~0, std ~1, ~0.3%% beyond 3, ~%.0f%% of ACF lags out of bounds)\n', 100 * (1 - erf(zConf/sqrt(2))));
-    elseif kf.hasInnov
-        fprintf('\nNIS: innovations logged but no S (log kf_S, or kf_H + kf_Pminus with filterParams.R).\n');
-    else
-        fprintf('\nNIS: no measurement updates in this run (%d update epochs).\n', kf.M);
     end
     fprintf('\n');
 end
@@ -1075,11 +1209,32 @@ function s = verdict_local(val, b)
 end
 
 % ======================================================================
-function msg = innovMissingMsg_local(kfRuns)
-    if any(cellfun(@(r) r.M, kfRuns) == 0)
-        msg = 'no measurement updates (GNSS flag never true, or kf_innov not logged)';
+function msg = measMissingMsg_local(kfRuns, s)
+    name = kfRuns{1}.meas{s}.name;
+    if all(cellfun(@(r) r.meas{s}.M, kfRuns) == 0)
+        msg = sprintf('no %s updates (flag never true, or its sub-bus not logged)', name);
     else
-        msg = 'needs kf_innov and S (kf_S, or kf_H + kf_Pminus + R)';
+        msg = sprintf('needs %s kf_innov and S (kf_S, or kf_H + kf_Pminus + R)', name);
+    end
+end
+
+% ======================================================================
+function axCh = chanTiles_local(tl, sensors, blk, yLabelFcn)
+    % One tile per measurement channel, one row of three per block.
+    % axCh{s}(m) is channel m of sensor s; yLabelFcn(unit) is the y label
+    % of each row's first tile.
+    axCh = arrayfun(@(sen) gobjects(1, numel(sen.lbl)), sensors, 'UniformOutput', false);
+    for b = 1:numel(blk)
+        s = blk(b).s;
+        for j = 1:numel(blk(b).idx)
+            m = blk(b).idx(j);
+            ax = nexttile(tl, 3*(b-1) + j); hold(ax, 'on'); grid(ax, 'on');
+            title(ax, sprintf('%s %s', sensors(s).name, sensors(s).lbl{m}), 'FontWeight', 'normal', 'FontSize', 8);
+            if j == 1
+                ylabel(ax, yLabelFcn(sensors(s).units{m}), 'FontSize', 8);
+            end
+            axCh{s}(m) = ax;
+        end
     end
 end
 
@@ -1115,6 +1270,17 @@ function s = updStyle_local(M)
         s = '.';
     else
         s = 'o-';
+    end
+end
+
+% ======================================================================
+function s = measStyle_local(M, mk)
+    % updStyle_local with a per-sensor marker, for axes several sensors
+    % share.
+    if M > 200
+        s = mk;
+    else
+        s = [mk '-'];
     end
 end
 

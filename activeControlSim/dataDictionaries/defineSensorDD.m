@@ -2,7 +2,7 @@ function S = defineSensorDD()
 
 % setup
 rng(42);
-biasOn = false;
+biasOn = true;
 
 % Lever Arm (relative to CG
 S.sensorParams.imuPosBdy_m = [0, 0, 0.1];

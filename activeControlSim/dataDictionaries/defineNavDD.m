@@ -12,7 +12,7 @@ N.navControl.velNed0_mps = [0 0 0];
 N.navControl.eulerCalcPreRotation = [0.707106781187, 0, -0.707106781187, 0];
 N.navControl.eulerCalcPreRotationInv = quatinv(N.navControl.eulerCalcPreRotation);
 N.navControl.gravityNed_mps2 = [0, 0, 9.81];
-N.navControl.leverIMUtoGNSS_m = [0 0 0.1];
+N.navControl.leverIMUtoGNSS_m = [0 0 0];
 N.navControl.rhoConst_kgpm3 = 1.225; 
 sigDummyQUEST_amin = 5; % [arcmin]
 sigDummyQUEST_rad = sigDummyQUEST_amin * 0.0002908; % [rad]
@@ -23,11 +23,9 @@ sigDummyVelNE_mps = 0.002; % [mps]
 sigDummyVelD_mps = 0.004; % [mps]
 N.navControl.varDummyPos_m = [sigDummyPosNE_m^2, sigDummyPosNE_m^2, sigDummyPosD_m^2]; % [m^2]
 N.navControl.varDummyVel_mps = [sigDummyVelNE_mps^2, sigDummyVelNE_mps^2, sigDummyVelD_mps^2]; % [m^2/s^2]
-
 gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05];
 N.navControl.gyroG = gyroG * 0.01745 / 9.8065;
-accScaleCoupling_na = [0 0 0; 0 0 0; 0 0 0];
-%N.navControl.
+
 
 N.navControl.filterDelay_na = 500;
 
