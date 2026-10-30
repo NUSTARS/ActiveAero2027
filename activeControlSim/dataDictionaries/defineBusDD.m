@@ -31,6 +31,8 @@ B.sensor_bus = makeBus_local({
     'wBdyMeas_rps',      3, 'double'
     'magBdyMeas_nT',     3, 'double'
     'baroMeas_Pa',       1, 'double'
+    'velNedMeas_mps',    3, 'double'
+    'gpsUpdated_b',      1, 'double'
 });
 
 % ------------------------------------------------------------------ plant
