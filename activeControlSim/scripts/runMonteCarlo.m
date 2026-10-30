@@ -1,7 +1,7 @@
 %RUNMONTECARLO  Run a batch of sims with dispersed parameters and save the results.
 
 modelName = 'activeControlSim';
-nRuns = 500;
+nRuns = 1500;
 rngSeed = 1;
 
 % Any numeric parameter in plantParams.sldd (definePlantDD +
@@ -19,22 +19,23 @@ rngSeed = 1;
 % doesn't change accPSDGM), so disperse the value the model actually uses.
 dispersions = {
     % parameter                          +/- half-width [param units]
-    'vehicleParams.mass_kg',             1.0
-    'vehicleParams.inertia_kgm2',        diag([0.005, 1.0, 1.0])
+    %'vehicleParams.mass_kg',             1.0
+    %'vehicleParams.inertia_kgm2',        diag([0.005, 1.0, 1.0])
     'vehicleParams.cg_m',                0.06
     'icParams.eulIC_rad',                [1.0, 0.2, 0.2]   % [roll pitch yaw]
-    'windParams.constantNed_mps',        [5; 5; 0]
+    'windParams.lowAltWindSpeed_mps',    5
+    'windParams.lowAltWindDir_deg',      180
     'aeroParams.finStaticScale_na'       0.1
-    'aeroParams.finControlScale_na'      0.2
+    %'aeroParams.finControlScale_na'      0.2
     'aeroParams.finStaticInputScale_na'  0.1
-    'aeroParams.finControlInputScale_na' 0.2
+    %'aeroParams.finControlInputScale_na' 0.2
     'aeroParams.bodyScale_na',           0.1
     'aeroParams.CpBaseShift_m',          0.06
     'aeroParams.finAngles1_rad'          [0.01, 0.01, 0.01]
     'aeroParams.finAngles2_rad'          [0.01, 0.01, 0.01]
     'aeroParams.finAngles3_rad'          [0.01, 0.01, 0.01]
     'aeroParams.finAngles4_rad'          [0.01, 0.01, 0.01]
-    'motorParams.thrustScaling_na'       0.05
+    %'motorParams.thrustScaling_na'       0.05
     % 'sensorParams.gyroTurnOnBias_rps',   0.009
 };
 

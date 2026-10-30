@@ -8,21 +8,22 @@ function P = definePlantDD()
 in2m = 1/39.37;
 
 %% Vehicle Params
-P.vehicleParams.mass_kg = 17.5;                        % [kg]
-P.vehicleParams.area_m2 = 0.018;                      % [m^2]
-P.vehicleParams.cg_m = 71.33*in2m;                          % [m]
-P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]); % [kg*m^2]
+P.vehicleParams.length_m = 2.75;
+P.vehicleParams.mass_kg = 17.5;                       
+P.vehicleParams.area_m2 = 0.018;                      
+P.vehicleParams.cg_m = 71.33*in2m;                         
+P.vehicleParams.inertia_kgm2 = diag([0.053, 8.41, 8.41]);
 
 %% Simulation Params
 P.simParams.dt_s = 1/100; % [s] Simulation time step
 
 %% ICs
-P.icParams.velBdy_mps  = [0.001, 0, 0];   % [m/s]
+P.icParams.velBdy_mps  = [0, 0, 0];   % [m/s]
 P.icParams.rateBdy_rps = [0, 0, 0];      % [rad/s]
 P.icParams.posNed_m    = [0, 0, 0];      % [m]
 
 % Rail angle. icParams.eul_rad is derived from this in derivePlantDD.m.
-P.icParams.eulIC_rad = [0.0, 0.1, 0.1];
+P.icParams.eulIC_rad = [0.0, 0.1, 0.0];
 %P.icParams.eulIC_rad = [-0.5395 0.2640 0.2240];   % [rad], [roll pitch yaw] (3-2-1), in the rotated frame (not bdy or NED)
 
 %% Enviornment
@@ -35,12 +36,15 @@ P.envParams.groundAlt_m = 182; % [m] above ellipsoid surface (sea level)
 P.envParams.date_y = decyear('01-September-2026','dd-mmm-yyyy'); % [y] year + fraction of year
 
 % Wind Simulations
-P.windParams.type       = 0;          % 0 = constant, 1 = stochastic
-P.windParams.constantNed_mps = [5; 0; 0]; % [m/s]
+P.windParams.useWindShear_b = true;
+P.windParams.useWindTurbulence_b = true;
+P.windParams.constantNed_mps = [0; 0; 0];
+P.windParams.lowAltWindSpeed_mps = 5;
+P.windParams.lowAltWindDir_deg = 180; % CW from north
 
 % Motor Parameters
 P.motorParams.thrustDataFile = 'AeroTech_M1315W.csv'; % [N] Motor thrust data file name
-P.motorParams.startUpDelay = 5; % [s] Motor start up delay 
+P.motorParams.startUpDelay = 12; % [s] Motor start up delay 
 P.motorParams.thrustData = readmatrix(P.motorParams.thrustDataFile);
 P.motorParams.time = P.motorParams.thrustData(:,1);
 P.motorParams.thrustScaling_na = 1.0;

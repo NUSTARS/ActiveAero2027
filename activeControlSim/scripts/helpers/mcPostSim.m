@@ -14,9 +14,10 @@ function s = mcPostSim(simOut)
 %     apogee_m
 %     activeControlTime_s   time spent in flightMode.ACTIVE (controller on)
 %     <group><Axis>ErrAvg_pct, <group><Axis>ErrMax_pct
-%       mean and max of |error| over the controlled flight phase
-%       (flightMode.ACTIVE), one pair per axis, as a percentage of the
-%       reference signal's range (max - min over that phase; peak |value|
+%       mean and max of |error| over the evaluated samples (ol/il:
+%       flightMode.ACTIVE; nav: any flight mode but flightMode.LOCKOUT),
+%       one pair per axis, as a percentage of the reference signal's
+%       range (max - min over those samples; peak |value|
 %       if the reference is constant). Same quantities
 %       as the plotRocketTrajectory.m evaluation figures:
 %         ol        outer loop: launch-frame Euler angle - guidance command
@@ -92,21 +93,28 @@ err = {
     r.gyroBiasEst_rps - r.gyroBiasTrue_rps,             r.gyroBiasTrue_rps       % navGyroBias
 };
 
-% Controlled flight phase: the controller only runs while the nav flight
-% mode is ACTIVE, so both the errors and the ranges they're normalized
-% by cover just those samples. No ACTIVE samples (or flight mode not
-% logged) leaves the error metrics NaN.
+% Evaluated samples, so both the errors and the ranges they're
+% normalized by cover just those samples: the controller only runs while
+% the nav flight mode is ACTIVE, so ol/il use ACTIVE samples; nav errors
+% use every sample that isn't LOCKOUT. No such samples (or flight mode
+% not logged) leaves that group's error metrics NaN.
 active = r.flightMode_int == double(flightMode.ACTIVE);
 if ~all(isnan(r.flightMode_int))
     s.activeControlTime_s = sum(diff(r.t) .* active(1:end-1));
 end
-if ~any(active)
-    return
-end
+notLockout = ~isnan(r.flightMode_int) & ...
+    r.flightMode_int ~= double(flightMode.LOCKOUT);
 
 for g = 1:size(groups, 1)
-    s = addErrMetrics_local(s, groups(g,:), ...
-        pctOfRange_local(err{g,1}(active,:), err{g,2}(active,:)));
+    if startsWith(groups{g,1}, 'nav')
+        mask = notLockout;
+    else
+        mask = active;
+    end
+    if any(mask)
+        s = addErrMetrics_local(s, groups(g,:), ...
+            pctOfRange_local(err{g,1}(mask,:), err{g,2}(mask,:)));
+    end
 end
 
 end
