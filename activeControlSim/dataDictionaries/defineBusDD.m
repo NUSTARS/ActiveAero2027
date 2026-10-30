@@ -100,6 +100,7 @@ B.sensorEst_bus = makeBus_local({
     'accBdyEst_mps2',    3, 'double'
     'fBdyEst_mps2',      3, 'double'
     'wBdyEst_rps',       3, 'double'
+    'baroEst_Pa',        1, 'double'
 });
 
 B.noiseFiltered_bus = makeBus_local({
@@ -110,6 +111,7 @@ B.noiseFiltered_bus = makeBus_local({
 B.bias_bus = makeBus_local({
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
+    'altitudeBoas_m',  1, 'double'
 });
 
 B.complementaryFilter_bus = makeBus_local({
@@ -119,20 +121,21 @@ B.complementaryFilter_bus = makeBus_local({
 });
 
 B.filter_bus = makeBus_local({
-    'eulerAnglesEst_rad', 3, 'double'
+    'eulerAnglesEst_rad',3, 'double'
     'qEst_na',           4, 'double'
-    'velEstNed_mps',        3, 'double'
+    'velEstNed_mps',     3, 'double'
     'posEst_m',          3, 'double'
     'accelFilt_mps2',    3, 'double'
     'gyroFilt_rps',      3, 'double'
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
+    'altitudeBias_m',  1, 'double'
 });
 
 B.deadReckoning_bus = makeBus_local({
     'qEst_na',           4, 'double'
     'posEst_m',          3, 'double'
-    'velEstNed_mps',        3, 'double'
+    'velEstNed_mps',     3, 'double'
 });
 
 B.navigation_bus = makeBus_local({
@@ -149,6 +152,7 @@ B.navigation_bus = makeBus_local({
     'zAccEst_mps2',      1, 'double'
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
+    'altitudeBias_m',  1, 'double'
     'dynPressureEst_Pa', 1, 'double'
     'xVelEstNed_mps',       1, 'double'
     'yVelEstNed_mps',       1, 'double'
