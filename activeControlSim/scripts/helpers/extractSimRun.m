@@ -415,10 +415,12 @@ function data = extractHeld_local(ts, t, N, ncols)
         data = repmat(reshape(ts.Data, 1, []), N, 1);
         return;
     end
-    data = alignRows_local(ts.Data, N, ncols);
+    % Resample before shape-checking: a signal logged at a slower rate
+    % (e.g. a discrete nav block) has fewer than N samples.
     if numel(ts.Time) ~= N || any(ts.Time(:) ~= t)
-        data = alignRows_local(resample(ts, t).Data, N, ncols);
+        ts = resample(ts, t);
     end
+    data = alignRows_local(ts.Data, N, ncols);
 end
 
 % ==========================================================================
