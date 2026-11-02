@@ -31,6 +31,9 @@ B.sensor_bus = makeBus_local({
     'wBdyMeas_rps',      3, 'double'
     'magBdyMeas_nT',     3, 'double'
     'baroMeas_Pa',       1, 'double'
+    'velNedMeas_mps',    3, 'double'
+    'gpsLLA_na',         3, 'double'
+    'gpsUpdated_b',      1, 'double'
 });
 
 % ------------------------------------------------------------------ plant
@@ -98,6 +101,8 @@ B.sensorEst_bus = makeBus_local({
     'accBdyEst_mps2',    3, 'double'
     'fBdyEst_mps2',      3, 'double'
     'wBdyEst_rps',       3, 'double'
+    'altitudeEst_m',     1, 'double'
+    'posEst_m',          3, 'double'
 });
 
 B.noiseFiltered_bus = makeBus_local({
@@ -108,29 +113,33 @@ B.noiseFiltered_bus = makeBus_local({
 B.bias_bus = makeBus_local({
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
+    'altitudeBias_m',    1, 'double'
+    'llaBias_na',        3, 'double'
 });
 
 B.complementaryFilter_bus = makeBus_local({
     'qEst_na',           4, 'double'
-    'velEstNed_mps',        3, 'double'
+    'velEstNed_mps',     3, 'double'
     'posEst_m',          3, 'double'
 });
 
 B.filter_bus = makeBus_local({
-    'eulerAnglesEst_rad', 3, 'double'
+    'eulerAnglesEst_rad',3, 'double'
     'qEst_na',           4, 'double'
-    'velEstNed_mps',        3, 'double'
+    'velEstNed_mps',     3, 'double'
     'posEst_m',          3, 'double'
     'accelFilt_mps2',    3, 'double'
     'gyroFilt_rps',      3, 'double'
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
+    'altitudeBias_m',    1, 'double'
+    'llaBias_na',        3, 'double'
 });
 
 B.deadReckoning_bus = makeBus_local({
     'qEst_na',           4, 'double'
     'posEst_m',          3, 'double'
-    'velEstNed_mps',        3, 'double'
+    'velEstNed_mps',     3, 'double'
 });
 
 B.navigation_bus = makeBus_local({
@@ -147,10 +156,12 @@ B.navigation_bus = makeBus_local({
     'zAccEst_mps2',      1, 'double'
     'accelBias_mps2',    3, 'double'
     'gyroBias_rps',      3, 'double'
+    'altitudeBias_m',    1, 'double'
+    'llaBias_na',        3, 'double'
     'dynPressureEst_Pa', 1, 'double'
-    'xVelEstNed_mps',       1, 'double'
-    'yVelEstNed_mps',       1, 'double'
-    'zVelEstNed_mps',       1, 'double'
+    'xVelEstNed_mps',    1, 'double'
+    'yVelEstNed_mps',    1, 'double'
+    'zVelEstNed_mps',    1, 'double'
     'xPosEst_m',         1, 'double'
     'yPosEst_m',         1, 'double'
     'zPosEst_m',         1, 'double'

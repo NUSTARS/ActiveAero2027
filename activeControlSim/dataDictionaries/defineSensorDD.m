@@ -68,7 +68,6 @@ gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05]; % [deg / s / g]
 % turn on bias
 gyroSigmaBiasTurnOn_rps = [0.009, 0.009, 0.009];
 
-
 %% Processing (nothing to change here)
 
 % Bias
@@ -125,6 +124,11 @@ S.sensorParams.magSI = eye(3) + magSI;
 S.sensorParams.baroPSDWhite = baroNoiseDensity_PapsqHz^2;
 S.sensorParams.baroPSDGM = 2 * baroBiasSigma_Pa^2 / (-1/(log(S.sensorParams.baroMarkovGain_na)*baroRate_Hz));
 
+%% GPS %%
+S.sensorParams.gpsSampleTime_s = 0.1;
+S.sensorParams.gpsDelay_na = 15; % At 100hz rate
+S.sensorParams.gpsOutageSampleTime_s = 1;
+S.sensorParams.gpsOutageProbability_pct = 0.25;
 
 %% End Processing
 

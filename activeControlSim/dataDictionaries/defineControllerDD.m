@@ -27,7 +27,7 @@ C.innerLoopParams.fbkGainBreakpoints_Pa = [0 30e3 75e3];
 % C.innerLoopParams.fbkGainPitchYawD_na = 0*[1.2 0.6 0.5];
 % C.innerLoopParams.fbkGainPitchYawN_na = [10 10 10];
 C.innerLoopParams.fbkGainPitchYawP_na = 200*[1.5 1.25 1.0];
-C.innerLoopParams.fbkGainPitchYawI_na = 6000*[0.5 0.75 1.0];
+C.innerLoopParams.fbkGainPitchYawI_na = 4000*[0.5 0.75 1.0];
 C.innerLoopParams.fbkGainPitchYawD_na = 0*[1.5 1.25 1.0];
 C.innerLoopParams.fbkGainPitchYawN_na = [1 1 1];
 
