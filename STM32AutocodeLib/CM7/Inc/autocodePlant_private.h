@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Tue Oct 27 19:08:19 2026
+ * C/C++ source code generated on : Thu Oct 29 16:32:54 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -44,12 +44,13 @@ extern const real_T rtCP_pooled_iFJY9irE5eYu[13];
 extern const real_T rtCP_pooled_NdeBycQJIW0T[11];
 extern const real_T rtCP_pooled_M1CXqHf2LQgH[13];
 extern const real_T rtCP_pooled_DNIXYaNNqB8g[13];
-extern const real_T rtCP_pooled_dv0Tl0SlWhXs[3];
 extern const real_T rtCP_pooled_14ELQx6IKv5S[9];
 extern const real_T rtCP_pooled_sBIJJlXDbIPs[9];
 extern const real_T rtCP_pooled_JIXvzcabvSoM[9];
 extern const real_T rtCP_pooled_ef9QsjHy4PWT[3];
 extern const real_T rtCP_pooled_l4jm3STFDRtI[9];
+extern const real_T rtCP_pooled_JSo03ipyAXHp[12];
+extern const real_T rtCP_pooled_7gMUpNl9LMnN[84];
 extern const real_T rtCP_pooled_eAvIOzbeucLm[150];
 extern const real_T rtCP_pooled_8SI81E8rkJpf[10];
 extern const real_T rtCP_pooled_WNDZ2Qab58zn[3];
@@ -58,76 +59,77 @@ extern const real_T rtCP_pooled_UvjEgMknWiW5[150];
 extern const real_T rtCP_pooled_mp0rSfxeHTgT[30];
 extern const real_T rtCP_pooled_QdRu7KTE4giD[30];
 extern const real_T rtCP_pooled_3H9qc1cSvZnc[30];
-extern const real_T rtCP_pooled_JSo03ipyAXHp[12];
-extern const real_T rtCP_pooled_7gMUpNl9LMnN[84];
 extern const real_T rtCP_pooled_Ypj7adFkGj9p[26];
 extern const real_T rtCP_pooled_9qn6g4UeIonm[26];
+extern const uint32_T rtCP_pooled_pJtn2I2I3lAZ[2];
 extern const uint32_T rtCP_pooled_dTVRh1Zt8UHp[3];
 extern const uint32_T rtCP_pooled_VXtezd9XA1ka[2];
-extern const uint32_T rtCP_pooled_pJtn2I2I3lAZ[2];
 
 #define rtCP__k1313_Value              rtCP_pooled_Xx6JxPt3qDMl  /* Expression: k
-                                                                  * Referenced by: '<S218>/k[13][13]'
+                                                                  * Referenced by: '<S236>/k[13][13]'
                                                                   */
 #define rtCP__k1313_Value_j            rtCP_pooled_Xx6JxPt3qDMl  /* Expression: k
-                                                                  * Referenced by: '<S227>/k[13][13]'
+                                                                  * Referenced by: '<S245>/k[13][13]'
                                                                   */
 #define rtCP__snorm169_Y0              rtCP_pooled_LGbvdPSmO37j  /* Expression: snorm
-                                                                  * Referenced by: '<S211>/snorm[169]'
+                                                                  * Referenced by: '<S229>/snorm[169]'
                                                                   */
 #define rtCP__UnitDelay1_InitialCondi_n rtCP_pooled_LGbvdPSmO37j /* Expression: snorm
-                                                                  * Referenced by: '<S211>/Unit Delay1'
+                                                                  * Referenced by: '<S229>/Unit Delay1'
                                                                   */
 #define rtCP__cmaxdefmaxdef_Value      rtCP_pooled_8bV7r3D8ytRk  /* Expression: c
-                                                                  * Referenced by: '<S212>/c[maxdef][maxdef]'
+                                                                  * Referenced by: '<S230>/c[maxdef][maxdef]'
                                                                   */
 #define rtCP__cdmaxdefmaxdef_Value     rtCP_pooled_6ZjlqwKmnCn7  /* Expression: cd
-                                                                  * Referenced by: '<S212>/cd[maxdef][maxdef]'
+                                                                  * Referenced by: '<S230>/cd[maxdef][maxdef]'
                                                                   */
 #define rtCP__fm_Value                 rtCP_pooled_1qQdvahcw3x7  /* Expression: fm
-                                                                  * Referenced by: '<S210>/fm'
+                                                                  * Referenced by: '<S228>/fm'
                                                                   */
 #define rtCP__fn_Value                 rtCP_pooled_iFJY9irE5eYu  /* Expression: fn
-                                                                  * Referenced by: '<S210>/fn'
+                                                                  * Referenced by: '<S228>/fn'
                                                                   */
 #define rtCP__sp11_Y0                  rtCP_pooled_NdeBycQJIW0T  /* Expression: (1:(maxdef-1))
-                                                                  * Referenced by: '<S250>/sp[11]'
+                                                                  * Referenced by: '<S268>/sp[11]'
                                                                   */
 #define rtCP__cp11_Y0                  rtCP_pooled_NdeBycQJIW0T  /* Expression: (1:(maxdef-1))
-                                                                  * Referenced by: '<S250>/cp[11]'
+                                                                  * Referenced by: '<S268>/cp[11]'
                                                                   */
 #define rtCP__Constant_Value_f         rtCP_pooled_NdeBycQJIW0T  /* Expression: [1:maxdef-1]
-                                                                  * Referenced by: '<S250>/Constant'
+                                                                  * Referenced by: '<S268>/Constant'
                                                                   */
 #define rtCP__Constant1_Value_a        rtCP_pooled_NdeBycQJIW0T  /* Expression: [1:maxdef-1]
-                                                                  * Referenced by: '<S250>/Constant1'
+                                                                  * Referenced by: '<S268>/Constant1'
                                                                   */
 #define rtCP__sp13_Y0                  rtCP_pooled_M1CXqHf2LQgH  /* Expression: [0 0 (1:(maxdef-1))]
-                                                                  * Referenced by: '<S203>/sp[13]'
+                                                                  * Referenced by: '<S221>/sp[13]'
                                                                   */
 #define rtCP__cp13_Y0                  rtCP_pooled_DNIXYaNNqB8g  /* Expression: [1 1 (1:(maxdef-1))]
-                                                                  * Referenced by: '<S203>/cp[13]'
-                                                                  */
-#define rtCP__Constant_Value_dx        rtCP_pooled_dv0Tl0SlWhXs  /* Expression: windParams.constantNed_mps
-                                                                  * Referenced by: '<S87>/Constant'
+                                                                  * Referenced by: '<S221>/cp[13]'
                                                                   */
 #define rtCP__Constant1_Value_fo       rtCP_pooled_14ELQx6IKv5S  /* Expression: vehicleParams.inertia_kgm2
                                                                   * Referenced by: '<S5>/Constant1'
                                                                   */
 #define rtCP__Constant_Value_dxg       rtCP_pooled_sBIJJlXDbIPs  /* Expression: sensorParams.accScaleCoupling_na
-                                                                  * Referenced by: '<S155>/Constant'
+                                                                  * Referenced by: '<S173>/Constant'
                                                                   */
 #define rtCP___Value_n                 rtCP_pooled_sBIJJlXDbIPs  /* Expression: sensorParams.gyroScaleCoupling_na
-                                                                  * Referenced by: '<S157>/   '
+                                                                  * Referenced by: '<S175>/   '
                                                                   */
 #define rtCP__Gs_Value                 rtCP_pooled_JIXvzcabvSoM  /* Expression: sensorParams.gyroG
-                                                                  * Referenced by: '<S157>/Gs'
+                                                                  * Referenced by: '<S175>/Gs'
                                                                   */
 #define rtCP__hardironBdy_nT_Value     rtCP_pooled_ef9QsjHy4PWT  /* Expression: sensorParams.magBiasHIBdy_nT
-                                                                  * Referenced by: '<S158>/hardironBdy_nT'
+                                                                  * Referenced by: '<S176>/hardironBdy_nT'
                                                                   */
 #define rtCP__softironmatrix_Value     rtCP_pooled_l4jm3STFDRtI  /* Expression: sensorParams.magSI
-                                                                  * Referenced by: '<S158>/soft iron matrix'
+                                                                  * Referenced by: '<S176>/soft iron matrix'
+                                                                  */
+#define rtCP__PreLookUpIndexSearchaltit rtCP_pooled_JSo03ipyAXHp /* Expression: h_vec
+                                                                  * Referenced by: '<S138>/PreLook-Up Index Search  (altitude)'
+                                                                  */
+#define rtCP__MediumHighAltitudeIntensi rtCP_pooled_7gMUpNl9LMnN /* Expression: sigma_vec'
+                                                                  * Referenced by: '<S138>/Medium//High Altitude Intensity'
                                                                   */
 #define rtCP__CALookupTable_tableData  rtCP_pooled_eAvIOzbeucLm  /* Expression: aeroParams.CaFin_na
                                                                   * Referenced by: '<S9>/CA Lookup Table'
@@ -252,17 +254,14 @@ extern const uint32_T rtCP_pooled_pJtn2I2I3lAZ[2];
 #define rtCP__CNLookupTable_bp02Data_o rtCP_pooled_WNDZ2Qab58zn  /* Expression: aeroParams.aoaBreakpoints_deg
                                                                   * Referenced by: '<S8>/CN Lookup Table'
                                                                   */
-#define rtCP__PreLookUpIndexSearchaltit rtCP_pooled_JSo03ipyAXHp /* Expression: h_vec
-                                                                  * Referenced by: '<S122>/PreLook-Up Index Search  (altitude)'
-                                                                  */
-#define rtCP__MediumHighAltitudeIntensi rtCP_pooled_7gMUpNl9LMnN /* Expression: sigma_vec'
-                                                                  * Referenced by: '<S122>/Medium//High Altitude Intensity'
-                                                                  */
 #define rtCP__uDLookupTable_tableData  rtCP_pooled_Ypj7adFkGj9p  /* Expression: motorParams.thrust
                                                                   * Referenced by: '<S6>/1-D Lookup Table'
                                                                   */
 #define rtCP__uDLookupTable_bp01Data   rtCP_pooled_9qn6g4UeIonm  /* Expression: motorParams.time
                                                                   * Referenced by: '<S6>/1-D Lookup Table'
+                                                                  */
+#define rtCP__MediumHighAltitudeInten_o rtCP_pooled_pJtn2I2I3lAZ /* Computed Parameter: rtCP__MediumHighAltitudeInten_o
+                                                                  * Referenced by: '<S138>/Medium//High Altitude Intensity'
                                                                   */
 #define rtCP__CALookupTable_dimSizes   rtCP_pooled_dTVRh1Zt8UHp  /* Computed Parameter: rtCP__CALookupTable_dimSizes
                                                                   * Referenced by: '<S9>/CA Lookup Table'
@@ -296,9 +295,6 @@ extern const uint32_T rtCP_pooled_pJtn2I2I3lAZ[2];
                                                                   */
 #define rtCP__CNLookupTable_maxIndex_a rtCP_pooled_VXtezd9XA1ka  /* Computed Parameter: rtCP__CNLookupTable_maxIndex_a
                                                                   * Referenced by: '<S8>/CN Lookup Table'
-                                                                  */
-#define rtCP__MediumHighAltitudeInten_o rtCP_pooled_pJtn2I2I3lAZ /* Computed Parameter: rtCP__MediumHighAltitudeInten_o
-                                                                  * Referenced by: '<S122>/Medium//High Altitude Intensity'
                                                                   */
 
 /* private model entry point functions */

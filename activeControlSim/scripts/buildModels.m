@@ -10,25 +10,24 @@ if ~isfolder(modelsDir)
     error('Cannot locate models directory relative to buildModels.m: %s', modelsDir);
 end
 fprintf('Project root: %s\n', projectRoot);
-addpath(modelsDir);
+addpath(scriptDir);
+addpath(genpath(modelsDir));
+addpath(fullfile(projectRoot, 'data'));
+addpath(fullfile(projectRoot, 'dataDictionaries'));
 
 buildDataDictionaries;
 
-% Generate both top models afresh in separate output roots. Post-processing
-% renames their const_params.c files, so incremental reuse is unsafe here.
+% Keep Simulink's generated files unchanged so incremental builds remain valid.
+% Only the independent toIDE copies are renamed and patched for linking.
 buildModelsInSeparateFolders(buildModelNames, modelsDir, projectRoot);
-
-% Locate each const_params.c wherever Simulink placed it. With shared
-% utility code enabled, R2026a may put it in slprj/ert/_sharedutils,
-% rather than <model>_ert_rtw.
-plantBuild = fullfile(projectRoot, 'build_autocodePlant');
-modelBuild = fullfile(projectRoot, 'build_autocodeModel');
-plantFile = findConstFile(plantBuild, 'const_params.c', true);
-modelFile = findConstFile(modelBuild, 'const_params.c', true);
-if isempty(plantFile) || isempty(modelFile)
-    error(['Cannot find fresh const_params.c for both builds. ' ...
-        'Clear their build directories and rebuild if Simulink reused ' ...
-        'already-renamed generated files.']);
+exportToIDE(projectRoot, buildModelNames);
+plantFile = fullfile(projectRoot, 'build_autocodePlant', 'toIDE', 'Src', ...
+    'const_params_autocodePlant.c');
+modelFile = fullfile(projectRoot, 'build_autocodeModel', 'toIDE', 'Src', ...
+    'const_params_autocodeModel.c');
+if ~isfile(plantFile) || ~isfile(modelFile)
+    error('Missing exported constant files after code generation: %s, %s', ...
+        plantFile, modelFile);
 end
 
 % Make sure the shared symbol definitions have the same array initializer.
@@ -58,51 +57,7 @@ if ~contains(plantText, externDecl)
 end
 writeText(plantFile, plantText);
 
-% Rename each file *at its discovered location*, and fix filename
-% references across generated makefiles and source/headers.
-for k = 1:numel(buildModelNames)
-    mdl = char(buildModelNames(k));
-    buildDir = fullfile(projectRoot, ['build_' mdl]);
-    if strcmp(mdl, 'autocodePlant')
-        oldFile = plantFile;
-    else
-        oldFile = modelFile;
-    end
-    [containingDir, ~, ~] = fileparts(oldFile);
-    newName = ['const_params_' mdl '.c'];
-    newFile = fullfile(containingDir, newName);
-    if isfile(newFile)
-        delete(newFile);
-    end
-    [ok, msg] = movefile(oldFile, newFile);
-    if ~ok
-        error('Cannot rename %s: %s', oldFile, msg);
-    end
-
-    exts = {'.c', '.h', '.mk', '.d', '.txt', '.rsp', '.bat'};
-    for e = 1:numel(exts)
-        matches = dir(fullfile(buildDir, '**', ['*' exts{e}]));
-        for j = 1:numel(matches)
-            path = fullfile(matches(j).folder, matches(j).name);
-            if contains(['/' strrep(matches(j).folder, char(92), '/') '/'], ...
-                    '/toIDE/', 'IgnoreCase', true)
-                continue; % Ignore stale exports from earlier runs.
-            end
-            original = fileread(path);
-            updated = strrep(original, 'const_params.c', newName);
-            if ~strcmp(original, updated)
-                writeText(path, updated);
-            end
-        end
-    end
-    fprintf('Post-processed: %s\n', newFile);
-end
-
-fprintf('Done. %s defined in Model and extern in Plant.\n', sharedSymbol);
-
-
-% Export generated code to per-model toIDE folders.
-exportToIDE(projectRoot, buildModelNames);
+fprintf('Done. %s defined in Model and extern in Plant exports.\n', sharedSymbol);
 
 % Extract each generated ERT example main into a reusable MCU harness.
 % Requires generateModelHarness.m beside buildModels.m.
@@ -111,6 +66,9 @@ for k = 1:numel(buildModelNames)
     mdl = char(buildModelNames(k));
     generateModelHarness(mdl, fullfile(projectRoot, ['build_' mdl]));
 end
+
+% Install the optional controller callback only into the exported plant copy.
+installPlantFeedbackHook(fullfile(projectRoot, 'build_autocodePlant'));
 
 % Refresh the copied CubeIDE CM7 project after code generation succeeds.
 copyGeneratedToCubeIDE(projectRoot, buildModelNames);
@@ -145,33 +103,6 @@ function hex = sha256File(path)
 end
 
 
-function path = findConstFile(buildDir, filename, preferShared)
-    matches = dir(fullfile(buildDir, '**', filename));
-    matches = matches(~[matches.isdir]);
-    % toIDE is an exported copy, not a code-generation output. Never
-    % consider it while locating files for caching or post-processing.
-    isExport = arrayfun(@(f) contains(['/' strrep(f.folder, char(92), '/') '/'], ...
-        '/toIDE/', 'IgnoreCase', true), matches);
-    matches = matches(~isExport);
-    if isempty(matches)
-        path = '';
-        return;
-    end
-    paths = arrayfun(@(f) fullfile(f.folder, f.name), matches, ...
-        'UniformOutput', false);
-    % Prefer the shared utility directory, which is the normal location
-    % for const_params.c with shared code placement enabled.
-    shared = contains(strrep(paths, '\', '/'), '/_sharedutils/');
-    if preferShared && any(shared)
-        paths = paths(shared);
-    end
-    if numel(paths) ~= 1
-        error('Ambiguous %s under %s:\n%s', filename, buildDir, ...
-            strjoin(paths, newline));
-    end
-    path = paths{1};
-end
-
 function exportToIDE(projectRoot, models)
     % Collect each model's generated C/H plus recursively needed MATLAB
     % Simulink include files. Export to toIDE/Src and toIDE/Inc.
@@ -189,7 +120,13 @@ function exportToIDE(projectRoot, models)
         if ~isfolder(sharedDir) || ~isfolder(modelDir)
             error('Missing generated folders for %s; cannot export toIDE.', mdl);
         end
-        exports{k} = collectCodeFiles({modelDir, sharedDir}, matlabIncludes);
+        sourceMap = collectCodeFiles({modelDir, sharedDir}, matlabIncludes);
+        if ~isKey(sourceMap, 'const_params.c')
+            error('Missing generated const_params.c for %s under %s.', mdl, buildDir);
+        end
+        sourceMap(['const_params_' mdl '.c']) = sourceMap('const_params.c');
+        remove(sourceMap, 'const_params.c');
+        exports{k} = sourceMap;
     end
 
     % Names in the PRIMARY model always win. A secondary file with the
@@ -236,10 +173,9 @@ function exportToIDE(projectRoot, models)
             else
                 error('Unexpected export file type: %s', key);
             end
-            [ok, msg] = copyfile(src, fullfile(targetDir, key));
-            if ~ok
-                error('Failed to export %s: %s', src, msg);
-            end
+            contents = fileread(src);
+            contents = strrep(contents, 'const_params.c', ['const_params_' mdl '.c']);
+            writeText(fullfile(targetDir, key), contents);
             copied = copied + 1;
         end
         fprintf('Exported %d files to %s (%d shared files omitted).\n', ...
@@ -323,9 +259,32 @@ function buildModelsInSeparateFolders(modelNames, modelsDir, projectRoot)
     currentDir = pwd;
     currentDirCleanup = onCleanup(@() cd(currentDir));
     cd(projectRoot);
+    originalFileGen = Simulink.fileGenControl('getConfig');
+    fileGenCleanup = onCleanup(@() Simulink.fileGenControl('setConfig', ...
+        'config', originalFileGen));
     for k = 1:numel(modelNames)
         mdl = char(modelNames(k));
         buildDir = fullfile(projectRoot, ['build_' mdl]);
+        % Repair output from older script versions that renamed cached files.
+        % Remove only model-owned generated artifacts, retaining the old exports.
+        legacyFile = fullfile(buildDir, 'slprj', 'ert', '_sharedutils', ...
+            ['const_params_' mdl '.c']);
+        if isfile(legacyFile)
+            expectedDir = char(java.io.File(fullfile(projectRoot, ['build_' mdl])).getCanonicalPath());
+            actualDir = char(java.io.File(buildDir).getCanonicalPath());
+            assert(strcmp(actualDir, expectedDir) && ...
+                any(strcmp(mdl, {'autocodePlant', 'autocodeModel'})), ...
+                'Refusing to clear an unexpected build directory: %s', buildDir);
+            fprintf('Repairing legacy renamed code-generation cache for %s.\n', mdl);
+            for artifact = {'slprj', [mdl '_ert_rtw']}
+                generatedDir = fullfile(buildDir, artifact{1});
+                if isfolder(generatedDir)
+                    rmdir(generatedDir, 's');
+                end
+            end
+            cacheFile = fullfile(buildDir, [mdl '.slxc']);
+            if isfile(cacheFile), delete(cacheFile); end
+        end
         Simulink.fileGenControl('set', 'CodeGenFolder', buildDir, ...
             'CacheFolder', buildDir, 'createDir', true);
         load_system(fullfile(modelsDir, [mdl '.slx']));

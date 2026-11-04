@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Tue Oct 27 19:09:50 2026
+ * C/C++ source code generated on : Thu Oct 29 16:34:18 2026
  */
 
 #include "BINARYSEARCH_real_T.h"
