@@ -33,7 +33,7 @@ B.sensor_bus = makeBus_local({
     'baroMeas_Pa',       1, 'double'
     'velNedMeas_mps',    3, 'double'
     'gpsLLA_na',         3, 'double'
-    'gpsUpdated_b',      1, 'double'
+    'gpsFix_b',      1, 'boolean'
 });
 
 % ------------------------------------------------------------------ plant
