@@ -122,6 +122,32 @@ constants, exports STM32-ready files to each model's `toIDE/` folder, and
 generates reusable harnesses. Successful builds also overwrite generated
 `.c`/`.h` files in `../STM32AutocodeLib/CM7/Src` and `Inc`.
 
+## UART simulation logging
+
+`AvionicsBoardV1` now waits for a host command before running its 30-second
+simulation and streams the CSV over USART3 (PD8 TX, PD9 RX, 115200 baud, 8N1).
+Connect a 3.3 V USB-to-UART adapter with TX/RX crossed and a shared ground.
+
+Install the helper dependency with `py -m pip install pyserial`. From the
+repository root, test the UART link without starting a simulation:
+
+```text
+py activeControlSim/scripts/helpers/flightLogUART.py --port COM4 --baud 115200 --echo
+```
+
+To start the simulation (the helper runs the echo test first):
+
+```text
+py activeControlSim/scripts/helpers/flightLogUART.py --port COM4 --baud 115200 --start-log-sim
+```
+
+The device answers `ECHO` with `ECHO_OK`. A timeout suggests checking the COM
+port, baud rate, TX/RX crossover, and shared ground. After the echo succeeds,
+the helper receives the CSV and prompts for a save path after
+`DONE,<row-count>`. Each `@sequence|payload|CRC16` frame uses
+CRC-16/CCITT-FALSE; ACK/NAK retries recover corrupt frames and sequence checks
+prevent duplicate rows in the saved CSV.
+
 ## STM32 sensor input bus
 
 `buildModels.m` generates `autocodeModel_initializeSensorBus` for the
