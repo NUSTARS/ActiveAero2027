@@ -9,7 +9,7 @@
  *
  * Model version              : 1.7
  * Simulink Coder version : 26.1 (R2026a) 20-Nov-2025
- * C source code generated on : Thu Oct 29 16:32:54 2026
+ * C source code generated on : Tue Nov  3 18:50:47 2026
  */
 #include "rtwtypes.h"
 
@@ -272,6 +272,9 @@ const real_T rtCP_pooled_Ypj7adFkGj9p[26] = { 1728.683, 1673.336, 1686.81,
 
 extern const uint32_T rtCP_pooled_dTVRh1Zt8UHp[3];
 const uint32_T rtCP_pooled_dTVRh1Zt8UHp[3] = { 1U, 10U, 30U } ;
+
+extern const real_T rtCP_pooled_dv0Tl0SlWhXs[3];
+const real_T rtCP_pooled_dv0Tl0SlWhXs[3] = { 5.0, 0.0, 0.0 } ;
 
 extern const real_T rtCP_pooled_eAvIOzbeucLm[150];
 const real_T rtCP_pooled_eAvIOzbeucLm[150] = { 0.03635, 0.03685, 0.0369,

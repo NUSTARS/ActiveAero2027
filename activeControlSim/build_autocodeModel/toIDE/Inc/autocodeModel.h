@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Thu Oct 29 16:34:18 2026
+ * C/C++ source code generated on : Wed Nov  4 17:25:57 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -129,10 +129,12 @@ typedef struct {
   real_T zAccEst_mps2;
   real_T accelBias_mps2[3];
   real_T gyroBias_rps[3];
+  real_T altitudeBias_m;
+  real_T llaBias_na[3];
   real_T dynPressureEst_Pa;
-  real_T xVelEst_mps;
-  real_T yVelEst_mps;
-  real_T zVelEst_mps;
+  real_T xVelEstNed_mps;
+  real_T yVelEstNed_mps;
+  real_T zVelEstNed_mps;
   real_T xPosEst_m;
   real_T yPosEst_m;
   real_T zPosEst_m;
@@ -159,6 +161,9 @@ typedef struct {
   real_T wBdyMeas_rps[3];
   real_T magBdyMeas_nT[3];
   real_T baroMeas_Pa;
+  real_T velNedMeas_mps[3];
+  real_T gpsLLA_na[3];
+  boolean_T gpsFix_b;
 } sensor_bus;
 
 #endif
@@ -184,22 +189,37 @@ typedef struct {
   real_T UnitDelay_13_DSTATE[3];       /* '<S408>/Unit Delay' */
   real_T DiscreteTransferFcn1_states[6];/* '<S409>/Discrete Transfer Fcn1' */
   real_T GyroFilter_states[3];         /* '<S428>/Gyro Filter' */
+  real_T UD_DSTATE[3];                 /* '<S477>/UD' */
   real_T UnitDelay_12_DSTATE[3];       /* '<S408>/Unit Delay' */
   real_T AccelFilter_states[3];        /* '<S409>/Accel Filter' */
-  real_T AccelFilter_states_l[3];      /* '<S428>/Accel Filter' */
-  real_T Delay_4_DSTATE[1500];         /* '<S426>/Delay' */
-  real_T UnitDelay_DSTATE[3];          /* '<S426>/Unit Delay' */
-  real_T DiscreteFIRFilter_states[297];/* '<S426>/Discrete FIR Filter' */
-  real_T Delay_3_DSTATE[1500];         /* '<S426>/Delay' */
+  real_T Delay2_6_DSTATE[500];         /* '<S426>/Delay2' */
+  real_T UnitDelay_15_DSTATE[3];       /* '<S408>/Unit Delay' */
+  real_T AccelFilter_states_k[3];      /* '<S428>/Accel Filter' */
+  real_T Delay2_3_DSTATE[1500];        /* '<S426>/Delay2' */
   real_T UnitDelay1_DSTATE[3];         /* '<S426>/Unit Delay1' */
   real_T DiscreteFIRFilter1_states[297];/* '<S426>/Discrete FIR Filter1' */
-  real_T Delay_3_DSTATE_e[1500];       /* '<S433>/Delay' */
+  real_T Delay2_4_DSTATE[1500];        /* '<S426>/Delay2' */
+  real_T UnitDelay_DSTATE[3];          /* '<S426>/Unit Delay' */
+  real_T DiscreteFIRFilter_states[297];/* '<S426>/Discrete FIR Filter' */
+  real_T Delay2_8_DSTATE[1500];        /* '<S426>/Delay2' */
+  real_T UnitDelay3_DSTATE[3];         /* '<S426>/Unit Delay3' */
+  real_T DiscreteFIRFilter3_states[297];/* '<S426>/Discrete FIR Filter3' */
+  real_T DiscreteFIRFilter2_states[99];/* '<S426>/Discrete FIR Filter2' */
+  real_T Delay_3_DSTATE[1500];         /* '<S436>/Delay' */
+  real_T SFunction_temp_table[8];      /* '<S432>/S-Function' */
+  real_T SFunction_pres_table[8];      /* '<S432>/S-Function' */
+  real_T SFunction_temp_table_m[8];    /* '<S467>/S-Function' */
+  real_T SFunction_pres_table_c[8];    /* '<S467>/S-Function' */
+  real_T Product;                      /* '<S430>/Product' */
+  real_T SFunction;                    /* '<S432>/S-Function' */
+  real_T Product_d;                    /* '<S466>/Product' */
+  real_T SFunction_p;                  /* '<S467>/S-Function' */
   real_T Integrator_DSTATE;            /* '<S326>/Integrator' */
   real_T Filter_DSTATE;                /* '<S321>/Filter' */
   real_T Delay_DSTATE;                 /* '<S345>/Delay' */
-  real_T UnitDelay_15_DSTATE;          /* '<S408>/Unit Delay' */
-  real_T UnitDelay_16_DSTATE;          /* '<S408>/Unit Delay' */
   real_T UnitDelay_17_DSTATE;          /* '<S408>/Unit Delay' */
+  real_T UnitDelay_18_DSTATE;          /* '<S408>/Unit Delay' */
+  real_T UnitDelay_19_DSTATE;          /* '<S408>/Unit Delay' */
   real_T Integrator_DSTATE_b;          /* '<S123>/Integrator' */
   real_T Filter_DSTATE_p;              /* '<S118>/Filter' */
   real_T Delay_DSTATE_p;               /* '<S150>/Delay' */
@@ -215,17 +235,20 @@ typedef struct {
   real_T Integrator_DSTATE_e;          /* '<S193>/Integrator' */
   real_T Filter_DSTATE_g;              /* '<S188>/Filter' */
   real_T Delay_DSTATE_e;               /* '<S221>/Delay' */
-  real_T UnitDelay_18_DSTATE;          /* '<S408>/Unit Delay' */
-  real_T UnitDelay_19_DSTATE;          /* '<S408>/Unit Delay' */
   real_T UnitDelay_20_DSTATE;          /* '<S408>/Unit Delay' */
-  real_T UD_DSTATE;                    /* '<S220>/UD' */
+  real_T UnitDelay_21_DSTATE;          /* '<S408>/Unit Delay' */
+  real_T UnitDelay_22_DSTATE;          /* '<S408>/Unit Delay' */
+  real_T UD_DSTATE_l;                  /* '<S220>/UD' */
   real_T UD_DSTATE_k;                  /* '<S79>/UD' */
   real_T UD_DSTATE_n;                  /* '<S149>/UD' */
   real_T UD_DSTATE_g;                  /* '<S284>/UD' */
   real_T UD_DSTATE_p;                  /* '<S404>/UD' */
   real_T UD_DSTATE_a;                  /* '<S344>/UD' */
-  int32_T DiscreteFIRFilter_circBuf;   /* '<S426>/Discrete FIR Filter' */
+  real_T UnitDelay2_DSTATE;            /* '<S426>/Unit Delay2' */
   int32_T DiscreteFIRFilter1_circBuf;  /* '<S426>/Discrete FIR Filter1' */
+  int32_T DiscreteFIRFilter_circBuf;   /* '<S426>/Discrete FIR Filter' */
+  int32_T DiscreteFIRFilter3_circBuf;  /* '<S426>/Discrete FIR Filter3' */
+  int32_T DiscreteFIRFilter2_circBuf;  /* '<S426>/Discrete FIR Filter2' */
   uint32_T temporalCounter_i1;         /* '<S411>/State Transition Table' */
   flightMode flightMode_enum;          /* '<S411>/State Transition Table' */
   flightMode UnitDelay_1_DSTATE;       /* '<S408>/Unit Delay' */
@@ -246,7 +269,9 @@ typedef struct {
 /* Invariant block signals (default storage) */
 typedef struct {
   const real_T QuaternionstoDirectionCosin[9];
-                          /* '<S433>/Quaternions to  Direction Cosine Matrix' */
+                          /* '<S436>/Quaternions to  Direction Cosine Matrix' */
+  const real_T RotationAnglestoDirectionCo[9];
+                       /* '<S436>/Rotation Angles to Direction Cosine Matrix' */
 } ConstB;
 
 /* Real-time Model Data Structure */
@@ -314,13 +339,20 @@ extern void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e
  * Block '<S349>/Scope' : Unused code path elimination
  * Block '<S407>/Data Type Duplicate' : Unused code path elimination
  * Block '<S407>/Data Type Propagation' : Unused code path elimination
- * Block '<S435>/Data Type Duplicate' : Unused code path elimination
+ * Block '<S443>/Data Type Duplicate' : Unused code path elimination
+ * Block '<S439>/Unary Minus' : Unused code path elimination
+ * Block '<S411>/Unary Minus' : Unused code path elimination
+ * Block '<S471>/Unit Conversion' : Unused code path elimination
+ * Block '<S413>/Sum3' : Unused code path elimination
  * Block '<S80>/Zero-Order Hold' : Eliminated since input and output rates are identical
  * Block '<S150>/Zero-Order Hold' : Eliminated since input and output rates are identical
  * Block '<S221>/Zero-Order Hold' : Eliminated since input and output rates are identical
  * Block '<S285>/Zero-Order Hold' : Eliminated since input and output rates are identical
  * Block '<S345>/Zero-Order Hold' : Eliminated since input and output rates are identical
  * Block '<S405>/Zero-Order Hold' : Eliminated since input and output rates are identical
+ * Block '<S434>/Unit Conversion' : Eliminated nontunable gain of 1
+ * Block '<S435>/Unit Conversion' : Eliminated nontunable gain of 1
+ * Block '<S472>/Unit Conversion' : Eliminated nontunable gain of 1
  */
 
 /*-
@@ -767,33 +799,54 @@ extern void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e
  * '<S427>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter'
  * '<S428>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Noise Filter'
  * '<S429>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles'
- * '<S430>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Bias Estimation/Compare To Constant'
- * '<S431>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Bias Estimation/gravityCalculation'
- * '<S432>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Compare To Constant'
- * '<S433>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter'
- * '<S434>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Pass Through'
- * '<S435>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/Normalize Vector1'
- * '<S436>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/Quaternion Normalize'
- * '<S437>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/Subsystem'
- * '<S438>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat'
- * '<S439>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/Quaternion Normalize/Quaternion Modulus'
- * '<S440>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/Quaternion Normalize/Quaternion Modulus/Quaternion Norm'
- * '<S441>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat/Quaternion Multiplication'
- * '<S442>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat/Quaternion Normalize'
- * '<S443>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat/Quaternion Multiplication/q0'
- * '<S444>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat/Quaternion Multiplication/q1'
- * '<S445>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat/Quaternion Multiplication/q2'
- * '<S446>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat/Quaternion Multiplication/q3'
- * '<S447>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat/Quaternion Normalize/Quaternion Modulus'
- * '<S448>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Complementary Filter/eulerAngles2Quat/Quaternion Normalize/Quaternion Modulus/Quaternion Norm'
- * '<S449>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication'
- * '<S450>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q0'
- * '<S451>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q1'
- * '<S452>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q2'
- * '<S453>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q3'
- * '<S454>' : 'autocodeModel/Navigation/Navigation/flightMode/State Transition Table'
- * '<S455>' : 'autocodeModel/Navigation/Navigation/navBusCreator/dynPressureEstimation'
- * '<S456>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/gravityCalculation'
+ * '<S430>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Bias Estimation/              '
+ * '<S431>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Bias Estimation/Compare To Constant'
+ * '<S432>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Bias Estimation/Pressure Altitude'
+ * '<S433>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Bias Estimation/gravityCalculation'
+ * '<S434>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Bias Estimation/Pressure Altitude/Length Conversion'
+ * '<S435>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Bias Estimation/Pressure Altitude/Pressure Conversion'
+ * '<S436>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter'
+ * '<S437>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Pass Through'
+ * '<S438>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Compare To Constant'
+ * '<S439>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Pos Complementary Filter no GPS'
+ * '<S440>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Pos Complementary Filter w//GPS'
+ * '<S441>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Vel Complementary Filter'
+ * '<S442>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Vel Pass Through'
+ * '<S443>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/Normalize Vector1'
+ * '<S444>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/Quaternion Normalize'
+ * '<S445>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/Subsystem'
+ * '<S446>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat'
+ * '<S447>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/Quaternion Normalize/Quaternion Modulus'
+ * '<S448>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/Quaternion Normalize/Quaternion Modulus/Quaternion Norm'
+ * '<S449>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat/Quaternion Multiplication'
+ * '<S450>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat/Quaternion Normalize'
+ * '<S451>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat/Quaternion Multiplication/q0'
+ * '<S452>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat/Quaternion Multiplication/q1'
+ * '<S453>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat/Quaternion Multiplication/q2'
+ * '<S454>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat/Quaternion Multiplication/q3'
+ * '<S455>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat/Quaternion Normalize/Quaternion Modulus'
+ * '<S456>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Attitude Complementary Filter/eulerAngles2Quat/Quaternion Normalize/Quaternion Modulus/Quaternion Norm'
+ * '<S457>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Pos Complementary Filter no GPS/Compare To Constant'
+ * '<S458>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/Complementary Filter/Vel Pass Through/Compare To Constant'
+ * '<S459>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication'
+ * '<S460>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q0'
+ * '<S461>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q1'
+ * '<S462>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q2'
+ * '<S463>' : 'autocodeModel/Navigation/Navigation/filter/No Kalman Filter/quat2EulerAngles/Quaternion Multiplication/q3'
+ * '<S464>' : 'autocodeModel/Navigation/Navigation/flightMode/State Transition Table'
+ * '<S465>' : 'autocodeModel/Navigation/Navigation/navBusCreator/dynPressureEstimation'
+ * '<S466>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/              '
+ * '<S467>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/Pressure Altitude'
+ * '<S468>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/Subsystem'
+ * '<S469>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/gpsUpdateCheck'
+ * '<S470>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/gravityCalculation'
+ * '<S471>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/Pressure Altitude/Length Conversion'
+ * '<S472>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/Pressure Altitude/Pressure Conversion'
+ * '<S473>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/Subsystem/Degrees to Radians'
+ * '<S474>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/Subsystem/Degrees to Radians1'
+ * '<S475>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/Subsystem/Degrees to Radians2'
+ * '<S476>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/gpsUpdateCheck/Compare To Constant'
+ * '<S477>' : 'autocodeModel/Navigation/Navigation/navPreProcessing/gpsUpdateCheck/Difference'
  */
 #endif                                 /* autocodeModel_h_ */
 
