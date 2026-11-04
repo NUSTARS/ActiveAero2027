@@ -36,6 +36,16 @@ C.innerLoopParams.fbkGainRollI_na = 1*[0.8 0.9 1.0];
 C.innerLoopParams.fbkGainRollD_na = [0 0 0];
 C.innerLoopParams.fbkGainRollN_na = [1 1 1];
 
+% Inner Loop Coefficient Derivatives 
+C.innerLoopParams.Mdelta = -115.2301;
+C.innerLoopParams.bWrapper =  5.6843*10^(-14);
+C.innerLoopParams.Zalpha = -3.9118;
+C.innerLoopParams.Malpha = -6*10^4; 
+C.innerLoopParams.timeConstant_s = .02;
+C.innerLoopParams.invTFNum = [-1, C.innerLoopParams.Zalpha, C.innerLoopParams.Malpha];
+C.innerLoopParams.invTFDenom = conv([-1*C.innerLoopParams.Mdelta, -1*C.innerLoopParams.bWrapper], ...
+                                    [C.innerLoopParams.timeConstant_s, 1]);
+
 %% Outer Loop (attitude-loop PID output -> body rate command limits/gains)
 % PID gain vectors are ordered [P, I, D, N] to match the PID Gain
 % Scheduler block's Demux wiring in pitchYawOuterLoop/rollOuterLoop.
