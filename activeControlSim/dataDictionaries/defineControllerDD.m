@@ -44,7 +44,7 @@ C.outerLoopParams.upRateLimitPitchYawRate_rps2 = 0.5;    % [rad/s^2] max pitch/y
 C.outerLoopParams.loRateLimitPitchYawRate_rps2 = -0.5;   % [rad/s^2] min pitch/yaw rate-command slew rate
 C.outerLoopParams.upLimitPitchYawRate_rps      = 0.4;    % [rad/s] max commanded pitch/yaw rate
 C.outerLoopParams.loLimitPitchYawRate_rps      = -0.4;   % [rad/s] min commanded pitch/yaw rate
-C.outerLoopParams.pitchYawGains                = [1, 1, 0, 1]; % [P, I, D, N] pitch/yaw outer-loop PID gains
+C.outerLoopParams.pitchYawGains                = [2, 1, 0, 1]; % [P, I, D, N] pitch/yaw outer-loop PID gains
 
 C.outerLoopParams.upRateLimitRollRate_rps2 = 5;    % [rad/s^2] max roll rate-command slew rate
 C.outerLoopParams.loRateLimitRollRate_rps2 = -5;   % [rad/s^2] min roll rate-command slew rate

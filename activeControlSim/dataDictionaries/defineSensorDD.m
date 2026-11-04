@@ -128,7 +128,7 @@ S.sensorParams.baroPSDGM = 2 * baroBiasSigma_Pa^2 / (-1/(log(S.sensorParams.baro
 S.sensorParams.gpsSampleTime_s = 0.1;
 S.sensorParams.gpsDelay_na = 15; % At 100hz rate
 S.sensorParams.gpsOutageSampleTime_s = 1;
-S.sensorParams.gpsOutageProbability_pct = 0.25;
+S.sensorParams.gpsOutageProbability_pct = 0.1;
 
 %% End Processing
 
