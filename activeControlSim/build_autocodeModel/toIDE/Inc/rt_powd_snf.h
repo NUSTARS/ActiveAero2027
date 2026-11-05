@@ -5,11 +5,11 @@
  *
  * File: rt_powd_snf.h
  *
- * Code generated for Simulink model 'autocodePlant'.
+ * Code generated for Simulink model 'autocodeModel'.
  *
- * Model version                  : 1.7
+ * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Thu Oct 29 16:32:54 2026
+ * C/C++ source code generated on : Tue Nov  3 18:52:24 2026
  */
 
 #ifndef rt_powd_snf_h_

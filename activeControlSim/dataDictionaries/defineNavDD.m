@@ -27,7 +27,7 @@ N.gpsConversion.M0_m = 6378137*(1-6.69437999014E-3)/(1-6.69437999014E-3*sin(lat0
 N.gpsConversion.N0_m = 6378137/(1-6.69437999014E-3*sind(lat0_deg)^2)^0.5;
 
 N.navStates.debounce_s = 0.1;
-N.navStates.boostThreshold_mps2 = 12;
+N.navStates.boostThreshold_mps2 = 35;
 N.navStates.coastThresholdxAcc_mps2 = 0; 
 N.navStates.coastThresholdAlt_m = 200;
 N.navStates.controlTresholdPitchYaw_rad = 1.0;

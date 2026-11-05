@@ -5,23 +5,25 @@
  *
  * File: rt_powd_snf.c
  *
- * Code generated for Simulink model 'autocodePlant'.
+ * Code generated for Simulink model 'autocodeModel'.
  *
- * Model version                  : 1.7
+ * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Thu Oct 29 16:32:54 2026
+ * C/C++ source code generated on : Tue Nov  3 18:52:24 2026
  */
 
-#include "rtwtypes.h"
 #include "rt_powd_snf.h"
-#include "rt_nonfinite.h"
 #include <math.h>
+#include "rtGetInf.h"
+#include "rtGetNaN.h"
+#include "rt_nonfinite.h"
+#include "rtwtypes.h"
 
 real_T rt_powd_snf(real_T u0, real_T u1)
 {
   real_T y;
   if (rtIsNaN(u0) || rtIsNaN(u1)) {
-    y = (rtNaN);
+    y = rtGetNaN();
   } else {
     real_T tmp;
     real_T tmp_0;
@@ -32,14 +34,14 @@ real_T rt_powd_snf(real_T u0, real_T u1)
         y = 1.0;
       } else if (tmp > 1.0) {
         if (u1 > 0.0) {
-          y = (rtInf);
+          y = rtGetInf();
         } else {
           y = 0.0;
         }
       } else if (u1 > 0.0) {
         y = 0.0;
       } else {
-        y = (rtInf);
+        y = rtGetInf();
       }
     } else if (tmp_0 == 0.0) {
       y = 1.0;
@@ -54,7 +56,7 @@ real_T rt_powd_snf(real_T u0, real_T u1)
     } else if ((u1 == 0.5) && (u0 >= 0.0)) {
       y = sqrt(u0);
     } else if ((u0 < 0.0) && (u1 > floor(u1))) {
-      y = (rtNaN);
+      y = rtGetNaN();
     } else {
       y = pow(u0, u1);
     }

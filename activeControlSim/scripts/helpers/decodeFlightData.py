@@ -211,7 +211,7 @@ def convert(input_path, output_path, *, force=False, force_legacy=False, strict=
                         break
                     if len(payload) != layout.payload_size:
                         stats["truncated_packets"] += 1
-                        print(f"WARNING: incomplete legacy packet at byte {offset}")
+                        print("\n" + f"WARNING: incomplete legacy packet at byte {offset}")
                         break
                     corrected = 0
                 else:
@@ -224,23 +224,23 @@ def convert(input_path, output_path, *, force=False, force_legacy=False, strict=
                         marker = marker[1:] + stream.read(1)
                     stats["discarded_bytes"] += skipped
                     if skipped:
-                        print(f"WARNING: skipped {skipped} bytes while locating packet marker at {offset}")
+                        print("\n" + f"WARNING: skipped {skipped} bytes while locating packet marker at {offset}")
                         if strict:
                             raise PacketError("Packet framing lost")
                     if marker != MARKER:
                         stats["truncated_packets"] += 1
-                        print("WARNING: partial packet marker at end of file")
+                        print("\nWARNING: partial packet marker at end of file")
                         break
                     protected = stream.read(layout.packet_size - 4)
                     if len(protected) != layout.packet_size - 4:
                         stats["truncated_packets"] += 1
-                        print(f"WARNING: incomplete protected packet at byte {offset}")
+                        print("\n" + f"WARNING: incomplete protected packet at byte {offset}")
                         break
                     try:
                         payload, corrected = decode_packet(protected, layout)
                     except PacketError as error:
                         stats["rejected_packets"] += 1
-                        print(f"WARNING: rejected packet at byte {offset}: {error}")
+                        print("\n" + f"WARNING: rejected packet at byte {offset}: {error}")
                         if strict:
                             raise
                         # Resume marker search one byte after this candidate:
@@ -251,6 +251,9 @@ def convert(input_path, output_path, *, force=False, force_legacy=False, strict=
                 stats["packets"] += 1
                 stats["corrected_bits"] += corrected
                 stats["corrected_packets"] += bool(corrected)
+                print(f"\rDecoded {stats['packets']} packets...", end="", flush=True)
+    if stats["packets"]:
+        print()
     print(f"Converted {stats['packets']} packets; corrected {stats['corrected_bits']} bits "
           f"in {stats['corrected_packets']} packets; rejected {stats['rejected_packets']}; "
           f"discarded {stats['discarded_bytes']} framing bytes; incomplete {stats['truncated_packets']}.")
