@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Nov  4 17:25:57 2026
+ * C/C++ source code generated on : Thu Nov  5 20:50:59 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -187,7 +187,7 @@ typedef struct {
   real_T qEst_na[4];                   /* '<S427>/Merge' */
   real_T UnitDelay_2_DSTATE[4];        /* '<S408>/Unit Delay' */
   real_T UnitDelay_13_DSTATE[3];       /* '<S408>/Unit Delay' */
-  real_T DiscreteTransferFcn1_states[6];/* '<S409>/Discrete Transfer Fcn1' */
+  real_T DiscreteTransferFcn1_states[9];/* '<S409>/Discrete Transfer Fcn1' */
   real_T GyroFilter_states[3];         /* '<S428>/Gyro Filter' */
   real_T UD_DSTATE[3];                 /* '<S477>/UD' */
   real_T UnitDelay_12_DSTATE[3];       /* '<S408>/Unit Delay' */
@@ -238,13 +238,13 @@ typedef struct {
   real_T UnitDelay_20_DSTATE;          /* '<S408>/Unit Delay' */
   real_T UnitDelay_21_DSTATE;          /* '<S408>/Unit Delay' */
   real_T UnitDelay_22_DSTATE;          /* '<S408>/Unit Delay' */
+  real_T UnitDelay2_DSTATE;            /* '<S426>/Unit Delay2' */
   real_T UD_DSTATE_l;                  /* '<S220>/UD' */
   real_T UD_DSTATE_k;                  /* '<S79>/UD' */
   real_T UD_DSTATE_n;                  /* '<S149>/UD' */
   real_T UD_DSTATE_g;                  /* '<S284>/UD' */
   real_T UD_DSTATE_p;                  /* '<S404>/UD' */
   real_T UD_DSTATE_a;                  /* '<S344>/UD' */
-  real_T UnitDelay2_DSTATE;            /* '<S426>/Unit Delay2' */
   int32_T DiscreteFIRFilter1_circBuf;  /* '<S426>/Discrete FIR Filter1' */
   int32_T DiscreteFIRFilter_circBuf;   /* '<S426>/Discrete FIR Filter' */
   int32_T DiscreteFIRFilter3_circBuf;  /* '<S426>/Discrete FIR Filter3' */
@@ -254,6 +254,7 @@ typedef struct {
   flightMode UnitDelay_1_DSTATE;       /* '<S408>/Unit Delay' */
   uint8_T is_active_c4_autocodeModel;  /* '<S411>/State Transition Table' */
   uint8_T is_c4_autocodeModel;         /* '<S411>/State Transition Table' */
+  boolean_T Delay1_6_DSTATE[500];      /* '<S426>/Delay1' */
   boolean_T UnitDelay_DSTATE_n;        /* '<S4>/Unit Delay' */
   boolean_T icLoad;                    /* '<S345>/Delay' */
   boolean_T icLoad_k;                  /* '<S150>/Delay' */

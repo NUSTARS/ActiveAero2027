@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Nov  4 17:25:23 2026
+ * C/C++ source code generated on : Thu Nov  5 20:49:28 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -763,8 +763,12 @@ typedef struct {
                         /* '<S137>/PreLook-Up Index Search  (prob of exceed)' */
   const real_T constBlockForifHeightMaxlow;
   const real_T constBlockForifHeightMaxl_b;
+  const real_T constBlockForifHeightMaxl_i;
+  const real_T constBlockForifHeightMaxl_f;
   const real_T constBlockForifHeightMaxl_d;
   const real_T constBlockForifHeightMaxl_n;
+  const real_T constBlockForifHeightMaxl_c;
+  const real_T constBlockForifHeightMax_nh;
   const real_T Sqrt[4];                /* '<S130>/Sqrt' */
   const real_T Sqrt1;                  /* '<S130>/Sqrt1' */
   const real_T Divide[4];              /* '<S130>/Divide' */

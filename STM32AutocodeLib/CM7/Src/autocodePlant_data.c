@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Nov  4 17:25:23 2026
+ * C/C++ source code generated on : Thu Nov  5 20:49:28 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -525,6 +525,10 @@ const ConstB_autocodePlant_T autocodePlant_ConstB = {
   9.0223097112860877,                  /* '<S123>/Unit Conversion' */
   1749.9999999999998,                  /* '<S157>/Unit Conversion' */
   0.0,                  /* '<S137>/PreLook-Up Index Search  (prob of exceed)' */
+  1000.0,
+  2000.0,
+  1000.0,
+  2000.0,
   1000.0,
   2000.0,
   1000.0,
