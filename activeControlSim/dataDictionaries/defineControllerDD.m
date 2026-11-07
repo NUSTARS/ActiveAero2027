@@ -3,6 +3,8 @@ function C = defineControllerDD()
 %   struct, grouped by field. No Simulink calls here -- just data.
 %
 
+dt_s = 0.01;
+
 %% Guidance (attitude commands)
 C.guidanceParams.phiCmd_rad   = 0; % [rad] commanded roll angle
 C.guidanceParams.thetaCmd_rad = 0.0; % [rad] commanded pitch angle
@@ -22,14 +24,11 @@ C.innerLoopParams.loLimitRoll_deg     = -5;  % [deg] min fin deflection angle
 
 C.innerLoopParams.fbkGainBreakpoints_Pa = [0 30e3 75e3];
 
-% C.innerLoopParams.fbkGainPitchYawP_na = 8000*[1.2 0.6 0.4];
-% C.innerLoopParams.fbkGainPitchYawI_na = 50000*[1.2 0.6 0.4];
-% C.innerLoopParams.fbkGainPitchYawD_na = 0*[1.2 0.6 0.5];
-% C.innerLoopParams.fbkGainPitchYawN_na = [10 10 10];
-C.innerLoopParams.fbkGainPitchYawP_na = 200*[1.5 1.25 1.0];
-C.innerLoopParams.fbkGainPitchYawI_na = 4000*[0.5 0.75 1.0];
-C.innerLoopParams.fbkGainPitchYawD_na = 0*[1.5 1.25 1.0];
-C.innerLoopParams.fbkGainPitchYawN_na = [1 1 1];
+C.innerLoopParams.fbkPitchYawGamma_na = eye(4);
+C.innerLoopParams.fbkPitchYawLambda_na = exp(-0.1*dt_s);
+C.innerLoopParams.fbkPitchYawTheta0_na = [1, 1, -100, 100];
+C.innerLoopParams.fbkPitchRefTau_na = exp(-0.1*dt_s);
+C.innerLoopParams.omegaBias_na = 0.1;
 
 C.innerLoopParams.fbkGainRollP_na = 2.5*[1.1 1.05 1.0];
 C.innerLoopParams.fbkGainRollI_na = 10*[2.0 1.2 1.0];
