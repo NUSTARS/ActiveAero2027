@@ -20,6 +20,7 @@ gyroG = [0.05 0 0; 0 0.05 0; 0 0 0.05];
 N.navControl.gyroG = gyroG * 0.01745 / 9.8065;
 
 N.navControl.filterDelay_na = 500;
+N.navControl.biasWindowSamples = 1000;
 
 lat0_deg = 42.0569355774686; % [deg]
 
