@@ -18,11 +18,14 @@ Every time-series plot is shaded by nav flight mode (IDLE/BOOST/ACTIVE/
 LOCKOUT). Columns that are identically zero (e.g. an unpopulated sensor) are
 skipped automatically.
 
+Set LOG_PATH and PLOT_WINDOW at the top of this file to choose the log and the
+time range.
+
 Examples (from activeControlSim/)::
 
-    py scripts/helpers/plotBoardLog.py data/board-test-11-4-26.csv
-    py scripts/helpers/plotBoardLog.py data/board-test-11-4-26.csv --tmin 60 --tmax 90
-    py scripts/helpers/plotBoardLog.py data/board-test-11-4-26.csv --save results/board-test --no-show
+    py scripts/helpers/plotBoardLog.py
+    py scripts/helpers/plotBoardLog.py --only gyro accel
+    py scripts/helpers/plotBoardLog.py --save results/board-test --no-show
 """
 
 from __future__ import annotations
@@ -34,7 +37,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-FLIGHT_MODES = {0: "IDLE", 1: "BOOST", 2: "ACTIVE", 3: "LOCKOUT"}
+# ------------------------------------------------------------ user settings
+# Board log to plot.
+LOG_PATH = (Path(__file__).resolve().parents[2]
+            / "data/nov-flight/FLIGHT_DATA.xlsx")
+
+# (start, end) in seconds relative to launch, where t=0 is the first sample
+# out of IDLE. Set to None to plot the whole log in time since log start.
+PLOT_WINDOW = (-1.0, 20.0)
+
+FLIGHT_MODES ={0: "IDLE", 1: "BOOST", 2: "ACTIVE", 3: "LOCKOUT"}
 MODE_COLORS = {0: None, 1: "#f4a259", 2: "#5b8e7d", 3: "#bc4b51"}
 
 # Fixed per-axis colors so "X" reads the same on every plot (matches
@@ -53,6 +65,14 @@ def load_log(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path)
     df["t_s"] = df["timestamp_us_delta"].cumsum() * 1e-6
     return df
+
+
+def launch_time(df: pd.DataFrame) -> float:
+    """Log time [s] of launch: the first sample where nav leaves IDLE."""
+    left_idle = df["nav_flightMode_enum"].to_numpy() != 0
+    if not left_idle.any():
+        raise SystemExit("No launch in this log: nav never leaves IDLE.")
+    return float(df["t_s"].iloc[int(np.argmax(left_idle))])
 
 
 def has_data(df: pd.DataFrame, col: str) -> bool:
@@ -102,7 +122,7 @@ def finish(fig, axes, df, note: str | None = None) -> None:
             ax.legend(loc="upper right", fontsize=8, ncol=3)
     visible = [ax for ax in axes if ax.get_visible()]
     if visible:
-        visible[-1].set_xlabel("Time [s]")
+        visible[-1].set_xlabel(df.attrs.get("time_label", "Time [s]"))
         visible[-1].tick_params(labelbottom=True)
         # Mode legend once, on the figure.
         fig.legend(handles=mode_legend_handles(), loc="upper left",
@@ -389,9 +409,10 @@ FIGURES = {
 # --------------------------------------------------------------------- main
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("csv", type=Path, help="board log CSV")
-    p.add_argument("--tmin", type=float, help="start time [s]")
-    p.add_argument("--tmax", type=float, help="end time [s]")
+    p.add_argument("--tmin", type=float,
+                   help="start time since log start [s] (needs PLOT_WINDOW = None)")
+    p.add_argument("--tmax", type=float,
+                   help="end time since log start [s] (needs PLOT_WINDOW = None)")
     p.add_argument("--only", nargs="+", choices=list(FIGURES),
                    help="only draw these figures")
     p.add_argument("--save", type=Path, metavar="DIR",
@@ -399,8 +420,17 @@ def main() -> None:
     p.add_argument("--no-show", action="store_true",
                    help="don't open interactive windows")
     args = p.parse_args()
+    if PLOT_WINDOW and (args.tmin is not None or args.tmax is not None):
+        p.error("--tmin/--tmax need PLOT_WINDOW = None")
+    if PLOT_WINDOW and PLOT_WINDOW[0] >= PLOT_WINDOW[1]:
+        p.error("PLOT_WINDOW start must be less than its end")
 
-    df = load_log(args.csv)
+    df = load_log(LOG_PATH)
+    if PLOT_WINDOW:
+        t_launch = launch_time(df)
+        print(f"launch at t={t_launch:.3f} s into the log")
+        df["t_s"] -= t_launch
+        df = df[df["t_s"].between(*PLOT_WINDOW)]
     if args.tmin is not None:
         df = df[df["t_s"] >= args.tmin]
     if args.tmax is not None:
@@ -408,6 +438,8 @@ def main() -> None:
     df = df.reset_index(drop=True)
     if df.empty:
         raise SystemExit("No samples in the selected time window.")
+    if PLOT_WINDOW:
+        df.attrs["time_label"] = "Time since launch [s]"
 
     names = args.only or list(FIGURES)
     if args.save:
@@ -415,7 +447,7 @@ def main() -> None:
     for name in names:
         fig = FIGURES[name](df)
         if args.save:
-            out = args.save / f"{args.csv.stem}_{name}.png"
+            out = args.save / f"{LOG_PATH.stem}_{name}.png"
             fig.savefig(out, dpi=150)
             print(f"wrote {out}")
         if args.no_show:
