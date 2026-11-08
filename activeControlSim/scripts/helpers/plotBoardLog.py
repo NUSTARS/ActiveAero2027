@@ -40,7 +40,7 @@ import pandas as pd
 # ------------------------------------------------------------ user settings
 # Board log to plot.
 LOG_PATH = (Path(__file__).resolve().parents[2]
-            / "data/nov-flight/FLIGHT_DATA.xlsx")
+            / "data/nov-flight/FLIGHT_DATA.csv")
 
 # (start, end) in seconds relative to launch, where t=0 is the first sample
 # out of IDLE. Set to None to plot the whole log in time since log start.

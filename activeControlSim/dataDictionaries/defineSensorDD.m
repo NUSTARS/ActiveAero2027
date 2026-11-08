@@ -40,6 +40,7 @@ S.sensorParams.accSigmaBias_mps2 = accSigmaBias_mg * 0.00981; % [m/s^2]
 accnoiseDensity_mps2psqHz = accnoiseDensity_microgpsqHz * 9.81e-6; % [m/s^2 / sqrt(Hz)]
 S.sensorParams.accPSDGM = 2 * S.sensorParams.accSigmaBias_mps2 .* S.sensorParams.accSigmaBias_mps2 / (-1/(log(S.sensorParams.accMarkovGain_na)*accRate_Hz));
 S.sensorParams.accPSDWhite = accnoiseDensity_mps2psqHz .* accnoiseDensity_mps2psqHz;
+S.sensorParams.accWhiteNoiseStrengths = [1.7478e-06, 1.1224e-06, 8.1680e-07];
 
 % Misc
 S.sensorParams.accScaleCoupling_na = eye(3) + accScaleCoupling_na;
