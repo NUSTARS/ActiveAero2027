@@ -18,11 +18,14 @@ Every time-series plot is shaded by nav flight mode (IDLE/BOOST/ACTIVE/
 LOCKOUT). Columns that are identically zero (e.g. an unpopulated sensor) are
 skipped automatically.
 
+Set LOG_PATH, PLOT_WINDOW, OVERLAY_PATH and OVERLAY_LR_PATH at the top of this
+file to choose the log, the time range and optional Blue Raven logs to overlay.
+
 Examples (from activeControlSim/)::
 
-    py scripts/helpers/plotBoardLog.py data/board-test-11-4-26.csv
-    py scripts/helpers/plotBoardLog.py data/board-test-11-4-26.csv --tmin 60 --tmax 90
-    py scripts/helpers/plotBoardLog.py data/board-test-11-4-26.csv --save results/board-test --no-show
+    py scripts/helpers/plotBoardLog.py
+    py scripts/helpers/plotBoardLog.py --only gyro accel
+    py scripts/helpers/plotBoardLog.py --save results/board-test --no-show
 """
 
 from __future__ import annotations
@@ -34,7 +37,48 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-FLIGHT_MODES = {0: "IDLE", 1: "BOOST", 2: "ACTIVE", 3: "LOCKOUT"}
+# ------------------------------------------------------------ user settings
+# Board log to plot.
+LOG_PATH = (Path(__file__).resolve().parents[2]
+            / "data/nov-flight/FLIGHT_DATA.csv")
+
+# (start, end) in seconds relative to launch, where t=0 is the first sample
+# out of IDLE. Set to None to plot the whole log in time since log start.
+PLOT_WINDOW = (-1.0, 20.0)
+
+# Optional Blue Raven CSV overlaid on the gyro and accel figures and compared
+# with nav in the attitude_compare figure. Set to None to plot the board log
+# alone.
+OVERLAY_PATH = (Path(__file__).resolve().parents[2]
+                / "data/nov-flight/blue-raven-data-hr.csv")
+
+# Optional Blue Raven low-rate CSV. Its tilt replaces the quaternion tilt in
+# attitude_compare, and its position and velocity are overlaid on the position
+# and velocity figures. Set to None to leave it out.
+OVERLAY_LR_PATH = (Path(__file__).resolve().parents[2]
+                   / "data/nov-flight/blue-raven-data-lr.csv")
+
+# Seconds added to the Blue Raven's Flight_Time so it lines up with board t=0.
+# Depends on the flight: 0.113 s is the best fit for the Nov flight's gyro data
+OVERLAY_TIME_OFFSET_S = 0.1
+
+# Sign taking each Blue Raven axis (X, Y, Z) into the board's axes, assuming
+# the same mounting as the Nov flight.
+OVERLAY_AXIS_SIGNS = (-1.0, 1.0, -1.0)
+
+# Small rotation [deg] about the board's X, Y and Z axes taking the Blue Raven's
+# axes (after OVERLAY_AXIS_SIGNS) into the board's. Depends on the mounting:
+# this value minimizes the Nov flight's RMS Raven (quaternion) minus nav tilt
+# error from launch to lockout. Applies to everything except the low-rate tilt,
+# which is a single logged angle. Set to (0.0, 0.0, 0.0) to turn it off.
+OVERLAY_MISALIGNMENT_DEG = (0.0, 1.71, 0.17)
+
+# Blue Raven's roll angle at launch [deg], in the same sense as nav's roll φ.
+# Also sets the compass direction of its down-range and cross-range axes.
+# Set to None to start it at nav's roll at launch.
+OVERLAY_INITIAL_ROLL_DEG = None
+
+FLIGHT_MODES ={0: "IDLE", 1: "BOOST", 2: "ACTIVE", 3: "LOCKOUT"}
 MODE_COLORS = {0: None, 1: "#f4a259", 2: "#5b8e7d", 3: "#bc4b51"}
 
 # Fixed per-axis colors so "X" reads the same on every plot (matches
@@ -45,7 +89,12 @@ EXTRA_COLORS = ("#7e2f8e", "#4dbeee", "#a2142f", "#edb120")
 # Firmware logs gyro in deg/s; nav works in rad/s.
 GYRO_RAW_UNITS = "deg/s"
 EARTH_RADIUS_M = 6378137.0
+STANDARD_GRAVITY_MPS2 = 9.80665
+FEET_TO_M = 0.3048
 UINT32_MAX = 4294967295
+# Nav's Euler angles are the 3-2-1 angles of EULER_PRE_ROTATION ⊗ qEst
+# (navControl.eulerCalcPreRotation in dataDictionaries/defineNavDD.m).
+EULER_PRE_ROTATION = np.array([0.707106781187, 0.0, -0.707106781187, 0.0])
 
 
 # ----------------------------------------------------------------- helpers
@@ -53,6 +102,117 @@ def load_log(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path)
     df["t_s"] = df["timestamp_us_delta"].cumsum() * 1e-6
     return df
+
+
+def quat_multiply(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Hamilton product of scalar-first quaternions, row-wise."""
+    a, b = np.broadcast_arrays(a, b)
+    w1, x1, y1, z1 = np.moveaxis(a, -1, 0)
+    w2, x2, y2, z2 = np.moveaxis(b, -1, 0)
+    return np.stack([w1*w2 - x1*x2 - y1*y2 - z1*z2,
+                     w1*x2 + x1*w2 + y1*z2 - z1*y2,
+                     w1*y2 - x1*z2 + y1*w2 + z1*x2,
+                     w1*z2 + x1*y2 - y1*x2 + z1*w2], axis=-1)
+
+
+def quat_to_euler(q: np.ndarray) -> np.ndarray:
+    """3-2-1 Euler angles [phi, theta, psi] in rad from scalar-first quaternions."""
+    w, x, y, z = np.moveaxis(q, -1, 0)
+    return np.stack([np.arctan2(2*(w*x + y*z), 1 - 2*(x*x + y*y)),
+                     np.arcsin(np.clip(2*(w*y - z*x), -1, 1)),
+                     np.arctan2(2*(w*z + x*y), 1 - 2*(y*y + z*z))], axis=-1)
+
+
+def quat_rotate(q: np.ndarray, v: np.ndarray) -> np.ndarray:
+    """Rotate row vectors v from the body frame to the reference frame of q."""
+    v_quat = np.column_stack([np.zeros(len(v)), v])
+    q_conj = q * np.array([1.0, -1.0, -1.0, -1.0])
+    return quat_multiply(quat_multiply(q, v_quat), q_conj)[:, 1:]
+
+
+def overlay_launch_attitude(q_launch: np.ndarray) -> np.ndarray:
+    """Nav's launch attitude with roll replaced by OVERLAY_INITIAL_ROLL_DEG if set."""
+    if OVERLAY_INITIAL_ROLL_DEG is None:
+        return q_launch
+    # Roll is the body-side Euler rotation, so it composes on the right.
+    nav_roll = quat_to_euler(quat_multiply(EULER_PRE_ROTATION, q_launch))[0]
+    half = (np.deg2rad(OVERLAY_INITIAL_ROLL_DEG) - nav_roll) / 2.0
+    return quat_multiply(q_launch, np.array([np.cos(half), np.sin(half), 0.0, 0.0]))
+
+
+def overlay_misalignment() -> np.ndarray:
+    """Unit quaternion taking Blue Raven axes into board axes."""
+    q = np.r_[1.0, np.deg2rad(OVERLAY_MISALIGNMENT_DEG) / 2.0]
+    return q / np.linalg.norm(q)
+
+
+def load_overlay(path: Path, q_launch: np.ndarray) -> pd.DataFrame:
+    """Load a Blue Raven CSV in board units and axes, with t_s=0 at board launch.
+
+    The Raven's quaternion is identity on the pad, so it is anchored to the
+    launch attitude (q_launch) before computing Euler angles nav's way.
+    """
+    raw = pd.read_csv(path)
+    out = pd.DataFrame({"t_s": raw["Flight_Time_(s)"] + OVERLAY_TIME_OFFSET_S})
+    misalignment = overlay_misalignment()
+    gyro, accel = (
+        quat_rotate(misalignment, raw[[f"{name}_{a}" for a in "XYZ"]].to_numpy(dtype=float)
+                    * OVERLAY_AXIS_SIGNS)
+        for name in ("Gyro", "Accel"))
+    for i, axis in enumerate("xyz"):
+        out[f"gyro_{axis}"] = np.deg2rad(gyro[:, i])
+        out[f"accel_{axis}"] = accel[:, i] * STANDARD_GRAVITY_MPS2
+
+    q_raven = raw[[f"Quat_{k}" for k in range(1, 5)]].to_numpy(dtype=float)
+    q_raven[:, 1:] *= OVERLAY_AXIS_SIGNS
+    q_raven = quat_multiply(quat_multiply(misalignment, q_raven),
+                            misalignment * np.array([1.0, -1.0, -1.0, -1.0]))
+    q_nav_frame = quat_multiply(q_launch, q_raven)
+    euler = quat_to_euler(quat_multiply(EULER_PRE_ROTATION, q_nav_frame))
+    for i, name in enumerate(("phi", "theta", "psi")):
+        out[name] = euler[:, i]
+    return out
+
+
+def load_overlay_lr(path: Path, q_launch: np.ndarray) -> pd.DataFrame:
+    """Load a Blue Raven low-rate CSV with position and velocity in NED metres.
+
+    Up, down-range and cross-range are the Raven's -X, -Y and +Z axes at launch
+    (found by integrating its high-rate accel), so q_launch rotates them to NED.
+    Rows stop at the first one where Time goes backwards: past that point the
+    log only repeats old samples.
+    """
+    raw = pd.read_csv(path, low_memory=False)
+    elapsed = pd.to_timedelta(raw["Time"])
+    raw = raw[(elapsed.diff().fillna(pd.Timedelta(0)) >= pd.Timedelta(0)).cummin()]
+
+    out = pd.DataFrame({"t_s": raw["Flight_Time_(s)"] + OVERLAY_TIME_OFFSET_S,
+                        "tilt_deg": raw["Tilt_Angle_(deg)"]})
+    for prefix, columns in (("vel", ("Velocity_Up", "Velocity_DR", "Velocity_CR")),
+                            ("pos", ("Inertial_Altitude", "Inertial_DR_Position",
+                                     "Inertial_CR_position"))):
+        up, down_range, cross_range = (raw[c].to_numpy(dtype=float) * FEET_TO_M
+                                       for c in columns)
+        raven_axes = np.column_stack([-up, -down_range, cross_range])
+        board_axes = quat_rotate(overlay_misalignment(), raven_axes * OVERLAY_AXIS_SIGNS)
+        ned = quat_rotate(q_launch, board_axes)
+        for i, axis in enumerate(("North", "East", "Down")):
+            out[f"{prefix}_{axis}"] = ned[:, i]
+    return out
+
+
+def plot_overlay(ax, overlay: pd.DataFrame | None, col: str) -> None:
+    if overlay is not None:
+        ax.plot(overlay["t_s"], overlay[col], color=EXTRA_COLORS[0], lw=0.9,
+                label="Blue Raven")
+
+
+def launch_time(df: pd.DataFrame) -> float:
+    """Log time [s] of launch: the first sample where nav leaves IDLE."""
+    left_idle = df["nav_flightMode_enum"].to_numpy() != 0
+    if not left_idle.any():
+        raise SystemExit("No launch in this log: nav never leaves IDLE.")
+    return float(df["t_s"].iloc[int(np.argmax(left_idle))])
 
 
 def has_data(df: pd.DataFrame, col: str) -> bool:
@@ -102,7 +262,7 @@ def finish(fig, axes, df, note: str | None = None) -> None:
             ax.legend(loc="upper right", fontsize=8, ncol=3)
     visible = [ax for ax in axes if ax.get_visible()]
     if visible:
-        visible[-1].set_xlabel("Time [s]")
+        visible[-1].set_xlabel(df.attrs.get("time_label", "Time [s]"))
         visible[-1].tick_params(labelbottom=True)
         # Mode legend once, on the figure.
         fig.legend(handles=mode_legend_handles(), loc="upper left",
@@ -128,7 +288,7 @@ def masked(series: pd.Series, mask: np.ndarray) -> np.ndarray:
 
 
 # ------------------------------------------------------------------ figures
-def plot_gyro(df):
+def plot_gyro(df, overlay=None):
     fig, axes = new_fig("Angular rate: raw gyro vs nav estimate", 4)
     d2r = np.pi / 180.0
     t = df["t_s"]
@@ -139,6 +299,7 @@ def plot_gyro(df):
             if has_data(df, col):
                 ax.plot(t, df[col] * d2r, ls, color=AX_COLORS[i], alpha=0.45,
                         lw=0.8, label=f"{sensor.upper()} raw")
+        plot_overlay(ax, overlay, f"gyro_{axis}")
         ax.plot(t, df[f"nav_{nav}Est_rps"], color="k", lw=1.0,
                 label=f"nav {nav}Est")
         ax.set_ylabel(f"{axis.upper()} [rad/s]")
@@ -151,7 +312,7 @@ def plot_gyro(df):
     return fig
 
 
-def plot_accel(df):
+def plot_accel(df, overlay=None):
     fig, axes = new_fig("Acceleration: raw accelerometer vs nav estimate", 4)
     t = df["t_s"]
     for i, axis in enumerate("xyz"):
@@ -161,6 +322,7 @@ def plot_accel(df):
             if has_data(df, col):
                 ax.plot(t, df[col], ls, color=AX_COLORS[i], alpha=0.45,
                         lw=0.8, label=f"{sensor.upper()} raw")
+        plot_overlay(ax, overlay, f"accel_{axis}")
         ax.plot(t, df[f"nav_{axis}AccEst_mps2"], color="k", lw=1.0,
                 label=f"nav {axis}AccEst")
         ax.set_ylabel(f"{axis.upper()} [m/s²]")
@@ -170,6 +332,61 @@ def plot_accel(df):
                 label=f"bias {axis}")
     ax.set_ylabel("Accel bias [m/s²]")
     finish(fig, axes, df)
+    return fig
+
+
+def break_wraps(deg: np.ndarray) -> np.ndarray:
+    """Blank ±180° wrap samples so they don't draw as vertical lines."""
+    out = deg.astype(float).copy()
+    out[np.abs(np.diff(out, prepend=out[0])) > 180.0] = np.nan
+    return out
+
+
+def tilt_deg(theta_rad: np.ndarray, psi_rad: np.ndarray) -> np.ndarray:
+    """Angle between the body X axis and nav's vertical, from pitch and yaw."""
+    return np.rad2deg(np.arccos(np.clip(np.cos(theta_rad) * np.cos(psi_rad),
+                                        -1.0, 1.0)))
+
+
+def plot_attitude_compare(df, overlay, overlay_lr=None):
+    fig, axes = new_fig("Attitude: Blue Raven quaternion vs nav Euler", 5)
+    t = df["t_s"].to_numpy()
+    t_raven = overlay["t_s"].to_numpy()
+    nearest = np.clip(np.searchsorted(t_raven, t), 0, len(t_raven) - 1)
+    outside = (t < t_raven[0]) | (t > t_raven[-1])
+    for i, (name, lbl) in enumerate((("phi", "Roll φ"), ("theta", "Pitch θ"),
+                                     ("psi", "Yaw ψ"))):
+        nav = np.rad2deg(df[f"nav_{name}Est_rad"].to_numpy())
+        raven = np.rad2deg(overlay[name].to_numpy())
+        axes[i].plot(t_raven, break_wraps(raven), color=EXTRA_COLORS[0],
+                     lw=0.9, label="Blue Raven")
+        axes[i].plot(t, break_wraps(nav), color="k", lw=1.0, label="nav")
+        axes[i].set_ylabel(f"{lbl} [deg]")
+        diff = (raven[nearest] - nav + 180.0) % 360.0 - 180.0
+        diff[outside] = np.nan
+        axes[4].plot(t, break_wraps(diff), color=AX_COLORS[i], lw=0.9,
+                     label=lbl)
+
+    tilt_nav = tilt_deg(df["nav_thetaEst_rad"].to_numpy(),
+                        df["nav_psiEst_rad"].to_numpy())
+    if overlay_lr is None or overlay_lr.empty:
+        t_tilt = t_raven
+        tilt_raven = tilt_deg(overlay["theta"].to_numpy(), overlay["psi"].to_numpy())
+    else:
+        t_tilt = overlay_lr["t_s"].to_numpy()
+        tilt_raven = overlay_lr["tilt_deg"].to_numpy()
+    axes[3].plot(t_tilt, tilt_raven, color=EXTRA_COLORS[0], lw=0.9,
+                 label="Blue Raven")
+    axes[3].plot(t, tilt_nav, color="k", lw=1.0, label="nav")
+    axes[3].set_ylabel("Tilt [deg]")
+    nearest_tilt = np.clip(np.searchsorted(t_tilt, t), 0, len(t_tilt) - 1)
+    tilt_diff = tilt_raven[nearest_tilt] - tilt_nav
+    tilt_diff[(t < t_tilt[0]) | (t > t_tilt[-1])] = np.nan
+    axes[4].plot(t, tilt_diff, color="k", lw=0.9, label="Tilt")
+    axes[4].set_ylabel("Raven − nav [deg]")
+    anchor = ("nav's attitude" if OVERLAY_INITIAL_ROLL_DEG is None else
+              f"nav's pitch/yaw and {OVERLAY_INITIAL_ROLL_DEG:g}° roll")
+    finish(fig, axes, df, note=f"(Blue Raven anchored to {anchor} at launch)")
     return fig
 
 
@@ -192,7 +409,7 @@ def plot_attitude(df):
     return fig
 
 
-def plot_velocity(df):
+def plot_velocity(df, overlay=None):
     fig, axes = new_fig("NED velocity: GNSS vs nav estimate", 3)
     t = df["t_s"]
     m = gnss_mask(df)
@@ -203,19 +420,21 @@ def plot_velocity(df):
         ax = axes[i]
         ax.plot(t, masked(df[gcol], m), ".", ms=2, color=AX_COLORS[i],
                 alpha=0.6, label="GNSS")
+        plot_overlay(ax, overlay, f"vel_{lbl}")
         ax.plot(t, df[ncol], color="k", lw=1.0, label="nav")
         ax.set_ylabel(f"{lbl} [m/s]")
     finish(fig, axes, df)
     return fig
 
 
-def plot_position(df):
+def plot_position(df, overlay=None):
     fig, axes = new_fig("Position: GNSS (local NED about first fix) vs nav", 3)
     t = df["t_s"]
     m = gnss_mask(df)
     nav_cols = ("nav_xPosEst_m", "nav_yPosEst_m", "nav_zPosEst_m")
     if not m.any():
         for i, (c, lbl) in enumerate(zip(nav_cols, ("North", "East", "Down"))):
+            plot_overlay(axes[i], overlay, f"pos_{lbl}")
             axes[i].plot(t, df[c], color="k", label="nav")
             axes[i].set_ylabel(f"{lbl} [m]")
         finish(fig, axes, df)
@@ -239,6 +458,7 @@ def plot_position(df):
         ax = axes[i]
         offset = df[c].iloc[i0]
         ax.plot(t, g, ".", ms=2, color=AX_COLORS[i], alpha=0.6, label="GNSS")
+        plot_overlay(ax, overlay, f"pos_{lbl}")
         ax.plot(t, df[c] - offset, color="k", lw=1.0,
                 label=f"nav − {offset:.4g} m")
         ax.set_ylabel(f"{lbl} [m]")
@@ -378,6 +598,7 @@ FIGURES = {
     "accel": plot_accel,
     "bias": plot_biases,
     "attitude": plot_attitude,
+    "attitude_compare": plot_attitude_compare,
     "velocity": plot_velocity,
     "position": plot_position,
     "airdata": plot_air_data,
@@ -389,9 +610,10 @@ FIGURES = {
 # --------------------------------------------------------------------- main
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    p.add_argument("csv", type=Path, help="board log CSV")
-    p.add_argument("--tmin", type=float, help="start time [s]")
-    p.add_argument("--tmax", type=float, help="end time [s]")
+    p.add_argument("--tmin", type=float,
+                   help="start time since log start [s] (needs PLOT_WINDOW = None)")
+    p.add_argument("--tmax", type=float,
+                   help="end time since log start [s] (needs PLOT_WINDOW = None)")
     p.add_argument("--only", nargs="+", choices=list(FIGURES),
                    help="only draw these figures")
     p.add_argument("--save", type=Path, metavar="DIR",
@@ -399,8 +621,27 @@ def main() -> None:
     p.add_argument("--no-show", action="store_true",
                    help="don't open interactive windows")
     args = p.parse_args()
+    if PLOT_WINDOW and (args.tmin is not None or args.tmax is not None):
+        p.error("--tmin/--tmax need PLOT_WINDOW = None")
+    if PLOT_WINDOW and PLOT_WINDOW[0] >= PLOT_WINDOW[1]:
+        p.error("PLOT_WINDOW start must be less than its end")
 
-    df = load_log(args.csv)
+    df = load_log(LOG_PATH)
+    if PLOT_WINDOW or OVERLAY_PATH or OVERLAY_LR_PATH:
+        t_launch = launch_time(df)
+        print(f"launch at t={t_launch:.3f} s into the log")
+    overlay = overlay_lr = None
+    if OVERLAY_PATH or OVERLAY_LR_PATH:
+        at_launch = df[df["t_s"] >= t_launch].iloc[0]
+        q_launch = overlay_launch_attitude(
+            at_launch[[f"nav_qEst_na_{k}" for k in range(4)]].to_numpy(dtype=float))
+        if OVERLAY_PATH:
+            overlay = load_overlay(OVERLAY_PATH, q_launch)
+        if OVERLAY_LR_PATH:
+            overlay_lr = load_overlay_lr(OVERLAY_LR_PATH, q_launch)
+    if PLOT_WINDOW:
+        df["t_s"] -= t_launch
+        df = df[df["t_s"].between(*PLOT_WINDOW)]
     if args.tmin is not None:
         df = df[df["t_s"] >= args.tmin]
     if args.tmax is not None:
@@ -408,14 +649,31 @@ def main() -> None:
     df = df.reset_index(drop=True)
     if df.empty:
         raise SystemExit("No samples in the selected time window.")
+    if PLOT_WINDOW:
+        df.attrs["time_label"] = "Time since launch [s]"
+
+    def to_plot_time(data):
+        if data is None:
+            return None
+        shifted = data["t_s"] + (0.0 if PLOT_WINDOW else t_launch)
+        keep = shifted.between(df["t_s"].iloc[0], df["t_s"].iloc[-1])
+        return data.assign(t_s=shifted)[keep]
+
+    overlay, overlay_lr = to_plot_time(overlay), to_plot_time(overlay_lr)
 
     names = args.only or list(FIGURES)
     if args.save:
         args.save.mkdir(parents=True, exist_ok=True)
     for name in names:
-        fig = FIGURES[name](df)
+        if name == "attitude_compare" and (overlay is None or overlay.empty):
+            print("skipping attitude_compare: no Blue Raven data in this window")
+            continue
+        extra = {"gyro": (overlay,), "accel": (overlay,),
+                 "attitude_compare": (overlay, overlay_lr),
+                 "velocity": (overlay_lr,), "position": (overlay_lr,)}
+        fig = FIGURES[name](df, *extra.get(name, ()))
         if args.save:
-            out = args.save / f"{args.csv.stem}_{name}.png"
+            out = args.save / f"{LOG_PATH.stem}_{name}.png"
             fig.savefig(out, dpi=150)
             print(f"wrote {out}")
         if args.no_show:
