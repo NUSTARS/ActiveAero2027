@@ -1,4 +1,0 @@
-../Src/rtGetInf.c:19:8:rtGetInf	0	static
-../Src/rtGetInf.c:25:10:rtGetInfF	0	static
-../Src/rtGetInf.c:31:8:rtGetMinusInf	0	static
-../Src/rtGetInf.c:37:10:rtGetMinusInfF	0	static
