@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Thu Nov  5 20:50:59 2026
+ * C/C++ source code generated on : Tue Nov 10 19:37:59 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -27,10 +27,16 @@
 #include "math.h"
 #endif                                 /* autocodeModel_COMMON_INCLUDES_ */
 
+#include "controllerParams_calibration_types.h"
+#include "navParams_calibration_types.h"
 #include "rt_nonfinite.h"
 #include "rtGetInf.h"
 #include "rtGetNaN.h"
 #include <string.h>
+
+/* Includes for objects with custom storage classes */
+#include "navParams_calibration.h"
+#include "controllerParams_calibration.h"
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus
@@ -168,20 +174,6 @@ typedef struct {
 
 #endif
 
-#ifndef DEFINED_TYPEDEF_FOR_struct_cubQF2aidKgGXLVFilbPjH_
-#define DEFINED_TYPEDEF_FOR_struct_cubQF2aidKgGXLVFilbPjH_
-
-typedef struct {
-  real_T debounce_s;
-  real_T boostThreshold_mps2;
-  real_T coastThresholdxAcc_mps2;
-  real_T coastThresholdAlt_m;
-  real_T controlTresholdPitchYaw_rad;
-  real_T controlTresholdPitchYawRate_rps;
-} struct_cubQF2aidKgGXLVFilbPjH;
-
-#endif
-
 /* Block signals and states (default storage) for system '<Root>' */
 typedef struct {
   real_T qEst_na[4];                   /* '<S427>/Merge' */
@@ -197,14 +189,14 @@ typedef struct {
   real_T AccelFilter_states_k[3];      /* '<S428>/Accel Filter' */
   real_T Delay2_3_DSTATE[1500];        /* '<S426>/Delay2' */
   real_T UnitDelay1_DSTATE[3];         /* '<S426>/Unit Delay1' */
-  real_T DiscreteFIRFilter1_states[297];/* '<S426>/Discrete FIR Filter1' */
+  real_T DiscreteFIRFilter1_states[2997];/* '<S426>/Discrete FIR Filter1' */
   real_T Delay2_4_DSTATE[1500];        /* '<S426>/Delay2' */
   real_T UnitDelay_DSTATE[3];          /* '<S426>/Unit Delay' */
-  real_T DiscreteFIRFilter_states[297];/* '<S426>/Discrete FIR Filter' */
+  real_T DiscreteFIRFilter_states[2997];/* '<S426>/Discrete FIR Filter' */
   real_T Delay2_8_DSTATE[1500];        /* '<S426>/Delay2' */
   real_T UnitDelay3_DSTATE[3];         /* '<S426>/Unit Delay3' */
   real_T DiscreteFIRFilter3_states[297];/* '<S426>/Discrete FIR Filter3' */
-  real_T DiscreteFIRFilter2_states[99];/* '<S426>/Discrete FIR Filter2' */
+  real_T DiscreteFIRFilter2_states[9]; /* '<S426>/Discrete FIR Filter2' */
   real_T Delay_3_DSTATE[1500];         /* '<S436>/Delay' */
   real_T SFunction_temp_table[8];      /* '<S432>/S-Function' */
   real_T SFunction_pres_table[8];      /* '<S432>/S-Function' */
@@ -238,13 +230,13 @@ typedef struct {
   real_T UnitDelay_20_DSTATE;          /* '<S408>/Unit Delay' */
   real_T UnitDelay_21_DSTATE;          /* '<S408>/Unit Delay' */
   real_T UnitDelay_22_DSTATE;          /* '<S408>/Unit Delay' */
-  real_T UnitDelay2_DSTATE;            /* '<S426>/Unit Delay2' */
   real_T UD_DSTATE_l;                  /* '<S220>/UD' */
   real_T UD_DSTATE_k;                  /* '<S79>/UD' */
   real_T UD_DSTATE_n;                  /* '<S149>/UD' */
   real_T UD_DSTATE_g;                  /* '<S284>/UD' */
   real_T UD_DSTATE_p;                  /* '<S404>/UD' */
   real_T UD_DSTATE_a;                  /* '<S344>/UD' */
+  real_T UnitDelay2_DSTATE;            /* '<S426>/Unit Delay2' */
   int32_T DiscreteFIRFilter1_circBuf;  /* '<S426>/Discrete FIR Filter1' */
   int32_T DiscreteFIRFilter_circBuf;   /* '<S426>/Discrete FIR Filter' */
   int32_T DiscreteFIRFilter3_circBuf;  /* '<S426>/Discrete FIR Filter3' */
@@ -269,8 +261,6 @@ typedef struct {
 
 /* Invariant block signals (default storage) */
 typedef struct {
-  const real_T QuaternionstoDirectionCosin[9];
-                          /* '<S436>/Quaternions to  Direction Cosine Matrix' */
   const real_T RotationAnglestoDirectionCo[9];
                        /* '<S436>/Rotation Angles to Direction Cosine Matrix' */
 } ConstB;
