@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Nov  4 17:25:57 2026
+ * C/C++ source code generated on : Tue Nov 10 19:37:59 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -23,10 +23,6 @@
 
 /* Invariant block signals (default storage) */
 const ConstB rtConstB = {
-  { 0.0, 0.0, 1.0000000000000002, -0.0, 1.0000000000000002, 0.0,
-    -1.0000000000000002, -0.0, 0.0 },
-                          /* '<S436>/Quaternions to  Direction Cosine Matrix' */
-
   { 0.54030230586813977, 0.8414709848078965, 0.0, -0.8414709848078965,
     0.54030230586813977, 0.0, 0.0, 0.0, 1.0 }
                        /* '<S436>/Rotation Angles to Direction Cosine Matrix' */

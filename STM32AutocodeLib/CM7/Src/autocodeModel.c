@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.6
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Nov  4 17:25:57 2026
+ * C/C++ source code generated on : Tue Nov 10 19:37:59 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -24,10 +24,14 @@
 #include <math.h>
 #include "rt_atan2d_snf.h"
 #include "rt_nonfinite.h"
+#include "navParams_calibration_types.h"
+#include "controllerParams_calibration_types.h"
 #include <string.h>
 #include "InitCalcAtmosCOESA.h"
 #include "CalcPAltCOESA.h"
 #include "LookUp_real_T_real_T.h"
+#include "navParams_calibration.h"
+#include "controllerParams_calibration.h"
 
 /* Named constants for State Transition Table: '<S411>/State Transition Table' */
 #define autocod_IN_PastLockoutThreshold ((uint8_T)6U)
@@ -37,64 +41,6 @@
 #define autocodeModel_IN_Boost         ((uint8_T)2U)
 #define autocodeModel_IN_Idle          ((uint8_T)3U)
 #define autocodeModel_IN_Lockout       ((uint8_T)4U)
-
-extern const real_T rtCP_pooled_fNBQpeDxrxVT[3];
-extern const real_T rtCP_pooled_Rqo4aJC4b46q[3];
-extern const real_T rtCP_pooled_IBfW69W5lTOo[3];
-extern const real_T rtCP_pooled_yFJB7ZDVgVsO[3];
-extern const real_T rtCP_pooled_5TzA8n11R6V0[3];
-extern const real_T rtCP_pooled_GmD90NsmWoMq[3];
-extern const real_T rtCP_pooled_kgC6bDkF2pIV[3];
-extern const real_T rtCP_pooled_Qcj6ValmO9nO[3];
-
-#define rtCP__Constant4_Value          rtCP_pooled_fNBQpeDxrxVT  /* Expression: innerLoopParams.fbkGainPitchYawP_na
-                                                                  * Referenced by: '<S9>/Constant4'
-                                                                  */
-#define rtCP__Constant5_Value          rtCP_pooled_Rqo4aJC4b46q  /* Expression: innerLoopParams.fbkGainPitchYawI_na
-                                                                  * Referenced by: '<S9>/Constant5'
-                                                                  */
-#define rtCP__Constant6_Value          rtCP_pooled_IBfW69W5lTOo  /* Expression: innerLoopParams.fbkGainPitchYawD_na
-                                                                  * Referenced by: '<S9>/Constant6'
-                                                                  */
-#define rtCP__Constant7_Value          rtCP_pooled_yFJB7ZDVgVsO  /* Expression: innerLoopParams.fbkGainPitchYawN_na
-                                                                  * Referenced by: '<S9>/Constant7'
-                                                                  */
-#define rtCP__Internalbreakpoints_Value rtCP_pooled_5TzA8n11R6V0 /* Expression: GainArrayBreakpoints
-                                                                  * Referenced by: '<S13>/Internal breakpoints'
-                                                                  */
-#define rtCP__Constant4_Value_c        rtCP_pooled_GmD90NsmWoMq  /* Expression: innerLoopParams.fbkGainRollP_na
-                                                                  * Referenced by: '<S10>/Constant4'
-                                                                  */
-#define rtCP__Constant5_Value_m        rtCP_pooled_kgC6bDkF2pIV  /* Expression: innerLoopParams.fbkGainRollI_na
-                                                                  * Referenced by: '<S10>/Constant5'
-                                                                  */
-#define rtCP__Constant6_Value_p        rtCP_pooled_IBfW69W5lTOo  /* Expression: innerLoopParams.fbkGainRollD_na
-                                                                  * Referenced by: '<S10>/Constant6'
-                                                                  */
-#define rtCP__Constant7_Value_o        rtCP_pooled_yFJB7ZDVgVsO  /* Expression: innerLoopParams.fbkGainRollN_na
-                                                                  * Referenced by: '<S10>/Constant7'
-                                                                  */
-#define rtCP__Internalbreakpoints_Val_f rtCP_pooled_5TzA8n11R6V0 /* Expression: GainArrayBreakpoints
-                                                                  * Referenced by: '<S84>/Internal breakpoints'
-                                                                  */
-#define rtCP__Constant4_Value_l        rtCP_pooled_fNBQpeDxrxVT  /* Expression: innerLoopParams.fbkGainPitchYawP_na
-                                                                  * Referenced by: '<S11>/Constant4'
-                                                                  */
-#define rtCP__Constant5_Value_l        rtCP_pooled_Rqo4aJC4b46q  /* Expression: innerLoopParams.fbkGainPitchYawI_na
-                                                                  * Referenced by: '<S11>/Constant5'
-                                                                  */
-#define rtCP__Constant6_Value_e        rtCP_pooled_IBfW69W5lTOo  /* Expression: innerLoopParams.fbkGainPitchYawD_na
-                                                                  * Referenced by: '<S11>/Constant6'
-                                                                  */
-#define rtCP__Constant7_Value_n        rtCP_pooled_yFJB7ZDVgVsO  /* Expression: innerLoopParams.fbkGainPitchYawN_na
-                                                                  * Referenced by: '<S11>/Constant7'
-                                                                  */
-#define rtCP__Internalbreakpoints_Val_d rtCP_pooled_5TzA8n11R6V0 /* Expression: GainArrayBreakpoints
-                                                                  * Referenced by: '<S154>/Internal breakpoints'
-                                                                  */
-#define rtCP__Constant_Value_bn        rtCP_pooled_Qcj6ValmO9nO  /* Expression: navControl.gravityNed_mps2
-                                                                  * Referenced by: '<S470>/Constant'
-                                                                  */
 
 void InitCalcAtmosCOESA(real_T *temperature76, real_T *pressureRatio76);
 void CalcPAltCOESA(const real_T *pressure, real_T *altitude, real_T
@@ -191,28 +137,27 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   real_T rtb_C[9];
   real_T rtb_C_l[9];
   real_T rtb_MathFunction_k[9];
+  real_T rtb_QuaternionstoDirectionCos_i[9];
   real_T rtb_QuaternionstoDirectionCosin[9];
   real_T AccelFilter_tmp[3];
   real_T DiscreteTransferFcn1_tmp[3];
+  real_T GyroFilter_tmp[3];
   real_T Switch1[3];
   real_T rtb_TmpSignalConversionAtSFunct[3];
   real_T rtb_accBdyEst_mps2[3];
+  real_T rtb_accelBias_mps2[3];
+  real_T rtb_gyroBias_rps[3];
   real_T rtb_gyroFilt_rps[3];
   real_T rtb_wBdyEst_rps[3];
   real_T Switch3_idx_0;
   real_T Switch3_idx_1;
   real_T Switch3_idx_2;
-  real_T Switch_idx_1;
   real_T Switch_idx_2;
   real_T rtb_Cos;
-  real_T rtb_Cos_a;
-  real_T rtb_Cos_cn;
   real_T rtb_Cos_e;
   real_T rtb_Cos_k;
   real_T rtb_Cos_l;
   real_T rtb_Cos_m;
-  real_T rtb_Cos_n2;
-  real_T rtb_Cos_p;
   real_T rtb_DProdOut_m;
   real_T rtb_Divide;
   real_T rtb_Divide_l;
@@ -231,10 +176,12 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   real_T rtb_MathFunction_idx_1;
   real_T rtb_MathFunction_idx_2;
   real_T rtb_MatrixMultiply1_idx_0;
+  real_T rtb_MatrixMultiply1_idx_1;
   real_T rtb_MatrixMultiply1_idx_2;
   real_T rtb_PProdOut_b;
   real_T rtb_Product1_ad;
   real_T rtb_Product1_e;
+  real_T rtb_Product1_j;
   real_T rtb_Product1_j3;
   real_T rtb_Product1_o;
   real_T rtb_Product1_p1;
@@ -256,15 +203,10 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   real_T rtb_Switch2_f;
   real_T rtb_Switch2_j;
   real_T rtb_Switch2_m;
-  real_T rtb_Switch_ft_idx_0;
   real_T rtb_Switch_ft_idx_1;
   real_T rtb_Switch_ft_idx_2;
+  real_T rtb_Switch_ft_idx_3;
   real_T rtb_UkYk1_l;
-  real_T rtb_accelBias_mps2_idx_1;
-  real_T rtb_accelBias_mps2_idx_2;
-  real_T rtb_gyroBias_rps_idx_0;
-  real_T rtb_gyroBias_rps_idx_1;
-  real_T rtb_gyroBias_rps_idx_2;
   real_T rtb_llaBias_na_idx_0;
   real_T rtb_llaBias_na_idx_1;
   real_T rtb_llaBias_na_idx_2;
@@ -272,19 +214,20 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   real_T rtb_sqrt;
   int32_T exitg1;
   int32_T i;
-  int32_T rtb_QuaternionstoDirectionCos_0;
+  int32_T rtb_QuaternionstoDirectionCos_1;
   int32_T uIdx;
   boolean_T rtb_Compare_p;
   boolean_T rtb_LogicalOperator;
   boolean_T rtb_LogicalOperator1;
-  boolean_T rtb_LogicalOperator1_a2;
-  boolean_T rtb_LogicalOperator1_b;
-  boolean_T rtb_LogicalOperator1_i;
-  boolean_T rtb_LogicalOperator1_j;
+  boolean_T rtb_LogicalOperator1_f;
+  boolean_T rtb_LogicalOperator1_f3;
+  boolean_T rtb_LogicalOperator1_kg;
   boolean_T rtb_LogicalOperator_a;
-  boolean_T rtb_LogicalOperator_i;
-  boolean_T rtb_LogicalOperator_j;
-  boolean_T rtb_LogicalOperator_ni;
+  boolean_T rtb_LogicalOperator_b;
+  boolean_T rtb_LogicalOperator_ff;
+  boolean_T rtb_LogicalOperator_l;
+  boolean_T rtb_LogicalOperator_o;
+  boolean_T rtb_LogicalOperator_p;
   flightMode rtb_flightMode_enum;
 
   /* Quat2Dcm: '<S470>/Quaternions to  Direction Cosine Matrix' incorporates:
@@ -296,52 +239,52 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     rtDW->UnitDelay_2_DSTATE[1]) + rtDW->UnitDelay_2_DSTATE[2] *
     rtDW->UnitDelay_2_DSTATE[2]) + rtDW->UnitDelay_2_DSTATE[3] *
     rtDW->UnitDelay_2_DSTATE[3]);
-  rtb_sqrt = 1.0 / rtb_Product1_ad;
-  rtb_Switch_ft_idx_1 = rtb_sqrt * rtDW->UnitDelay_2_DSTATE[1];
-  rtb_Switch_ft_idx_2 = rtb_sqrt * rtDW->UnitDelay_2_DSTATE[2];
-  rtb_Product2_l = rtb_sqrt * rtDW->UnitDelay_2_DSTATE[3];
-  rtb_Switch2 = rtb_sqrt * rtDW->UnitDelay_2_DSTATE[0];
-  rtb_Sin = rtb_Switch2 * rtb_Switch2;
+  rtb_Product1_ad = 1.0 / rtb_Product1_ad;
+  rtb_Switch_ft_idx_1 = rtb_Product1_ad * rtDW->UnitDelay_2_DSTATE[1];
+  rtb_Switch_ft_idx_2 = rtb_Product1_ad * rtDW->UnitDelay_2_DSTATE[2];
+  rtb_Switch_ft_idx_3 = rtb_Product1_ad * rtDW->UnitDelay_2_DSTATE[3];
+  rtb_Product2_l = rtb_Product1_ad * rtDW->UnitDelay_2_DSTATE[0];
+  rtb_Sin = rtb_Product2_l * rtb_Product2_l;
   rtb_Sum_e = rtb_Switch_ft_idx_1 * rtb_Switch_ft_idx_1;
   rtb_Integrator_b = rtb_Switch_ft_idx_2 * rtb_Switch_ft_idx_2;
-  rtb_Cos_e = rtb_Product2_l * rtb_Product2_l;
-  rtb_Cos_l = ((rtb_Sin + rtb_Sum_e) - rtb_Integrator_b) - rtb_Cos_e;
-  rtb_QuaternionstoDirectionCosin[0] = rtb_Cos_l;
-  rtb_Cos_k = rtb_Switch_ft_idx_1 * rtb_Switch_ft_idx_2;
-  rtb_Cos_m = rtb_Switch2 * rtb_Product2_l;
-  rtb_Cos_cn = (rtb_Cos_k + rtb_Cos_m) * 2.0;
-  rtb_QuaternionstoDirectionCosin[3] = rtb_Cos_cn;
-  rtb_Cos_p = rtb_Switch_ft_idx_1 * rtb_Product2_l;
-  rtb_Product1_ad = rtb_Switch2 * rtb_Switch_ft_idx_2;
-  rtb_Switch_ft_idx_0 = (rtb_Cos_p - rtb_Product1_ad) * 2.0;
-  rtb_QuaternionstoDirectionCosin[6] = rtb_Switch_ft_idx_0;
-  rtb_Cos_k = (rtb_Cos_k - rtb_Cos_m) * 2.0;
-  rtb_QuaternionstoDirectionCosin[1] = rtb_Cos_k;
+  rtb_Cos = rtb_Switch_ft_idx_3 * rtb_Switch_ft_idx_3;
+  rtb_Cos_e = ((rtb_Sin + rtb_Sum_e) - rtb_Integrator_b) - rtb_Cos;
+  rtb_QuaternionstoDirectionCosin[0] = rtb_Cos_e;
+  rtb_Cos_l = rtb_Switch_ft_idx_1 * rtb_Switch_ft_idx_2;
+  rtb_Product1_ad = rtb_Product2_l * rtb_Switch_ft_idx_3;
+  rtb_Sum2_p = (rtb_Cos_l + rtb_Product1_ad) * 2.0;
+  rtb_QuaternionstoDirectionCosin[3] = rtb_Sum2_p;
+  rtb_Product1_e = rtb_Switch_ft_idx_1 * rtb_Switch_ft_idx_3;
+  rtb_Sum_kk_idx_3 = rtb_Product2_l * rtb_Switch_ft_idx_2;
+  rtb_Switch2 = (rtb_Product1_e - rtb_Sum_kk_idx_3) * 2.0;
+  rtb_QuaternionstoDirectionCosin[6] = rtb_Switch2;
+  rtb_Cos_l = (rtb_Cos_l - rtb_Product1_ad) * 2.0;
+  rtb_QuaternionstoDirectionCosin[1] = rtb_Cos_l;
   rtb_Sin -= rtb_Sum_e;
-  rtb_Sum_e = (rtb_Sin + rtb_Integrator_b) - rtb_Cos_e;
+  rtb_Sum_e = (rtb_Sin + rtb_Integrator_b) - rtb_Cos;
   rtb_QuaternionstoDirectionCosin[4] = rtb_Sum_e;
-  rtb_Cos_m = rtb_Switch_ft_idx_2 * rtb_Product2_l;
-  rtb_Switch_ft_idx_1 *= rtb_Switch2;
-  rtb_Switch_ft_idx_2 = (rtb_Cos_m + rtb_Switch_ft_idx_1) * 2.0;
+  rtb_Product1_ad = rtb_Switch_ft_idx_2 * rtb_Switch_ft_idx_3;
+  rtb_Switch_ft_idx_1 *= rtb_Product2_l;
+  rtb_Switch_ft_idx_2 = (rtb_Product1_ad + rtb_Switch_ft_idx_1) * 2.0;
   rtb_QuaternionstoDirectionCosin[7] = rtb_Switch_ft_idx_2;
-  rtb_Cos_p = (rtb_Cos_p + rtb_Product1_ad) * 2.0;
-  rtb_QuaternionstoDirectionCosin[2] = rtb_Cos_p;
-  rtb_Cos_m = (rtb_Cos_m - rtb_Switch_ft_idx_1) * 2.0;
-  rtb_QuaternionstoDirectionCosin[5] = rtb_Cos_m;
-  rtb_Sin = (rtb_Sin - rtb_Integrator_b) + rtb_Cos_e;
+  rtb_Product1_e = (rtb_Product1_e + rtb_Sum_kk_idx_3) * 2.0;
+  rtb_QuaternionstoDirectionCosin[2] = rtb_Product1_e;
+  rtb_Product1_ad = (rtb_Product1_ad - rtb_Switch_ft_idx_1) * 2.0;
+  rtb_QuaternionstoDirectionCosin[5] = rtb_Product1_ad;
+  rtb_Sin = (rtb_Sin - rtb_Integrator_b) + rtb_Cos;
   rtb_QuaternionstoDirectionCosin[8] = rtb_Sin;
 
   /* Quat2Dcm: '<S409>/C-' incorporates:
    *  Math: '<S418>/Math Function'
    */
-  rtb_MathFunction_k[0] = rtb_Cos_l;
-  rtb_MathFunction_k[3] = rtb_Cos_cn;
-  rtb_MathFunction_k[6] = rtb_Switch_ft_idx_0;
-  rtb_MathFunction_k[1] = rtb_Cos_k;
+  rtb_MathFunction_k[0] = rtb_Cos_e;
+  rtb_MathFunction_k[3] = rtb_Sum2_p;
+  rtb_MathFunction_k[6] = rtb_Switch2;
+  rtb_MathFunction_k[1] = rtb_Cos_l;
   rtb_MathFunction_k[4] = rtb_Sum_e;
   rtb_MathFunction_k[7] = rtb_Switch_ft_idx_2;
-  rtb_MathFunction_k[2] = rtb_Cos_p;
-  rtb_MathFunction_k[5] = rtb_Cos_m;
+  rtb_MathFunction_k[2] = rtb_Product1_e;
+  rtb_MathFunction_k[5] = rtb_Product1_ad;
   rtb_MathFunction_k[8] = rtb_Sin;
 
   /* DotProduct: '<S409>/Dot Product' */
@@ -351,22 +294,23 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      *  Inport: '<Root>/sensor_bus'
      *  UnitDelay generated from: '<S408>/Unit Delay'
      */
-    rtb_Integrator_b = rtU_sensor_bus_e->wBdyMeas_rps[i] -
-      rtDW->UnitDelay_13_DSTATE[i];
-    rtb_wBdyEst_rps[i] = rtb_Integrator_b;
+    rtb_Cos = rtU_sensor_bus_e->wBdyMeas_rps[i] - rtDW->UnitDelay_13_DSTATE[i];
+    rtb_wBdyEst_rps[i] = rtb_Cos;
 
     /* DiscreteTransferFcn: '<S409>/Discrete Transfer Fcn1' */
-    uIdx = i << 1;
+    uIdx = i * 3;
     rtb_Sin = rtDW->DiscreteTransferFcn1_states[uIdx];
     rtb_Sum_e = rtDW->DiscreteTransferFcn1_states[uIdx + 1];
-    rtb_Cos = (rtb_Integrator_b - -0.7478 * rtb_Sin) - rtb_Sum_e * 0.2722;
+    rtb_Integrator_b = rtDW->DiscreteTransferFcn1_states[uIdx + 2];
+    rtb_Cos = ((rtb_Cos - -1.76 * rtb_Sin) - rtb_Sum_e * 1.1829) -
+      rtb_Integrator_b * -0.2781;
     DiscreteTransferFcn1_tmp[i] = rtb_Cos;
 
     /* Gain: '<S409>/Gain1' incorporates:
      *  DiscreteTransferFcn: '<S409>/Discrete Transfer Fcn1'
      */
-    rtb_Sin = ((0.1311 * rtb_Cos + 0.2622 * rtb_Sin) + rtb_Sum_e * 0.1311) *
-      0.01;
+    rtb_Sin = (((0.0181 * rtb_Cos + 0.0543 * rtb_Sin) + rtb_Sum_e * 0.0543) +
+               rtb_Integrator_b * 0.0181) * navControl.dt_s;
     rtb_gyroFilt_rps[i] = rtb_Sin;
 
     /* DotProduct: '<S409>/Dot Product' */
@@ -459,10 +403,10 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtb_Product1_ad = rtb_Sum_kk_idx_0 * rtDW->UnitDelay_2_DSTATE[3];
 
   /* Product: '<S422>/Product1' */
-  rtb_Cos_e = rtb_Sum_kk_idx_2;
+  rtb_Cos = rtb_Sum_kk_idx_2;
 
   /* Product: '<S422>/Product2' */
-  rtb_Cos_l = rtb_Sum_kk_idx_1;
+  rtb_Cos_e = rtb_Sum_kk_idx_1;
 
   /* SignalConversion generated from: '<S417>/Dot Product' incorporates:
    *  Product: '<S422>/Product'
@@ -475,7 +419,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtb_Sum_kk_idx_1 = rtb_Integrator_b;
   rtb_Sum_kk_idx_2 = rtb_Sum_e;
   rtb_Sum_kk_idx_3 = ((rtDW->UnitDelay_2_DSTATE[0] * rtb_Sum_kk_idx_3 +
-                       rtDW->UnitDelay_2_DSTATE[1] * rtb_Cos_e) - rtb_Cos_l *
+                       rtDW->UnitDelay_2_DSTATE[1] * rtb_Cos) - rtb_Cos_e *
                       rtDW->UnitDelay_2_DSTATE[2]) + rtb_Product1_ad;
 
   /* Switch: '<S417>/Switch' incorporates:
@@ -524,59 +468,63 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    */
   rtb_Product1_ad = sqrt(((rtb_Sum2_p * rtb_Sum2_p + rtb_Sum_e * rtb_Sum_e) +
     rtb_Integrator_b * rtb_Integrator_b) + rtb_Sin * rtb_Sin);
-  rtb_Gain_a = 1.0 / rtb_Product1_ad;
-  rtb_Product2_m = rtb_Gain_a * rtb_Sum_e;
-  rtb_Product2_l = rtb_Gain_a * rtb_Integrator_b;
-  rtb_Product1_ad = rtb_Gain_a * rtb_Sin;
-  rtb_Switch2 = rtb_Gain_a * rtb_Sum2_p;
+  rtb_UkYk1_l = 1.0 / rtb_Product1_ad;
+  rtb_Switch2 = rtb_UkYk1_l * rtb_Sum_e;
+  rtb_Product1_e = rtb_UkYk1_l * rtb_Integrator_b;
+  rtb_Product1_ad = rtb_UkYk1_l * rtb_Sin;
+  rtb_Product2_l = rtb_UkYk1_l * rtb_Sum2_p;
+  rtb_Cos = rtb_Product2_l * rtb_Product2_l;
   rtb_Cos_e = rtb_Switch2 * rtb_Switch2;
-  rtb_Cos_l = rtb_Product2_m * rtb_Product2_m;
-  rtb_Cos_k = rtb_Product2_l * rtb_Product2_l;
-  rtb_Cos_m = rtb_Product1_ad * rtb_Product1_ad;
-  rtb_Cos_cn = ((rtb_Cos_e + rtb_Cos_l) - rtb_Cos_k) - rtb_Cos_m;
-  rtb_C_l[0] = rtb_Cos_cn;
-  rtb_Cos_p = rtb_Product2_m * rtb_Product2_l;
-  rtb_Switch_ft_idx_1 = rtb_Switch2 * rtb_Product1_ad;
-  rtb_Switch_ft_idx_2 = (rtb_Cos_p + rtb_Switch_ft_idx_1) * 2.0;
-  rtb_C_l[3] = rtb_Switch_ft_idx_2;
-  rtb_Switch_ft_idx_0 = rtb_Product2_m * rtb_Product1_ad;
-  rtb_Product1_e = rtb_Switch2 * rtb_Product2_l;
-  rtb_sqrt = (rtb_Switch_ft_idx_0 - rtb_Product1_e) * 2.0;
-  rtb_C_l[6] = rtb_sqrt;
-  rtb_Cos_p = (rtb_Cos_p - rtb_Switch_ft_idx_1) * 2.0;
-  rtb_C_l[1] = rtb_Cos_p;
-  rtb_Cos_e -= rtb_Cos_l;
-  rtb_Cos_l = (rtb_Cos_e + rtb_Cos_k) - rtb_Cos_m;
-  rtb_C_l[4] = rtb_Cos_l;
-  rtb_Switch_ft_idx_1 = rtb_Product2_l * rtb_Product1_ad;
-  rtb_Product1_ad = rtb_Switch2 * rtb_Product2_m;
-  rtb_Product2_l = (rtb_Switch_ft_idx_1 + rtb_Product1_ad) * 2.0;
+  rtb_Cos_l = rtb_Product1_e * rtb_Product1_e;
+  rtb_Switch_ft_idx_1 = rtb_Product1_ad * rtb_Product1_ad;
+  rtb_Switch_ft_idx_2 = ((rtb_Cos + rtb_Cos_e) - rtb_Cos_l) -
+    rtb_Switch_ft_idx_1;
+  rtb_C_l[0] = rtb_Switch_ft_idx_2;
+  rtb_Switch_ft_idx_3 = rtb_Switch2 * rtb_Product1_e;
+  rtb_Sum_kk_idx_3 = rtb_Product2_l * rtb_Product1_ad;
+  rtb_Product2_m = (rtb_Switch_ft_idx_3 + rtb_Sum_kk_idx_3) * 2.0;
+  rtb_C_l[3] = rtb_Product2_m;
+  rtb_sqrt = rtb_Switch2 * rtb_Product1_ad;
+  rtb_Filter_g = rtb_Product2_l * rtb_Product1_e;
+  rtb_MathFunction_idx_0 = (rtb_sqrt - rtb_Filter_g) * 2.0;
+  rtb_C_l[6] = rtb_MathFunction_idx_0;
+  rtb_Switch_ft_idx_3 = (rtb_Switch_ft_idx_3 - rtb_Sum_kk_idx_3) * 2.0;
+  rtb_C_l[1] = rtb_Switch_ft_idx_3;
+  rtb_Cos -= rtb_Cos_e;
+  rtb_Cos_e = (rtb_Cos + rtb_Cos_l) - rtb_Switch_ft_idx_1;
+  rtb_C_l[4] = rtb_Cos_e;
+  rtb_Sum_kk_idx_3 = rtb_Product1_e * rtb_Product1_ad;
+  rtb_Product1_ad = rtb_Product2_l * rtb_Switch2;
+  rtb_Product2_l = (rtb_Sum_kk_idx_3 + rtb_Product1_ad) * 2.0;
   rtb_C_l[7] = rtb_Product2_l;
-  rtb_Switch_ft_idx_0 = (rtb_Switch_ft_idx_0 + rtb_Product1_e) * 2.0;
-  rtb_C_l[2] = rtb_Switch_ft_idx_0;
-  rtb_Switch_ft_idx_1 = (rtb_Switch_ft_idx_1 - rtb_Product1_ad) * 2.0;
-  rtb_C_l[5] = rtb_Switch_ft_idx_1;
-  rtb_Cos_e = (rtb_Cos_e - rtb_Cos_k) + rtb_Cos_m;
-  rtb_C_l[8] = rtb_Cos_e;
+  rtb_sqrt = (rtb_sqrt + rtb_Filter_g) * 2.0;
+  rtb_C_l[2] = rtb_sqrt;
+  rtb_Sum_kk_idx_3 = (rtb_Sum_kk_idx_3 - rtb_Product1_ad) * 2.0;
+  rtb_C_l[5] = rtb_Sum_kk_idx_3;
+  rtb_Cos = (rtb_Cos - rtb_Cos_l) + rtb_Switch_ft_idx_1;
+  rtb_C_l[8] = rtb_Cos;
 
   /* Quat2Dcm: '<S433>/C-' */
-  rtb_C[0] = rtb_Cos_cn;
-  rtb_C[3] = rtb_Switch_ft_idx_2;
-  rtb_C[6] = rtb_sqrt;
-  rtb_C[1] = rtb_Cos_p;
-  rtb_C[4] = rtb_Cos_l;
+  rtb_C[0] = rtb_Switch_ft_idx_2;
+  rtb_C[3] = rtb_Product2_m;
+  rtb_C[6] = rtb_MathFunction_idx_0;
+  rtb_C[1] = rtb_Switch_ft_idx_3;
+  rtb_C[4] = rtb_Cos_e;
   rtb_C[7] = rtb_Product2_l;
-  rtb_C[2] = rtb_Switch_ft_idx_0;
-  rtb_C[5] = rtb_Switch_ft_idx_1;
-  rtb_C[8] = rtb_Cos_e;
+  rtb_C[2] = rtb_sqrt;
+  rtb_C[5] = rtb_Sum_kk_idx_3;
+  rtb_C[8] = rtb_Cos;
 
   /* DiscreteTransferFcn: '<S428>/Gyro Filter' */
-  rtb_Cos_e = rtb_wBdyEst_rps[0] - 0.4142 * rtDW->GyroFilter_states[0];
-  rtb_Cos_l = 0.7071 * rtb_Cos_e + 0.7071 * rtDW->GyroFilter_states[0];
-  rtb_Cos_k = rtb_wBdyEst_rps[1] - 0.4142 * rtDW->GyroFilter_states[1];
-  rtb_Cos_m = 0.7071 * rtb_Cos_k + 0.7071 * rtDW->GyroFilter_states[1];
-  rtb_Cos_cn = rtb_wBdyEst_rps[2] - 0.4142 * rtDW->GyroFilter_states[2];
-  rtb_Cos_p = 0.7071 * rtb_Cos_cn + 0.7071 * rtDW->GyroFilter_states[2];
+  rtb_Cos = rtb_wBdyEst_rps[0] - 0.4142 * rtDW->GyroFilter_states[0];
+  GyroFilter_tmp[0] = rtb_Cos;
+  rtb_Cos = 0.7071 * rtb_Cos + 0.7071 * rtDW->GyroFilter_states[0];
+  rtb_Cos_e = rtb_wBdyEst_rps[1] - 0.4142 * rtDW->GyroFilter_states[1];
+  GyroFilter_tmp[1] = rtb_Cos_e;
+  rtb_Cos_e = 0.7071 * rtb_Cos_e + 0.7071 * rtDW->GyroFilter_states[1];
+  rtb_Cos_l = rtb_wBdyEst_rps[2] - 0.4142 * rtDW->GyroFilter_states[2];
+  GyroFilter_tmp[2] = rtb_Cos_l;
+  rtb_Cos_l = 0.7071 * rtb_Cos_l + 0.7071 * rtDW->GyroFilter_states[2];
 
   /* UnitDelay generated from: '<S408>/Unit Delay' */
   rtb_flightMode_enum = rtDW->UnitDelay_1_DSTATE;
@@ -589,43 +537,87 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     /* Outputs for IfAction SubSystem: '<S427>/Attitude Complementary Filter' incorporates:
      *  ActionPort: '<S436>/Action Port'
      */
+    /* Quat2Dcm: '<S436>/Quaternions to  Direction Cosine Matrix' incorporates:
+     *  Constant: '<S436>/Constant1'
+     */
+    rtb_Product1_ad = sqrt(((navControl.eulerCalcPreRotationInv[0] *
+      navControl.eulerCalcPreRotationInv[0] +
+      navControl.eulerCalcPreRotationInv[1] *
+      navControl.eulerCalcPreRotationInv[1]) +
+      navControl.eulerCalcPreRotationInv[2] *
+      navControl.eulerCalcPreRotationInv[2]) +
+      navControl.eulerCalcPreRotationInv[3] *
+      navControl.eulerCalcPreRotationInv[3]);
+    rtb_UkYk1_l = 1.0 / rtb_Product1_ad;
+    rtb_Switch2 = rtb_UkYk1_l * navControl.eulerCalcPreRotationInv[1];
+    rtb_Product1_e = rtb_UkYk1_l * navControl.eulerCalcPreRotationInv[2];
+    rtb_Product1_ad = rtb_UkYk1_l * navControl.eulerCalcPreRotationInv[3];
+    rtb_Product2_l = rtb_UkYk1_l * navControl.eulerCalcPreRotationInv[0];
+    rtb_Switch_ft_idx_1 = rtb_Product2_l * rtb_Product2_l;
+    rtb_Switch_ft_idx_2 = rtb_Switch2 * rtb_Switch2;
+    rtb_Switch_ft_idx_3 = rtb_Product1_e * rtb_Product1_e;
+    rtb_Sum_kk_idx_3 = rtb_Product1_ad * rtb_Product1_ad;
+    rtb_QuaternionstoDirectionCos_i[0] = ((rtb_Switch_ft_idx_1 +
+      rtb_Switch_ft_idx_2) - rtb_Switch_ft_idx_3) - rtb_Sum_kk_idx_3;
+    rtb_Product2_m = rtb_Switch2 * rtb_Product1_e;
+    rtb_sqrt = rtb_Product2_l * rtb_Product1_ad;
+    rtb_QuaternionstoDirectionCos_i[3] = (rtb_Product2_m + rtb_sqrt) * 2.0;
+    rtb_Filter_g = rtb_Switch2 * rtb_Product1_ad;
+    rtb_MathFunction_idx_0 = rtb_Product2_l * rtb_Product1_e;
+    rtb_QuaternionstoDirectionCos_i[6] = (rtb_Filter_g - rtb_MathFunction_idx_0)
+      * 2.0;
+    rtb_QuaternionstoDirectionCos_i[1] = (rtb_Product2_m - rtb_sqrt) * 2.0;
+    rtb_Switch_ft_idx_1 -= rtb_Switch_ft_idx_2;
+    rtb_QuaternionstoDirectionCos_i[4] = (rtb_Switch_ft_idx_1 +
+      rtb_Switch_ft_idx_3) - rtb_Sum_kk_idx_3;
+    rtb_Switch_ft_idx_2 = rtb_Product1_e * rtb_Product1_ad;
+    rtb_Product2_m = rtb_Product2_l * rtb_Switch2;
+    rtb_QuaternionstoDirectionCos_i[7] = (rtb_Switch_ft_idx_2 + rtb_Product2_m) *
+      2.0;
+    rtb_QuaternionstoDirectionCos_i[2] = (rtb_Filter_g + rtb_MathFunction_idx_0)
+      * 2.0;
+    rtb_QuaternionstoDirectionCos_i[5] = (rtb_Switch_ft_idx_2 - rtb_Product2_m) *
+      2.0;
+    rtb_QuaternionstoDirectionCos_i[8] = (rtb_Switch_ft_idx_1 -
+      rtb_Switch_ft_idx_3) + rtb_Sum_kk_idx_3;
+
     /* Product: '<S436>/Matrix Multiply' incorporates:
      *  Delay generated from: '<S436>/Delay'
      *  Gain: '<S436>/Gain2'
      *  Quat2Dcm: '<S436>/Quaternions to  Direction Cosine Matrix'
      */
-    rtb_sqrt = 0.0;
-    rtb_Product1_j3 = 0.0;
-    rtb_Switch2_m = 0.0;
+    rtb_Product1_ad = 0.0;
+    rtb_Switch_ft_idx_1 = 0.0;
+    rtb_Switch_ft_idx_2 = 0.0;
     for (i = 0; i < 3; i++) {
-      rtb_Sum3 = -rtDW->Delay_3_DSTATE[i];
-      rtb_sqrt += rtConstB.QuaternionstoDirectionCosin[3 * i] * rtb_Sum3;
-      rtb_Product1_j3 += rtConstB.QuaternionstoDirectionCosin[3 * i + 1] *
-        rtb_Sum3;
-      rtb_Switch2_m += rtConstB.QuaternionstoDirectionCosin[3 * i + 2] *
-        rtb_Sum3;
+      rtb_Product2_m = -rtDW->Delay_3_DSTATE[i];
+      rtb_Product1_ad += rtb_QuaternionstoDirectionCos_i[3 * i] * rtb_Product2_m;
+      rtb_Switch_ft_idx_1 += rtb_QuaternionstoDirectionCos_i[3 * i + 1] *
+        rtb_Product2_m;
+      rtb_Switch_ft_idx_2 += rtb_QuaternionstoDirectionCos_i[3 * i + 2] *
+        rtb_Product2_m;
     }
 
-    rtb_gyroFilt_rps[2] = rtb_Switch2_m;
-    rtb_gyroFilt_rps[1] = rtb_Product1_j3;
-    rtb_gyroFilt_rps[0] = rtb_sqrt;
+    rtb_gyroFilt_rps[2] = rtb_Switch_ft_idx_2;
+    rtb_gyroFilt_rps[1] = rtb_Switch_ft_idx_1;
+    rtb_gyroFilt_rps[0] = rtb_Product1_ad;
 
     /* End of Product: '<S436>/Matrix Multiply' */
 
     /* Product: '<S436>/Matrix Multiply1' incorporates:
      *  Angle2Dcm: '<S436>/Rotation Angles to Direction Cosine Matrix'
      */
-    rtb_Switch_ft_idx_0 = 0.0;
+    rtb_Sum_kk_idx_3 = 0.0;
     rtb_Switch_ft_idx_1 = 0.0;
     rtb_Switch_ft_idx_2 = 0.0;
     for (i = 0; i < 3; i++) {
-      rtb_sqrt = rtb_gyroFilt_rps[i];
-      rtb_Switch_ft_idx_0 += rtConstB.RotationAnglestoDirectionCo[3 * i] *
-        rtb_sqrt;
+      rtb_Product2_m = rtb_gyroFilt_rps[i];
+      rtb_Sum_kk_idx_3 += rtConstB.RotationAnglestoDirectionCo[3 * i] *
+        rtb_Product2_m;
       rtb_Switch_ft_idx_1 += rtConstB.RotationAnglestoDirectionCo[3 * i + 1] *
-        rtb_sqrt;
+        rtb_Product2_m;
       rtb_Switch_ft_idx_2 += rtConstB.RotationAnglestoDirectionCo[3 * i + 2] *
-        rtb_sqrt;
+        rtb_Product2_m;
     }
 
     /* Math: '<S443>/Math Function1' incorporates:
@@ -636,7 +628,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      * About '<S443>/Math Function1':
      *  Operator: sqrt
      */
-    rtb_Product2_l = sqrt((rtb_Switch_ft_idx_0 * rtb_Switch_ft_idx_0 +
+    rtb_Product2_l = sqrt((rtb_Sum_kk_idx_3 * rtb_Sum_kk_idx_3 +
       rtb_Switch_ft_idx_1 * rtb_Switch_ft_idx_1) + rtb_Switch_ft_idx_2 *
                           rtb_Switch_ft_idx_2);
 
@@ -645,11 +637,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      *  Product: '<S436>/Matrix Multiply1'
      *  Product: '<S443>/Product'
      */
-    if (!(rtb_Product2_l > 1.0E-6)) {
-      rtb_Switch_ft_idx_0 *= 0.0;
+    if (rtb_Product2_l > 1.0E-6) {
+      rtb_Switch_ft_idx_3 = rtb_Product2_l;
+    } else {
+      rtb_Sum_kk_idx_3 *= 0.0;
       rtb_Switch_ft_idx_1 *= 0.0;
       rtb_Switch_ft_idx_2 *= 0.0;
-      rtb_Product2_l = 1.0;
+      rtb_Switch_ft_idx_3 = 1.0;
     }
 
     /* End of Switch: '<S443>/Switch' */
@@ -657,113 +651,99 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     /* UnaryMinus: '<S436>/Unary Minus1' incorporates:
      *  Product: '<S443>/Divide'
      */
-    rtb_Cos = -(rtb_Switch_ft_idx_1 / rtb_Product2_l);
-    rtb_MatrixMultiply1_idx_2 = -(rtb_Switch_ft_idx_2 / rtb_Product2_l);
+    rtb_MatrixMultiply1_idx_1 = -(rtb_Switch_ft_idx_1 / rtb_Switch_ft_idx_3);
+    rtb_MatrixMultiply1_idx_2 = -(rtb_Switch_ft_idx_2 / rtb_Switch_ft_idx_3);
 
     /* Angle2Quat: '<S446>/Rotation Angles to Quaternions' incorporates:
+     *  Constant: '<S436>/Constant'
      *  Math: '<S436>/Square'
      *  Math: '<S436>/Square1'
      *  Product: '<S443>/Divide'
+     *  SignalConversion generated from: '<S446>/Rotation Angles to Quaternions'
      *  Sqrt: '<S436>/Sqrt'
      *  Sum: '<S436>/Sum'
      *  Trigonometry: '<S436>/Atan1'
      *  Trigonometry: '<S436>/Atan2'
      *  UnaryMinus: '<S436>/Unary Minus2'
      */
-    rtb_Switch2 = rt_atan2d_snf(rtb_Switch_ft_idx_0 / rtb_Product2_l, sqrt
-      (rtb_Cos * rtb_Cos + rtb_MatrixMultiply1_idx_2 * rtb_MatrixMultiply1_idx_2))
-      / 2.0;
-    rtb_Product2_l = cos(rtb_Switch2);
-    rtb_Product1_ad = rt_atan2d_snf(-rtb_Cos, rtb_MatrixMultiply1_idx_2) / 2.0;
-    rtb_Product2_m = cos(rtb_Product1_ad);
-    rtb_sqrt = sin(rtb_Switch2);
-    rtb_Switch2 = sin(rtb_Product1_ad);
-    rtb_Product1_ad = 0.8775825618903728 * rtb_Product2_l;
-    rtb_Product1_e = 0.479425538604203 * rtb_sqrt;
-    rtb_Switch_ft_idx_0 = rtb_Product1_ad * rtb_Product2_m + rtb_Product1_e *
+    rtb_Switch_ft_idx_1 = navControl.roll0_rad / 2.0;
+    rtb_Product1_ad = cos(rtb_Switch_ft_idx_1);
+    rtb_Switch_ft_idx_2 = rt_atan2d_snf(rtb_Sum_kk_idx_3 / rtb_Switch_ft_idx_3,
+      sqrt(rtb_MatrixMultiply1_idx_1 * rtb_MatrixMultiply1_idx_1 +
+           rtb_MatrixMultiply1_idx_2 * rtb_MatrixMultiply1_idx_2)) / 2.0;
+    rtb_Product2_l = cos(rtb_Switch_ft_idx_2);
+    rtb_Switch_ft_idx_3 = rt_atan2d_snf(-rtb_MatrixMultiply1_idx_1,
+      rtb_MatrixMultiply1_idx_2) / 2.0;
+    rtb_Product2_m = cos(rtb_Switch_ft_idx_3);
+    rtb_Product1_e = sin(rtb_Switch_ft_idx_1);
+    rtb_sqrt = sin(rtb_Switch_ft_idx_2);
+    rtb_Switch2 = sin(rtb_Switch_ft_idx_3);
+    rtb_Switch_ft_idx_3 = rtb_Product1_ad * rtb_Product2_l;
+    rtb_Filter_g = rtb_Product1_e * rtb_sqrt;
+    rtb_Sum_kk_idx_3 = rtb_Switch_ft_idx_3 * rtb_Product2_m + rtb_Filter_g *
       rtb_Switch2;
-    rtb_sqrt *= 0.8775825618903728;
-    rtb_Switch_ft_idx_2 = 0.479425538604203 * rtb_Product2_l;
-    rtb_Switch_ft_idx_1 = rtb_Switch_ft_idx_2 * rtb_Product2_m - rtb_sqrt *
-      rtb_Switch2;
-    rtb_Switch_ft_idx_2 = rtb_sqrt * rtb_Product2_m + rtb_Switch_ft_idx_2 *
-      rtb_Switch2;
-    rtb_Product2_l = rtb_Product1_ad * rtb_Switch2 - rtb_Product1_e *
+    rtb_Product1_ad *= rtb_sqrt;
+    rtb_Switch_ft_idx_2 = rtb_Product1_e * rtb_Product2_l;
+    rtb_Switch_ft_idx_1 = rtb_Switch_ft_idx_2 * rtb_Product2_m - rtb_Product1_ad
+      * rtb_Switch2;
+    rtb_Switch_ft_idx_2 = rtb_Product1_ad * rtb_Product2_m + rtb_Switch_ft_idx_2
+      * rtb_Switch2;
+    rtb_Switch_ft_idx_3 = rtb_Switch_ft_idx_3 * rtb_Switch2 - rtb_Filter_g *
       rtb_Product2_m;
 
-    /* Product: '<S451>/Product2' incorporates:
-     *  Constant: '<S446>/Constant'
-     *  Product: '<S453>/Product'
-     */
-    rtb_Product2_m = 0.7071067811860949 * rtb_Switch_ft_idx_2;
-
-    /* Product: '<S451>/Product3' incorporates:
-     *  Constant: '<S446>/Constant'
-     *  Product: '<S453>/Product1'
-     */
-    rtb_Product1_e = -0.0 * rtb_Product2_l;
-
-    /* Product: '<S451>/Product' incorporates:
-     *  Constant: '<S446>/Constant'
-     *  Product: '<S453>/Product2'
-     */
-    rtb_sqrt = 0.7071067811860949 * rtb_Switch_ft_idx_0;
-
-    /* Product: '<S451>/Product1' incorporates:
-     *  Constant: '<S446>/Constant'
-     *  Product: '<S453>/Product3'
-     */
-    rtb_Filter_g = -0.0 * rtb_Switch_ft_idx_1;
-
     /* Sum: '<S451>/Sum' incorporates:
+     *  Constant: '<S446>/Constant'
      *  Product: '<S451>/Product'
      *  Product: '<S451>/Product1'
      *  Product: '<S451>/Product2'
      *  Product: '<S451>/Product3'
      */
-    rtb_Product1_ad = ((rtb_sqrt - rtb_Filter_g) - rtb_Product2_m) -
-      rtb_Product1_e;
-
-    /* Product: '<S452>/Product2' incorporates:
-     *  Constant: '<S446>/Constant'
-     *  Product: '<S454>/Product'
-     */
-    rtb_Switch2 = 0.7071067811860949 * rtb_Product2_l;
-
-    /* Product: '<S452>/Product3' incorporates:
-     *  Constant: '<S446>/Constant'
-     *  Product: '<S454>/Product1'
-     */
-    rtb_Switch_ft_idx_2 *= -0.0;
-
-    /* Product: '<S452>/Product' incorporates:
-     *  Constant: '<S446>/Constant'
-     *  Product: '<S454>/Product2'
-     */
-    rtb_Switch_ft_idx_1 *= 0.7071067811860949;
-
-    /* Product: '<S452>/Product1' incorporates:
-     *  Constant: '<S446>/Constant'
-     *  Product: '<S454>/Product3'
-     */
-    rtb_Switch_ft_idx_0 *= -0.0;
+    rtb_Product1_ad = ((navControl.eulerCalcPreRotationInv[0] * rtb_Sum_kk_idx_3
+                        - navControl.eulerCalcPreRotationInv[1] *
+                        rtb_Switch_ft_idx_1) -
+                       navControl.eulerCalcPreRotationInv[2] *
+                       rtb_Switch_ft_idx_2) -
+      navControl.eulerCalcPreRotationInv[3] * rtb_Switch_ft_idx_3;
 
     /* Sum: '<S452>/Sum' incorporates:
+     *  Constant: '<S446>/Constant'
      *  Product: '<S452>/Product'
      *  Product: '<S452>/Product1'
      *  Product: '<S452>/Product2'
      *  Product: '<S452>/Product3'
      */
-    rtb_Product2_l = ((rtb_Switch_ft_idx_1 + rtb_Switch_ft_idx_0) + rtb_Switch2)
-      - rtb_Switch_ft_idx_2;
+    rtb_Product2_l = ((navControl.eulerCalcPreRotationInv[0] *
+                       rtb_Switch_ft_idx_1 + rtb_Sum_kk_idx_3 *
+                       navControl.eulerCalcPreRotationInv[1]) +
+                      navControl.eulerCalcPreRotationInv[2] *
+                      rtb_Switch_ft_idx_3) - rtb_Switch_ft_idx_2 *
+      navControl.eulerCalcPreRotationInv[3];
 
-    /* Sum: '<S453>/Sum' */
-    rtb_Product2_m = ((rtb_Product2_m - rtb_Product1_e) + rtb_sqrt) +
-      rtb_Filter_g;
+    /* Sum: '<S453>/Sum' incorporates:
+     *  Constant: '<S446>/Constant'
+     *  Product: '<S453>/Product'
+     *  Product: '<S453>/Product1'
+     *  Product: '<S453>/Product2'
+     *  Product: '<S453>/Product3'
+     */
+    rtb_Product2_m = ((navControl.eulerCalcPreRotationInv[0] *
+                       rtb_Switch_ft_idx_2 - navControl.eulerCalcPreRotationInv
+                       [1] * rtb_Switch_ft_idx_3) + rtb_Sum_kk_idx_3 *
+                      navControl.eulerCalcPreRotationInv[2]) +
+      rtb_Switch_ft_idx_1 * navControl.eulerCalcPreRotationInv[3];
 
-    /* Sum: '<S454>/Sum' */
-    rtb_Product1_e = ((rtb_Switch2 + rtb_Switch_ft_idx_2) - rtb_Switch_ft_idx_1)
-      + rtb_Switch_ft_idx_0;
+    /* Sum: '<S454>/Sum' incorporates:
+     *  Constant: '<S446>/Constant'
+     *  Product: '<S454>/Product'
+     *  Product: '<S454>/Product1'
+     *  Product: '<S454>/Product2'
+     *  Product: '<S454>/Product3'
+     */
+    rtb_Product1_e = ((navControl.eulerCalcPreRotationInv[0] *
+                       rtb_Switch_ft_idx_3 + navControl.eulerCalcPreRotationInv
+                       [1] * rtb_Switch_ft_idx_2) - rtb_Switch_ft_idx_1 *
+                      navControl.eulerCalcPreRotationInv[2]) + rtb_Sum_kk_idx_3 *
+      navControl.eulerCalcPreRotationInv[3];
 
     /* Sqrt: '<S455>/sqrt' incorporates:
      *  Product: '<S456>/Product'
@@ -784,26 +764,26 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      *  Product: '<S450>/Product2'
      *  Product: '<S450>/Product3'
      */
-    rtb_Switch_ft_idx_0 = rtb_Product1_ad / rtb_sqrt * 0.0050000000000000044 +
-      0.995 * rtb_Sum2_p;
-    rtb_Switch_ft_idx_1 = rtb_Product2_l / rtb_sqrt * 0.0050000000000000044 +
-      0.995 * rtb_Sum_e;
-    rtb_Switch_ft_idx_2 = rtb_Product2_m / rtb_sqrt * 0.0050000000000000044 +
-      0.995 * rtb_Integrator_b;
-    rtb_Product2_l = rtb_Product1_e / rtb_sqrt * 0.0050000000000000044 + 0.995 *
-      rtb_Sin;
+    rtb_Sum_kk_idx_3 = (1.0 - navComp.attitudeGain) * (rtb_Product1_ad /
+      rtb_sqrt) + navComp.attitudeGain * rtb_Sum2_p;
+    rtb_Switch_ft_idx_1 = (1.0 - navComp.attitudeGain) * (rtb_Product2_l /
+      rtb_sqrt) + navComp.attitudeGain * rtb_Sum_e;
+    rtb_Switch_ft_idx_2 = (1.0 - navComp.attitudeGain) * (rtb_Product2_m /
+      rtb_sqrt) + navComp.attitudeGain * rtb_Integrator_b;
+    rtb_Switch_ft_idx_3 = (1.0 - navComp.attitudeGain) * (rtb_Product1_e /
+      rtb_sqrt) + navComp.attitudeGain * rtb_Sin;
 
     /* Switch: '<S445>/Switch' incorporates:
      *  Constant: '<S445>/Constant'
      *  DotProduct: '<S445>/Dot Product'
      */
-    if (!(((rtb_Switch_ft_idx_0 * rtb_Switch_ft_idx_0 + rtb_Switch_ft_idx_1 *
+    if (!(((rtb_Sum_kk_idx_3 * rtb_Sum_kk_idx_3 + rtb_Switch_ft_idx_1 *
             rtb_Switch_ft_idx_1) + rtb_Switch_ft_idx_2 * rtb_Switch_ft_idx_2) +
-          rtb_Product2_l * rtb_Product2_l > 1.0E-6)) {
-      rtb_Switch_ft_idx_0 = 1.0;
+          rtb_Switch_ft_idx_3 * rtb_Switch_ft_idx_3 > 1.0E-6)) {
+      rtb_Sum_kk_idx_3 = 1.0;
       rtb_Switch_ft_idx_1 = 0.0;
       rtb_Switch_ft_idx_2 = 0.0;
-      rtb_Product2_l = 0.0;
+      rtb_Switch_ft_idx_3 = 0.0;
     }
 
     /* End of Switch: '<S445>/Switch' */
@@ -815,15 +795,15 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      *  Product: '<S448>/Product3'
      *  Sum: '<S448>/Sum'
      */
-    rtb_sqrt = sqrt(((rtb_Switch_ft_idx_0 * rtb_Switch_ft_idx_0 +
-                      rtb_Switch_ft_idx_1 * rtb_Switch_ft_idx_1) +
-                     rtb_Switch_ft_idx_2 * rtb_Switch_ft_idx_2) + rtb_Product2_l
-                    * rtb_Product2_l);
+    rtb_sqrt = sqrt(((rtb_Sum_kk_idx_3 * rtb_Sum_kk_idx_3 + rtb_Switch_ft_idx_1 *
+                      rtb_Switch_ft_idx_1) + rtb_Switch_ft_idx_2 *
+                     rtb_Switch_ft_idx_2) + rtb_Switch_ft_idx_3 *
+                    rtb_Switch_ft_idx_3);
 
     /* Product: '<S444>/Product' incorporates:
      *  Merge: '<S427>/Merge'
      */
-    rtDW->qEst_na[0] = rtb_Switch_ft_idx_0 / rtb_sqrt;
+    rtDW->qEst_na[0] = rtb_Sum_kk_idx_3 / rtb_sqrt;
 
     /* Product: '<S444>/Product1' incorporates:
      *  Merge: '<S427>/Merge'
@@ -838,7 +818,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     /* Product: '<S444>/Product3' incorporates:
      *  Merge: '<S427>/Merge'
      */
-    rtDW->qEst_na[3] = rtb_Product2_l / rtb_sqrt;
+    rtDW->qEst_na[3] = rtb_Switch_ft_idx_3 / rtb_sqrt;
 
     /* Update for Delay generated from: '<S436>/Delay' incorporates:
      *  Inport: '<Root>/sensor_bus'
@@ -877,8 +857,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Constant: '<S429>/Constant'
    *  Product: '<S462>/Product1'
    */
-  rtb_Product2_m = 0.0 * rtDW->qEst_na[3];
-  rtb_Product1_ad = rtb_Product2_m;
+  rtb_Switch_ft_idx_1 = 0.0 * rtDW->qEst_na[3];
+  rtb_Product1_ad = rtb_Switch_ft_idx_1;
 
   /* Product: '<S460>/Product1' incorporates:
    *  Constant: '<S429>/Constant'
@@ -899,14 +879,14 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Constant: '<S429>/Constant'
    *  Product: '<S463>/Product1'
    */
-  rtb_Product1_e = rtDW->qEst_na[2] * 0.0;
-  rtb_Product1_ad = rtb_Product1_e;
+  rtb_Sum2_p = rtDW->qEst_na[2] * 0.0;
+  rtb_Product1_ad = rtb_Sum2_p;
 
   /* Product: '<S461>/Product1' incorporates:
    *  Constant: '<S429>/Constant'
    *  Product: '<S463>/Product3'
    */
-  rtb_Sum2_p = rtDW->qEst_na[0] * 0.0;
+  rtb_Sum_kk_idx_3 = rtDW->qEst_na[0] * 0.0;
 
   /* Sum: '<S461>/Sum' incorporates:
    *  Constant: '<S429>/Constant'
@@ -914,7 +894,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Product: '<S461>/Product1'
    *  Product: '<S461>/Product2'
    */
-  rtb_Integrator_b = ((0.707106781187 * rtDW->qEst_na[1] + rtb_Sum2_p) +
+  rtb_Integrator_b = ((0.707106781187 * rtDW->qEst_na[1] + rtb_Sum_kk_idx_3) +
                       -0.707106781187 * rtDW->qEst_na[3]) - rtb_Product1_ad;
 
   /* Product: '<S462>/Product3' */
@@ -925,11 +905,11 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Product: '<S462>/Product'
    *  Product: '<S462>/Product2'
    */
-  rtb_Sum_e = ((0.707106781187 * rtDW->qEst_na[2] - rtb_Product2_m) +
+  rtb_Sum_e = ((0.707106781187 * rtDW->qEst_na[2] - rtb_Switch_ft_idx_1) +
                rtDW->qEst_na[0] * -0.707106781187) + rtb_Product1_ad;
 
   /* Product: '<S463>/Product3' */
-  rtb_Product1_ad = rtb_Sum2_p;
+  rtb_Product1_ad = rtb_Sum_kk_idx_3;
 
   /* SignalConversion generated from: '<S429>/Quaternions to Rotation Angles' incorporates:
    *  Constant: '<S429>/Constant'
@@ -937,7 +917,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Product: '<S463>/Product2'
    *  Sum: '<S463>/Sum'
    */
-  rtb_Sum_kk_idx_3 = ((0.707106781187 * rtDW->qEst_na[3] + rtb_Product1_e) -
+  rtb_Sum_kk_idx_3 = ((0.707106781187 * rtDW->qEst_na[3] + rtb_Sum2_p) -
                       rtDW->qEst_na[1] * -0.707106781187) + rtb_Product1_ad;
 
   /* Quat2Angle: '<S429>/Quaternions to Rotation Angles' incorporates:
@@ -947,118 +927,123 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtb_Product1_ad = sqrt(((rtb_Sin * rtb_Sin + rtb_Integrator_b *
     rtb_Integrator_b) + rtb_Sum_e * rtb_Sum_e) + rtb_Sum_kk_idx_3 *
     rtb_Sum_kk_idx_3);
-  rtb_sqrt = 1.0 / rtb_Product1_ad;
-  rtb_Switch2 = rtb_sqrt * rtb_Sin;
-  rtb_Product2_m = rtb_sqrt * rtb_Integrator_b;
-  rtb_Product2_l = rtb_sqrt * rtb_Sum_e;
-  rtb_Product1_ad = rtb_sqrt * rtb_Sum_kk_idx_3;
-  rtb_sqrt = rtb_Switch2 * rtb_Switch2;
-  rtb_Switch_ft_idx_2 = rtb_Product2_m * rtb_Product2_m;
-  rtb_Sin = rtb_Product2_l * rtb_Product2_l;
+  rtb_Product2_m = 1.0 / rtb_Product1_ad;
+  rtb_Product2_l = rtb_Product2_m * rtb_Sin;
+  rtb_Switch2 = rtb_Product2_m * rtb_Integrator_b;
+  rtb_Product1_e = rtb_Product2_m * rtb_Sum_e;
+  rtb_Product1_ad = rtb_Product2_m * rtb_Sum_kk_idx_3;
+  rtb_Product2_m = rtb_Product2_l * rtb_Product2_l;
+  rtb_Switch_ft_idx_2 = rtb_Switch2 * rtb_Switch2;
+  rtb_Sin = rtb_Product1_e * rtb_Product1_e;
   rtb_Sum_e = rtb_Product1_ad * rtb_Product1_ad;
-  rtb_Product1_e = ((rtb_sqrt + rtb_Switch_ft_idx_2) - rtb_Sin) - rtb_Sum_e;
-  rtb_Switch_ft_idx_0 = rtb_Product2_m * rtb_Product2_l;
-  rtb_Sum2_p = rtb_Switch2 * rtb_Product1_ad;
-  rtb_Filter_g = (rtb_Switch_ft_idx_0 + rtb_Sum2_p) * 2.0;
-  rtb_Integrator_b = rtb_Product2_m * rtb_Product1_ad;
-  rtb_Switch_ft_idx_1 = rtb_Switch2 * rtb_Product2_l;
-  rtb_Cos = (rtb_Integrator_b - rtb_Switch_ft_idx_1) * 2.0;
-  rtb_Sum_kk_idx_3 = (rtb_Switch_ft_idx_0 - rtb_Sum2_p) * 2.0;
-  rtb_Switch_ft_idx_2 = rtb_sqrt - rtb_Switch_ft_idx_2;
-  rtb_Sum_kk_idx_0 = (rtb_Switch_ft_idx_2 + rtb_Sin) - rtb_Sum_e;
-  rtb_Product1_j3 = rtb_Product2_l * rtb_Product1_ad;
-  rtb_Product1_ad = rtb_Switch2 * rtb_Product2_m;
-  rtb_Sum_kk_idx_1 = (rtb_Product1_j3 + rtb_Product1_ad) * 2.0;
-  rtb_Product2_l = (rtb_Integrator_b + rtb_Switch_ft_idx_1) * 2.0;
-  rtb_Sum_kk_idx_2 = (rtb_Product1_j3 - rtb_Product1_ad) * 2.0;
-  rtb_MathFunction_idx_0 = (rtb_Switch_ft_idx_2 - rtb_Sin) + rtb_Sum_e;
-  if (-rtb_Cos <= -1.0) {
+  rtb_Sum2_p = ((rtb_Product2_m + rtb_Switch_ft_idx_2) - rtb_Sin) - rtb_Sum_e;
+  rtb_Switch_ft_idx_3 = rtb_Switch2 * rtb_Product1_e;
+  rtb_Sum_kk_idx_3 = rtb_Product2_l * rtb_Product1_ad;
+  rtb_sqrt = (rtb_Switch_ft_idx_3 + rtb_Sum_kk_idx_3) * 2.0;
+  rtb_Integrator_b = rtb_Switch2 * rtb_Product1_ad;
+  rtb_Switch_ft_idx_1 = rtb_Product2_l * rtb_Product1_e;
+  rtb_MathFunction_idx_0 = (rtb_Integrator_b - rtb_Switch_ft_idx_1) * 2.0;
+  rtb_Filter_g = (rtb_Switch_ft_idx_3 - rtb_Sum_kk_idx_3) * 2.0;
+  rtb_Switch_ft_idx_2 = rtb_Product2_m - rtb_Switch_ft_idx_2;
+  rtb_MathFunction_idx_1 = (rtb_Switch_ft_idx_2 + rtb_Sin) - rtb_Sum_e;
+  rtb_Switch2_f = rtb_Product1_e * rtb_Product1_ad;
+  rtb_Product1_ad = rtb_Product2_l * rtb_Switch2;
+  rtb_MathFunction_idx_2 = (rtb_Switch2_f + rtb_Product1_ad) * 2.0;
+  rtb_Product1_e = (rtb_Integrator_b + rtb_Switch_ft_idx_1) * 2.0;
+  rtb_Product1_o = (rtb_Switch2_f - rtb_Product1_ad) * 2.0;
+  rtb_Gain_a = (rtb_Switch_ft_idx_2 - rtb_Sin) + rtb_Sum_e;
+  if (-rtb_MathFunction_idx_0 <= -1.0) {
     rtb_Sin = -1.0;
-  } else if (-rtb_Cos >= 1.0) {
+  } else if (-rtb_MathFunction_idx_0 >= 1.0) {
     rtb_Sin = 1.0;
   } else {
-    rtb_Sin = -rtb_Cos;
+    rtb_Sin = -rtb_MathFunction_idx_0;
   }
 
   rtb_Switch_ft_idx_1 = asin(rtb_Sin);
   if (fabs(rtb_Sin) == 1.0) {
-    rtb_accBdyEst_mps2[0] = rt_atan2d_snf(-rtb_Sum_kk_idx_3, rtb_Sum_kk_idx_0);
+    rtb_accBdyEst_mps2[0] = rt_atan2d_snf(-rtb_Filter_g, rtb_MathFunction_idx_1);
     rtb_Switch_ft_idx_2 = 0.0;
-    rtb_Switch_ft_idx_0 = 0.0;
+    rtb_Switch_ft_idx_3 = 0.0;
   } else {
-    rtb_Switch_ft_idx_2 = rt_atan2d_snf(rtb_Filter_g, rtb_Product1_e);
-    rtb_Switch_ft_idx_0 = rt_atan2d_snf(rtb_Sum_kk_idx_1, rtb_MathFunction_idx_0);
+    rtb_Switch_ft_idx_2 = rt_atan2d_snf(rtb_sqrt, rtb_Sum2_p);
+    rtb_Switch_ft_idx_3 = rt_atan2d_snf(rtb_MathFunction_idx_2, rtb_Gain_a);
     rtb_accBdyEst_mps2[0] = 0.0;
   }
 
-  rtb_Product1_ad = cos(rtb_Switch_ft_idx_0);
-  rtb_Sin = sin(rtb_Switch_ft_idx_0);
-  rtb_Sum2_p = cos(rtb_Switch_ft_idx_1);
+  rtb_Product1_ad = cos(rtb_Switch_ft_idx_3);
+  rtb_Sin = sin(rtb_Switch_ft_idx_3);
+  rtb_Sum_kk_idx_3 = cos(rtb_Switch_ft_idx_1);
   rtb_Sum_e = sin(rtb_Switch_ft_idx_1);
-  rtb_sqrt = 0.0 * rtb_Sum_e;
-  rtb_Switch2 = rtb_sqrt + rtb_Sum2_p;
-  rtb_Integrator_b = 0.0 * rtb_Sum2_p;
-  rtb_UkYk1_l = rtb_Integrator_b - rtb_Sum_e;
-  rtb_Gain_a = rtb_Product1_ad * 0.0;
-  rtb_Product2_m = (rtb_Integrator_b + rtb_Gain_a) + rtb_Sin * rtb_Sum_e;
-  rtb_MathFunction_idx_1 = rtb_Sin * 0.0 + rtb_Product1_ad;
-  rtb_Product1_j3 = 0.0 * -rtb_Sum_e;
-  rtb_MathFunction_idx_2 = (rtb_Product1_j3 + rtb_Gain_a) + rtb_Sin * rtb_Sum2_p;
-  rtb_Sum4_a = -rtb_Sin * 0.0;
-  rtb_Product1_o = (rtb_Integrator_b + rtb_Sum4_a) + rtb_Sum_e * rtb_Product1_ad;
-  rtb_Gain_a -= rtb_Sin;
-  rtb_Sum4_a = (rtb_Product1_j3 + rtb_Sum4_a) + rtb_Product1_ad * rtb_Sum2_p;
+  rtb_Product2_m = 0.0 * rtb_Sum_e;
+  rtb_Product2_l = rtb_Product2_m + rtb_Sum_kk_idx_3;
+  rtb_Integrator_b = 0.0 * rtb_Sum_kk_idx_3;
+  rtb_Sum1_j = rtb_Integrator_b - rtb_Sum_e;
+  rtb_UkYk1_l = rtb_Product1_ad * 0.0;
+  rtb_Switch2 = (rtb_Integrator_b + rtb_UkYk1_l) + rtb_Sin * rtb_Sum_e;
+  rtb_Integrator_i = rtb_Sin * 0.0 + rtb_Product1_ad;
+  rtb_Switch2_f = 0.0 * -rtb_Sum_e;
+  rtb_Sum3 = (rtb_Switch2_f + rtb_UkYk1_l) + rtb_Sin * rtb_Sum_kk_idx_3;
+  rtb_PProdOut_b = -rtb_Sin * 0.0;
+  rtb_Sum4_a = (rtb_Integrator_b + rtb_PProdOut_b) + rtb_Sum_e * rtb_Product1_ad;
+  rtb_UkYk1_l -= rtb_Sin;
+  rtb_PProdOut_b = (rtb_Switch2_f + rtb_PProdOut_b) + rtb_Product1_ad *
+    rtb_Sum_kk_idx_3;
   rtb_Product1_ad = cos(rtb_Switch_ft_idx_2);
   rtb_Sin = sin(rtb_Switch_ft_idx_2);
-  rtb_PProdOut_b = rtb_Integrator_b + rtb_sqrt;
-  rtb_Switch2_f = rtb_Product1_j3 + rtb_Integrator_b;
-  rtb_Integrator_i = rtb_Integrator_b + rtb_Sum_e;
-  rtb_Switch2_b = rtb_Product1_j3 + rtb_Sum2_p;
+  rtb_Product1_j3 = rtb_Integrator_b + rtb_Product2_m;
+  rtb_Switch2_m = rtb_Switch2_f + rtb_Integrator_b;
+  rtb_Divide = rtb_Integrator_b + rtb_Sum_e;
+  rtb_Switch2_j = rtb_Switch2_f + rtb_Sum_kk_idx_3;
   rtb_Integrator_b = cos(rtb_accBdyEst_mps2[0]);
   rtb_Sum_e = sin(rtb_accBdyEst_mps2[0]);
-  rtb_sqrt = rtb_UkYk1_l * 0.0;
-  rtb_Product1_j3 = rtb_Switch2_f * 0.0;
-  rtb_Switch2_m = 0.0 * -rtb_Sum_e;
-  rtb_Sum3 = 0.0 * rtb_Integrator_b;
-  rtb_Sum1_j = rtb_Switch2_b * 0.0;
-  rtb_Cos = fabs(rtb_Cos - (rtb_Switch2 * 0.0 + rtb_UkYk1_l));
-  rtb_UkYk1_l = rtb_MathFunction_idx_2 * 0.0;
-  rtb_Divide = rtb_Sum4_a * 0.0;
-  if ((((((((fabs(rtb_Product1_e - ((rtb_Switch2 * rtb_Integrator_b +
-                rtb_Switch2_m) + rtb_sqrt)) + fabs(rtb_Filter_g - ((rtb_Switch2 *
-    rtb_Sum_e + rtb_Sum3) + rtb_sqrt))) + rtb_Cos) + fabs(rtb_Sum_kk_idx_3 -
-            ((rtb_Integrator_b * rtb_PProdOut_b - rtb_Sum_e) + rtb_Product1_j3)))
-          + fabs(rtb_Sum_kk_idx_0 - ((rtb_Sum_e * rtb_PProdOut_b +
-             rtb_Integrator_b) + rtb_Product1_j3))) + fabs(rtb_Sum_kk_idx_1 -
-          (rtb_PProdOut_b * 0.0 + rtb_Switch2_f))) + fabs(rtb_Product2_l -
-         ((rtb_Integrator_b * rtb_Integrator_i + rtb_Switch2_m) + rtb_Sum1_j)))
-       + fabs(rtb_Sum_kk_idx_2 - ((rtb_Sum_e * rtb_Integrator_i + rtb_Sum3) +
-         rtb_Sum1_j))) + fabs(rtb_MathFunction_idx_0 - (rtb_Integrator_i * 0.0 +
-        rtb_Switch2_b)) <= (((((((fabs(rtb_Product1_e - ((rtb_Switch2 *
-                rtb_Product1_ad + 0.0 * -rtb_Sin) + rtb_sqrt)) + fabs
-             (rtb_Filter_g - ((rtb_Switch2 * rtb_Sin + 0.0 * rtb_Product1_ad) +
-               rtb_sqrt))) + rtb_Cos) + fabs(rtb_Sum_kk_idx_3 -
-            ((rtb_Product1_ad * rtb_Product2_m + -rtb_Sin *
-              rtb_MathFunction_idx_1) + rtb_UkYk1_l))) + fabs(rtb_Sum_kk_idx_0 -
-           ((rtb_Sin * rtb_Product2_m + rtb_MathFunction_idx_1 * rtb_Product1_ad)
-            + rtb_UkYk1_l))) + fabs(rtb_Sum_kk_idx_1 - ((rtb_Product2_m * 0.0 +
-            rtb_MathFunction_idx_1 * 0.0) + rtb_MathFunction_idx_2))) + fabs
-        (rtb_Product2_l - ((rtb_Product1_ad * rtb_Product1_o + -rtb_Sin *
-           rtb_Gain_a) + rtb_Divide))) + fabs(rtb_Sum_kk_idx_2 - ((rtb_Sin *
-          rtb_Product1_o + rtb_Product1_ad * rtb_Gain_a) + rtb_Divide))) + fabs
-      (rtb_MathFunction_idx_0 - ((rtb_Product1_o * 0.0 + rtb_Gain_a * 0.0) +
-        rtb_Sum4_a))) {
+  rtb_Product2_m = rtb_Sum1_j * 0.0;
+  rtb_Switch2_f = rtb_Switch2_m * 0.0;
+  rtb_Sum_kk_idx_0 = 0.0 * -rtb_Sum_e;
+  rtb_Sum_kk_idx_1 = 0.0 * rtb_Integrator_b;
+  rtb_Sum_kk_idx_2 = rtb_Switch2_j * 0.0;
+  rtb_MathFunction_idx_0 = fabs(rtb_MathFunction_idx_0 - (rtb_Product2_l * 0.0 +
+    rtb_Sum1_j));
+  rtb_Sum1_j = rtb_Sum3 * 0.0;
+  rtb_Product1_j = rtb_PProdOut_b * 0.0;
+  if ((((((((fabs(rtb_Sum2_p - ((rtb_Product2_l * rtb_Integrator_b +
+                rtb_Sum_kk_idx_0) + rtb_Product2_m)) + fabs(rtb_sqrt -
+              ((rtb_Product2_l * rtb_Sum_e + rtb_Sum_kk_idx_1) + rtb_Product2_m)))
+            + rtb_MathFunction_idx_0) + fabs(rtb_Filter_g - ((rtb_Integrator_b *
+              rtb_Product1_j3 - rtb_Sum_e) + rtb_Switch2_f))) + fabs
+          (rtb_MathFunction_idx_1 - ((rtb_Sum_e * rtb_Product1_j3 +
+             rtb_Integrator_b) + rtb_Switch2_f))) + fabs(rtb_MathFunction_idx_2
+          - (rtb_Product1_j3 * 0.0 + rtb_Switch2_m))) + fabs(rtb_Product1_e -
+         ((rtb_Integrator_b * rtb_Divide + rtb_Sum_kk_idx_0) + rtb_Sum_kk_idx_2)))
+       + fabs(rtb_Product1_o - ((rtb_Sum_e * rtb_Divide + rtb_Sum_kk_idx_1) +
+         rtb_Sum_kk_idx_2))) + fabs(rtb_Gain_a - (rtb_Divide * 0.0 +
+        rtb_Switch2_j)) <= (((((((fabs(rtb_Sum2_p - ((rtb_Product2_l *
+                rtb_Product1_ad + 0.0 * -rtb_Sin) + rtb_Product2_m)) + fabs
+             (rtb_sqrt - ((rtb_Product2_l * rtb_Sin + 0.0 * rtb_Product1_ad) +
+                          rtb_Product2_m))) + rtb_MathFunction_idx_0) + fabs
+           (rtb_Filter_g - ((rtb_Product1_ad * rtb_Switch2 + -rtb_Sin *
+              rtb_Integrator_i) + rtb_Sum1_j))) + fabs(rtb_MathFunction_idx_1 -
+           ((rtb_Sin * rtb_Switch2 + rtb_Integrator_i * rtb_Product1_ad) +
+            rtb_Sum1_j))) + fabs(rtb_MathFunction_idx_2 - ((rtb_Switch2 * 0.0 +
+            rtb_Integrator_i * 0.0) + rtb_Sum3))) + fabs(rtb_Product1_e -
+         ((rtb_Product1_ad * rtb_Sum4_a + -rtb_Sin * rtb_UkYk1_l) +
+          rtb_Product1_j))) + fabs(rtb_Product1_o - ((rtb_Sin * rtb_Sum4_a +
+          rtb_Product1_ad * rtb_UkYk1_l) + rtb_Product1_j))) + fabs(rtb_Gain_a -
+       ((rtb_Sum4_a * 0.0 + rtb_UkYk1_l * 0.0) + rtb_PProdOut_b))) {
     rtb_Switch_ft_idx_2 = rtb_accBdyEst_mps2[0];
-    rtb_Switch_ft_idx_0 = 0.0;
+    rtb_Switch_ft_idx_3 = 0.0;
   }
+
+  /* Sum: '<S224>/Sum2' incorporates:
+   *  Constant: '<S2>/Constant'
+   *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
+   */
+  rtb_Sum2_p = guidanceParams.phiCmd_rad - rtb_Switch_ft_idx_3;
 
   /* Product: '<S319>/DProd Out' incorporates:
    *  Constant: '<S226>/Constant4'
-   *  Constant: '<S2>/Constant'
-   *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
-   *  Sum: '<S224>/Sum2'
    */
-  rtb_Product1_ad = (0.0 - rtb_Switch_ft_idx_0) * 0.0;
+  rtb_Product1_ad = rtb_Sum2_p * outerLoopParams.rollGains[2];
 
   /* Sum: '<S321>/SumD' incorporates:
    *  DiscreteIntegrator: '<S321>/Filter'
@@ -1068,18 +1053,18 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Product: '<S329>/NProd Out' incorporates:
    *  Constant: '<S226>/Constant4'
    */
-  rtb_Sin = rtb_Product1_ad * 100.0;
+  rtb_Sin = rtb_Product1_ad * outerLoopParams.rollGains[3];
 
   /* Product: '<S288>/Product1' incorporates:
-   *  Constant: '<S2>/Constant'
+   *  Constant: '<S226>/Constant4'
    *  DiscreteIntegrator: '<S326>/Integrator'
-   *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
-   *  Sum: '<S224>/Sum2'
+   *  Product: '<S331>/PProd Out'
    *  Sum: '<S335>/Sum'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_Product1_e = (((0.0 - rtb_Switch_ft_idx_0) + rtDW->Integrator_DSTATE) +
-                    rtb_Sin) * (real_T)rtDW->UnitDelay_DSTATE_n;
+  rtb_Product1_e = ((rtb_Sum2_p * outerLoopParams.rollGains[0] +
+                     rtDW->Integrator_DSTATE) + rtb_Sin) * (real_T)
+    rtDW->UnitDelay_DSTATE_n;
 
   /* Switch: '<S347>/Switch2' incorporates:
    *  Constant: '<S226>/Constant2'
@@ -1088,13 +1073,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S347>/UpperRelop'
    *  Switch: '<S347>/Switch'
    */
-  if (rtb_Product1_e > 2.0) {
-    rtb_Switch2 = 2.0;
-  } else if (rtb_Product1_e < -2.0) {
+  if (rtb_Product1_e > outerLoopParams.upLimitRollRate_rps) {
+    rtb_Switch2 = outerLoopParams.upLimitRollRate_rps;
+  } else if (rtb_Product1_e < outerLoopParams.loLimitRollRate_rps) {
     /* Switch: '<S347>/Switch' incorporates:
      *  Constant: '<S226>/Constant3'
      */
-    rtb_Switch2 = -2.0;
+    rtb_Switch2 = outerLoopParams.loLimitRollRate_rps;
   } else {
     rtb_Switch2 = rtb_Product1_e;
   }
@@ -1113,7 +1098,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * About '<S345>/sample time':
    *  y = K where K = ( w * Ts )
    *   */
-  rtb_Product2_l = 0.05;
+  rtb_Product2_l = outerLoopParams.upRateLimitRollRate_rps2 * 0.01;
 
   /* Sum: '<S345>/Difference Inputs1' incorporates:
    *  Delay: '<S345>/Delay'
@@ -1127,12 +1112,21 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Switch: '<S346>/Switch2' incorporates:
    *  RelationalOperator: '<S346>/LowerRelop1'
    */
-  if (!(rtb_Integrator_b > 0.05)) {
+  if (!(rtb_Integrator_b > rtb_Product2_l)) {
+    /* Product: '<S345>/delta fall limit' incorporates:
+     *  Constant: '<S226>/Constant1'
+     *  SampleTimeMath: '<S345>/sample time'
+     *
+     * About '<S345>/sample time':
+     *  y = K where K = ( w * Ts )
+     *   */
+    rtb_Sum_e = 0.01 * outerLoopParams.loRateLimitRollRate_rps2;
+
     /* Switch: '<S346>/Switch' incorporates:
      *  RelationalOperator: '<S346>/UpperRelop'
      */
-    if (rtb_Integrator_b < -0.05) {
-      rtb_Product2_l = -0.05;
+    if (rtb_Integrator_b < rtb_Sum_e) {
+      rtb_Product2_l = rtb_Sum_e;
     } else {
       rtb_Product2_l = rtb_Integrator_b;
     }
@@ -1154,7 +1148,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Sum: '<S8>/Sum' incorporates:
    *  DiscreteTransferFcn: '<S428>/Gyro Filter'
    */
-  rtb_Product2_l = rtb_Integrator_b - rtb_Cos_l;
+  rtb_Product2_l = rtb_Integrator_b - rtb_Cos;
 
   /* UnitDelay generated from: '<S408>/Unit Delay' */
   rtb_Filter_g = rtDW->UnitDelay_18_DSTATE;
@@ -1174,20 +1168,22 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *
    *  Store in Global RAM
    */
-  rtb_Product2_m = rtU_sensor_bus_e->gpsLLA_na[0] - rtDW->UD_DSTATE[0];
-  rtb_Sum_kk_idx_3 = rtU_sensor_bus_e->gpsLLA_na[1] - rtDW->UD_DSTATE[1];
-  rtb_Cos = rtU_sensor_bus_e->gpsLLA_na[2] - rtDW->UD_DSTATE[2];
+  rtb_sqrt = rtU_sensor_bus_e->gpsLLA_na[0] - rtDW->UD_DSTATE[0];
+  rtb_MathFunction_idx_0 = rtU_sensor_bus_e->gpsLLA_na[1] - rtDW->UD_DSTATE[1];
+  rtb_MathFunction_idx_1 = rtU_sensor_bus_e->gpsLLA_na[2] - rtDW->UD_DSTATE[2];
 
   /* DotProduct: '<S469>/Dot Product' */
-  rtb_Product1_ad = (rtb_Product2_m * rtb_Product2_m + rtb_Sum_kk_idx_3 *
-                     rtb_Sum_kk_idx_3) + rtb_Cos * rtb_Cos;
+  rtb_Product1_ad = (rtb_sqrt * rtb_sqrt + rtb_MathFunction_idx_0 *
+                     rtb_MathFunction_idx_0) + rtb_MathFunction_idx_1 *
+    rtb_MathFunction_idx_1;
 
   /* Logic: '<S469>/Logical Operator' incorporates:
    *  Constant: '<S476>/Constant'
    *  Inport: '<Root>/sensor_bus'
    *  RelationalOperator: '<S476>/Compare'
    */
-  rtb_Compare_p = ((rtb_Product1_ad >= 1.0E-6) && rtU_sensor_bus_e->gpsFix_b);
+  rtb_LogicalOperator = ((rtb_Product1_ad >= 1.0E-6) &&
+    rtU_sensor_bus_e->gpsFix_b);
 
   /* UnitDelay generated from: '<S408>/Unit Delay' */
   rtb_Product1_ad = rtDW->UnitDelay_17_DSTATE;
@@ -1196,26 +1192,28 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Constant: '<S470>/Constant'
    *  Quat2Dcm: '<S470>/Quaternions to  Direction Cosine Matrix'
    */
-  rtb_Product2_m = 0.0;
-  rtb_Sum_kk_idx_3 = 0.0;
-  rtb_Cos = 0.0;
+  rtb_sqrt = 0.0;
+  rtb_MathFunction_idx_0 = 0.0;
+  rtb_MathFunction_idx_1 = 0.0;
   for (i = 0; i < 3; i++) {
-    rtb_sqrt = rtCP__Constant_Value_bn[i];
-    rtb_Product2_m += rtb_QuaternionstoDirectionCosin[3 * i] * rtb_sqrt;
-    rtb_Sum_kk_idx_3 += rtb_QuaternionstoDirectionCosin[3 * i + 1] * rtb_sqrt;
-    rtb_Cos += rtb_QuaternionstoDirectionCosin[3 * i + 2] * rtb_sqrt;
+    rtb_Product2_m = navControl.gravityNed_mps2[i];
+    rtb_sqrt += rtb_QuaternionstoDirectionCosin[3 * i] * rtb_Product2_m;
+    rtb_MathFunction_idx_0 += rtb_QuaternionstoDirectionCosin[3 * i + 1] *
+      rtb_Product2_m;
+    rtb_MathFunction_idx_1 += rtb_QuaternionstoDirectionCosin[3 * i + 2] *
+      rtb_Product2_m;
   }
 
-  rtb_TmpSignalConversionAtSFunct[2] = rtb_Cos;
-  rtb_TmpSignalConversionAtSFunct[1] = rtb_Sum_kk_idx_3;
-  rtb_TmpSignalConversionAtSFunct[0] = rtb_Product2_m;
+  rtb_TmpSignalConversionAtSFunct[2] = rtb_MathFunction_idx_1;
+  rtb_TmpSignalConversionAtSFunct[1] = rtb_MathFunction_idx_0;
+  rtb_TmpSignalConversionAtSFunct[0] = rtb_sqrt;
 
   /* End of Product: '<S470>/Matrix Multiply' */
 
   /* Product: '<S409>/Product' */
   rtb_n_m = 0.0;
-  rtb_Cos_a = 0.0;
-  rtb_Cos_n2 = 0.0;
+  rtb_Cos_k = 0.0;
+  rtb_Cos_m = 0.0;
   for (i = 0; i < 3; i++) {
     /* Sum: '<S413>/Sum1' incorporates:
      *  Inport: '<Root>/sensor_bus'
@@ -1228,9 +1226,10 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
 
     /* DiscreteTransferFcn: '<S409>/Accel Filter' */
     rtb_Product2_m = rtDW->AccelFilter_states[i];
-    rtb_Cos = rtb_sqrt - 0.0 * rtb_Product2_m;
-    AccelFilter_tmp[i] = rtb_Cos;
-    rtb_TmpSignalConversionAtSFunct[i] = 0.5 * rtb_Cos + 0.5 * rtb_Product2_m;
+    rtb_MatrixMultiply1_idx_1 = rtb_sqrt - 0.0 * rtb_Product2_m;
+    AccelFilter_tmp[i] = rtb_MatrixMultiply1_idx_1;
+    rtb_TmpSignalConversionAtSFunct[i] = 0.5 * rtb_MatrixMultiply1_idx_1 + 0.5 *
+      rtb_Product2_m;
 
     /* Gain: '<S409>/Gain' incorporates:
      *  Math: '<S418>/Math Function'
@@ -1243,33 +1242,32 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     uIdx = 3 * i + 1;
     rtb_QuaternionstoDirectionCosin[uIdx] = (rtb_C_l[i + 3] +
       rtb_MathFunction_k[i + 3]) * 0.5;
-    rtb_QuaternionstoDirectionCos_0 = 3 * i + 2;
-    rtb_QuaternionstoDirectionCosin[rtb_QuaternionstoDirectionCos_0] =
+    rtb_QuaternionstoDirectionCos_1 = 3 * i + 2;
+    rtb_QuaternionstoDirectionCosin[rtb_QuaternionstoDirectionCos_1] =
       (rtb_C_l[i + 6] + rtb_MathFunction_k[i + 6]) * 0.5;
 
     /* Product: '<S409>/Product' */
-    rtb_sqrt = rtb_TmpSignalConversionAtSFunct[i];
-    rtb_n_m += rtb_QuaternionstoDirectionCosin[3 * i] * rtb_sqrt;
-    rtb_Cos_a += rtb_QuaternionstoDirectionCosin[uIdx] * rtb_sqrt;
-    rtb_Cos_n2 +=
-      rtb_QuaternionstoDirectionCosin[rtb_QuaternionstoDirectionCos_0] *
-      rtb_sqrt;
+    rtb_Product2_m = rtb_TmpSignalConversionAtSFunct[i];
+    rtb_n_m += rtb_QuaternionstoDirectionCosin[3 * i] * rtb_Product2_m;
+    rtb_Cos_k += rtb_QuaternionstoDirectionCosin[uIdx] * rtb_Product2_m;
+    rtb_Cos_m += rtb_QuaternionstoDirectionCosin[rtb_QuaternionstoDirectionCos_1]
+      * rtb_Product2_m;
   }
 
   /* Sum: '<S409>/Sum4' incorporates:
    *  Gain: '<S409>/Gain3'
    *  Product: '<S409>/Product'
    */
-  rtb_MatrixMultiply1_idx_0 = 0.01 * rtb_n_m + rtb_Product1_ad;
-  rtb_Cos = 0.01 * rtb_Cos_a + rtb_Filter_g;
-  rtb_MatrixMultiply1_idx_2 = 0.01 * rtb_Cos_n2 + rtb_Sum_e;
+  rtb_MatrixMultiply1_idx_0 = navControl.dt_s * rtb_n_m + rtb_Product1_ad;
+  rtb_MatrixMultiply1_idx_1 = navControl.dt_s * rtb_Cos_k + rtb_Filter_g;
+  rtb_MatrixMultiply1_idx_2 = navControl.dt_s * rtb_Cos_m + rtb_Sum_e;
 
   /* If: '<S427>/If1' incorporates:
    *  Constant: '<S458>/Constant'
    *  RelationalOperator: '<S458>/Compare'
    *  Switch: '<S442>/Switch'
    */
-  if (rtb_Compare_p) {
+  if (rtb_LogicalOperator) {
     /* Outputs for IfAction SubSystem: '<S427>/Vel Complementary Filter' incorporates:
      *  ActionPort: '<S441>/Action Port'
      */
@@ -1278,12 +1276,15 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      *  Gain: '<S441>/Gain1'
      *  Inport: '<Root>/sensor_bus'
      */
-    rtb_MathFunction_idx_0 = 0.19999999999999996 *
-      rtU_sensor_bus_e->velNedMeas_mps[0] + 0.8 * rtb_MatrixMultiply1_idx_0;
-    rtb_MathFunction_idx_1 = 0.19999999999999996 *
-      rtU_sensor_bus_e->velNedMeas_mps[1] + 0.8 * rtb_Cos;
-    rtb_MathFunction_idx_2 = 0.19999999999999996 *
-      rtU_sensor_bus_e->velNedMeas_mps[2] + 0.8 * rtb_MatrixMultiply1_idx_2;
+    rtb_MathFunction_idx_0 = (1.0 - navComp.velGain) *
+      rtU_sensor_bus_e->velNedMeas_mps[0] + navComp.velGain *
+      rtb_MatrixMultiply1_idx_0;
+    rtb_MathFunction_idx_1 = (1.0 - navComp.velGain) *
+      rtU_sensor_bus_e->velNedMeas_mps[1] + navComp.velGain *
+      rtb_MatrixMultiply1_idx_1;
+    rtb_MathFunction_idx_2 = (1.0 - navComp.velGain) *
+      rtU_sensor_bus_e->velNedMeas_mps[2] + navComp.velGain *
+      rtb_MatrixMultiply1_idx_2;
 
     /* End of Outputs for SubSystem: '<S427>/Vel Complementary Filter' */
 
@@ -1294,13 +1295,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     /* Switch: '<S442>/Switch' incorporates:
      *  Gain: '<S442>/Gain'
      */
-    rtb_MathFunction_idx_0 = 0.8 * rtb_MatrixMultiply1_idx_0;
-    rtb_MathFunction_idx_1 = 0.8 * rtb_Cos;
-    rtb_MathFunction_idx_2 = 0.8 * rtb_MatrixMultiply1_idx_2;
+    rtb_MathFunction_idx_0 = navComp.velGain * rtb_MatrixMultiply1_idx_0;
+    rtb_MathFunction_idx_1 = navComp.velGain * rtb_MatrixMultiply1_idx_1;
+    rtb_MathFunction_idx_2 = navComp.velGain * rtb_MatrixMultiply1_idx_2;
   } else {
     /* Switch: '<S442>/Switch' */
     rtb_MathFunction_idx_0 = rtb_MatrixMultiply1_idx_0;
-    rtb_MathFunction_idx_1 = rtb_Cos;
+    rtb_MathFunction_idx_1 = rtb_MatrixMultiply1_idx_1;
     rtb_MathFunction_idx_2 = rtb_MatrixMultiply1_idx_2;
 
     /* End of Outputs for SubSystem: '<S427>/Vel Pass Through' */
@@ -1316,7 +1317,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Gain: '<S465>/Gain1' incorporates:
    *  Gain: '<S465>/Gain'
    */
-  rtb_Sum_e = 0.5 * rtb_Sum_e * 1.225;
+  rtb_Sum_e = 0.5 * rtb_Sum_e * navControl.rhoConst_kgpm3;
 
   /* Delay generated from: '<S426>/Delay2' */
   rtb_Filter_g = rtDW->Delay2_6_DSTATE[0];
@@ -1363,8 +1364,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_Filter_g), rtCP__Constant4_Value, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Value, 2U);
+  LookUp_real_T_real_T( &(rtb_Filter_g), &innerLoopParams.fbkGainPitchYawP_na[0],
+                       rtb_Sum_e, &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* S-Function (sfix_look1_dyn): '<S74>/Gain Dynamic Lookup' incorporates:
    *  Constant: '<S13>/Internal breakpoints'
@@ -1378,8 +1379,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_Product1_ad), rtCP__Constant6_Value, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Value, 2U);
+  LookUp_real_T_real_T( &(rtb_Product1_ad),
+                       &innerLoopParams.fbkGainPitchYawD_na[0], rtb_Sum_e,
+                       &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* S-Function (sfix_look1_dyn): '<S76>/Gain Dynamic Lookup' incorporates:
    *  Constant: '<S13>/Internal breakpoints'
@@ -1393,8 +1395,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_Filter_b), rtCP__Constant7_Value, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Value, 2U);
+  LookUp_real_T_real_T( &(rtb_Filter_b), &innerLoopParams.fbkGainPitchYawN_na[0],
+                       rtb_Sum_e, &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* S-Function (sfix_look1_dyn): '<S218>/Gain Dynamic Lookup' incorporates:
    *  Constant: '<S11>/Constant4'
@@ -1408,8 +1410,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_Product1_p1), rtCP__Constant4_Value_l, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Val_d, 2U);
+  LookUp_real_T_real_T( &(rtb_Product1_p1),
+                       &innerLoopParams.fbkGainPitchYawP_na[0], rtb_Sum_e,
+                       &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* S-Function (sfix_look1_dyn): '<S215>/Gain Dynamic Lookup' incorporates:
    *  Constant: '<S11>/Constant6'
@@ -1423,8 +1426,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_Filter_e), rtCP__Constant6_Value_e, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Val_d, 2U);
+  LookUp_real_T_real_T( &(rtb_Filter_e), &innerLoopParams.fbkGainPitchYawD_na[0],
+                       rtb_Sum_e, &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* S-Function (sfix_look1_dyn): '<S217>/Gain Dynamic Lookup' incorporates:
    *  Constant: '<S11>/Constant7'
@@ -1438,8 +1441,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_GainDynamicLookup_k), rtCP__Constant7_Value_n,
-                       rtb_Sum_e, rtCP__Internalbreakpoints_Val_d, 2U);
+  LookUp_real_T_real_T( &(rtb_GainDynamicLookup_k),
+                       &innerLoopParams.fbkGainPitchYawN_na[0], rtb_Sum_e,
+                       &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* S-Function (sfix_look1_dyn): '<S148>/Gain Dynamic Lookup' incorporates:
    *  Constant: '<S10>/Constant4'
@@ -1453,8 +1457,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_Integrator_g), rtCP__Constant4_Value_c, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Val_f, 2U);
+  LookUp_real_T_real_T( &(rtb_Integrator_g), &innerLoopParams.fbkGainRollP_na[0],
+                       rtb_Sum_e, &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* Product: '<S128>/PProd Out' */
   rtb_Product2_m = rtb_Product2_l * rtb_Integrator_g;
@@ -1474,8 +1478,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_Filter_c), rtCP__Constant6_Value_p, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Val_f, 2U);
+  LookUp_real_T_real_T( &(rtb_Filter_c), &innerLoopParams.fbkGainRollD_na[0],
+                       rtb_Sum_e, &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* Product: '<S116>/DProd Out' */
   rtb_sqrt = rtb_Product2_l * rtb_Filter_c;
@@ -1495,8 +1499,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_Integrator_fe), rtCP__Constant7_Value_o, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Val_f, 2U);
+  LookUp_real_T_real_T( &(rtb_Integrator_fe), &innerLoopParams.fbkGainRollN_na[0],
+                       rtb_Sum_e, &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* Product: '<S126>/NProd Out' incorporates:
    *  Sum: '<S118>/SumD'
@@ -1521,13 +1525,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S152>/UpperRelop'
    *  Switch: '<S152>/Switch'
    */
-  if (rtb_Gain_a > 5.0) {
-    rtb_Switch2_f = 5.0;
-  } else if (rtb_Gain_a < -5.0) {
+  if (rtb_Gain_a > innerLoopParams.upLimitRoll_deg) {
+    rtb_Switch2_f = innerLoopParams.upLimitRoll_deg;
+  } else if (rtb_Gain_a < innerLoopParams.loLimitRoll_deg) {
     /* Switch: '<S152>/Switch' incorporates:
      *  Constant: '<S10>/Constant3'
      */
-    rtb_Switch2_f = -5.0;
+    rtb_Switch2_f = innerLoopParams.loLimitRoll_deg;
   } else {
     rtb_Switch2_f = rtb_Gain_a;
   }
@@ -1546,7 +1550,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * About '<S150>/sample time':
    *  y = K where K = ( w * Ts )
    *   */
-  rtb_Integrator_fe = 0.9;
+  rtb_Integrator_fe = innerLoopParams.upRateLimitRoll_dps * 0.01;
 
   /* Sum: '<S150>/Difference Inputs1' incorporates:
    *  Delay: '<S150>/Delay'
@@ -1560,13 +1564,20 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Switch: '<S151>/Switch2' incorporates:
    *  RelationalOperator: '<S151>/LowerRelop1'
    */
-  if (!(rtb_Integrator_g > 0.9)) {
+  if (!(rtb_Integrator_g > rtb_Integrator_fe)) {
+    /* Product: '<S150>/delta fall limit' incorporates:
+     *  Constant: '<S10>/Constant1'
+     *  SampleTimeMath: '<S150>/sample time'
+     *
+     * About '<S150>/sample time':
+     *  y = K where K = ( w * Ts )
+     *   */
+    rtb_Integrator_fe = 0.01 * innerLoopParams.loRateLimitRoll_dps;
+
     /* Switch: '<S151>/Switch' incorporates:
      *  RelationalOperator: '<S151>/UpperRelop'
      */
-    if (rtb_Integrator_g < -0.9) {
-      rtb_Integrator_fe = -0.9;
-    } else {
+    if (!(rtb_Integrator_g < rtb_Integrator_fe)) {
       rtb_Integrator_fe = rtb_Integrator_g;
     }
 
@@ -1587,24 +1598,31 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Trigonometry: '<S224>/Cos' incorporates:
    *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
    */
-  rtb_Integrator_fe = cos(rtb_Switch_ft_idx_0);
+  rtb_Integrator_fe = cos(rtb_Switch_ft_idx_3);
+
+  /* Sum: '<S224>/Sum1' incorporates:
+   *  Constant: '<S2>/Constant1'
+   *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
+   */
+  rtb_Integrator_i = guidanceParams.thetaCmd_rad - rtb_Switch_ft_idx_1;
 
   /* Trigonometry: '<S224>/Sin' incorporates:
    *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
    */
-  rtb_Sum1_j = sin(rtb_Switch_ft_idx_0);
+  rtb_Sum1_j = sin(rtb_Switch_ft_idx_3);
+
+  /* Sum: '<S224>/Sum' incorporates:
+   *  Constant: '<S2>/Constant2'
+   *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
+   */
+  rtb_Sum3 = guidanceParams.psiCmd_rad - rtb_Switch_ft_idx_2;
 
   /* Sum: '<S224>/Sum4' incorporates:
-   *  Constant: '<S2>/Constant1'
-   *  Constant: '<S2>/Constant2'
    *  Product: '<S224>/Product'
    *  Product: '<S224>/Product1'
-   *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
-   *  Sum: '<S224>/Sum'
-   *  Sum: '<S224>/Sum1'
    */
-  rtb_Sum4_a = (0.0 - rtb_Switch_ft_idx_1) * rtb_Integrator_fe + rtb_Sum1_j *
-    rtb_Sum2_p * (0.0 - rtb_Switch_ft_idx_2);
+  rtb_Sum4_a = rtb_Sum1_j * rtb_Sum_kk_idx_3 * rtb_Sum3 + rtb_Integrator_fe *
+    rtb_Integrator_i;
 
   /* Product: '<S269>/NProd Out' incorporates:
    *  Constant: '<S225>/Constant4'
@@ -1612,7 +1630,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Product: '<S259>/DProd Out'
    *  Sum: '<S261>/SumD'
    */
-  rtb_Product2_m = rtb_Sum4_a * 0.0 - rtDW->Filter_DSTATE_n;
+  rtb_Product2_m = (rtb_Sum4_a * outerLoopParams.pitchYawGains[2] -
+                    rtDW->Filter_DSTATE_n) * outerLoopParams.pitchYawGains[3];
 
   /* Product: '<S228>/Product1' incorporates:
    *  Constant: '<S225>/Constant4'
@@ -1621,8 +1640,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Sum: '<S275>/Sum'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_Product1_j3 = ((rtb_Sum4_a * 2.0 + rtDW->Integrator_DSTATE_g) +
-                     rtb_Product2_m) * (real_T)rtDW->UnitDelay_DSTATE_n;
+  rtb_Product1_j3 = ((rtb_Sum4_a * outerLoopParams.pitchYawGains[0] +
+                      rtDW->Integrator_DSTATE_g) + rtb_Product2_m) * (real_T)
+    rtDW->UnitDelay_DSTATE_n;
 
   /* Switch: '<S287>/Switch2' incorporates:
    *  Constant: '<S225>/Constant2'
@@ -1631,13 +1651,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S287>/UpperRelop'
    *  Switch: '<S287>/Switch'
    */
-  if (rtb_Product1_j3 > 0.4) {
-    rtb_Switch2_m = 0.4;
-  } else if (rtb_Product1_j3 < -0.4) {
+  if (rtb_Product1_j3 > outerLoopParams.upLimitPitchYawRate_rps) {
+    rtb_Switch2_m = outerLoopParams.upLimitPitchYawRate_rps;
+  } else if (rtb_Product1_j3 < outerLoopParams.loLimitPitchYawRate_rps) {
     /* Switch: '<S287>/Switch' incorporates:
      *  Constant: '<S225>/Constant3'
      */
-    rtb_Switch2_m = -0.4;
+    rtb_Switch2_m = outerLoopParams.loLimitPitchYawRate_rps;
   } else {
     rtb_Switch2_m = rtb_Product1_j3;
   }
@@ -1651,12 +1671,14 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
 
   /* Product: '<S285>/delta rise limit' incorporates:
    *  Constant: '<S225>/Constant'
+   *  Product: '<S405>/delta rise limit'
    *  SampleTimeMath: '<S285>/sample time'
    *
    * About '<S285>/sample time':
    *  y = K where K = ( w * Ts )
    *   */
-  rtb_sqrt = 0.005;
+  rtb_Sum_kk_idx_1 = outerLoopParams.upRateLimitPitchYawRate_rps2 * 0.01;
+  rtb_sqrt = rtb_Sum_kk_idx_1;
 
   /* Sum: '<S285>/Difference Inputs1' incorporates:
    *  Delay: '<S285>/Delay'
@@ -1668,15 +1690,23 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtb_UkYk1_l = rtb_Switch2_m - rtDW->Delay_DSTATE_c;
 
   /* Switch: '<S286>/Switch2' incorporates:
+   *  Product: '<S285>/delta rise limit'
    *  RelationalOperator: '<S286>/LowerRelop1'
    */
-  if (!(rtb_UkYk1_l > 0.005)) {
+  if (!(rtb_UkYk1_l > rtb_Sum_kk_idx_1)) {
+    /* Product: '<S285>/delta fall limit' incorporates:
+     *  Constant: '<S225>/Constant1'
+     *  SampleTimeMath: '<S285>/sample time'
+     *
+     * About '<S285>/sample time':
+     *  y = K where K = ( w * Ts )
+     *   */
+    rtb_sqrt = 0.01 * outerLoopParams.loRateLimitPitchYawRate_rps2;
+
     /* Switch: '<S286>/Switch' incorporates:
      *  RelationalOperator: '<S286>/UpperRelop'
      */
-    if (rtb_UkYk1_l < -0.005) {
-      rtb_sqrt = -0.005;
-    } else {
+    if (!(rtb_UkYk1_l < rtb_sqrt)) {
       rtb_sqrt = rtb_UkYk1_l;
     }
 
@@ -1697,7 +1727,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Sum: '<S8>/Sum2' incorporates:
    *  DiscreteTransferFcn: '<S428>/Gyro Filter'
    */
-  rtb_sqrt = rtb_UkYk1_l - rtb_Cos_m;
+  rtb_sqrt = rtb_UkYk1_l - rtb_Cos_e;
 
   /* Product: '<S57>/PProd Out' */
   rtb_PProdOut_b = rtb_sqrt * rtb_Filter_g;
@@ -1733,13 +1763,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S82>/UpperRelop'
    *  Switch: '<S82>/Switch'
    */
-  if (rtb_Divide > 45.0) {
-    rtb_Switch2_j = 45.0;
-  } else if (rtb_Divide < -45.0) {
+  if (rtb_Divide > innerLoopParams.upLimitPitchYaw_deg) {
+    rtb_Switch2_j = innerLoopParams.upLimitPitchYaw_deg;
+  } else if (rtb_Divide < innerLoopParams.loLimitPitchYaw_deg) {
     /* Switch: '<S82>/Switch' incorporates:
      *  Constant: '<S9>/Constant3'
      */
-    rtb_Switch2_j = -45.0;
+    rtb_Switch2_j = innerLoopParams.loLimitPitchYaw_deg;
   } else {
     rtb_Switch2_j = rtb_Divide;
   }
@@ -1753,12 +1783,14 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
 
   /* Product: '<S80>/delta rise limit' incorporates:
    *  Constant: '<S9>/Constant'
+   *  Product: '<S221>/delta rise limit'
    *  SampleTimeMath: '<S80>/sample time'
    *
    * About '<S80>/sample time':
    *  y = K where K = ( w * Ts )
    *   */
-  rtb_Filter_b = 1.8;
+  rtb_Sum_kk_idx_0 = innerLoopParams.upRateLimitPitchYaw_dps * 0.01;
+  rtb_Filter_b = rtb_Sum_kk_idx_0;
 
   /* Sum: '<S80>/Difference Inputs1' incorporates:
    *  Delay: '<S80>/Delay'
@@ -1772,13 +1804,20 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Switch: '<S81>/Switch2' incorporates:
    *  RelationalOperator: '<S81>/LowerRelop1'
    */
-  if (!(rtb_PProdOut_b > 1.8)) {
+  if (!(rtb_PProdOut_b > rtb_Filter_b)) {
+    /* Product: '<S80>/delta fall limit' incorporates:
+     *  Constant: '<S9>/Constant1'
+     *  SampleTimeMath: '<S80>/sample time'
+     *
+     * About '<S80>/sample time':
+     *  y = K where K = ( w * Ts )
+     *   */
+    rtb_Filter_b = 0.01 * innerLoopParams.loRateLimitPitchYaw_dps;
+
     /* Switch: '<S81>/Switch' incorporates:
      *  RelationalOperator: '<S81>/UpperRelop'
      */
-    if (rtb_PProdOut_b < -1.8) {
-      rtb_Filter_b = -1.8;
-    } else {
+    if (!(rtb_PProdOut_b < rtb_Filter_b)) {
       rtb_Filter_b = rtb_PProdOut_b;
     }
 
@@ -1797,30 +1836,28 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtb_PProdOut_b = rtb_Filter_b + rtDW->Delay_DSTATE_f;
 
   /* Sum: '<S224>/Sum3' incorporates:
-   *  Constant: '<S2>/Constant1'
-   *  Constant: '<S2>/Constant2'
    *  Product: '<S224>/Product2'
    *  Product: '<S224>/Product3'
-   *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
-   *  Sum: '<S224>/Sum'
-   *  Sum: '<S224>/Sum1'
    *  UnaryMinus: '<S224>/Unary Minus'
    */
-  rtb_Sum3 = (0.0 - rtb_Switch_ft_idx_1) * -rtb_Sum1_j + rtb_Integrator_fe *
-    rtb_Sum2_p * (0.0 - rtb_Switch_ft_idx_2);
+  rtb_Sum3 = rtb_Integrator_fe * rtb_Sum_kk_idx_3 * rtb_Sum3 + -rtb_Sum1_j *
+    rtb_Integrator_i;
 
   /* Product: '<S379>/DProd Out' incorporates:
    *  Constant: '<S227>/Constant4'
    */
-  rtb_Integrator_fe = rtb_Sum3 * 0.0;
+  rtb_Integrator_fe = rtb_Sum3 * outerLoopParams.pitchYawGains[2];
 
   /* DiscreteIntegrator: '<S381>/Filter' */
   rtb_Filter_b = rtDW->Filter_DSTATE_c;
 
+  /* Sum: '<S381>/SumD' */
+  rtb_Integrator_fe -= rtb_Filter_b;
+
   /* Product: '<S389>/NProd Out' incorporates:
-   *  Sum: '<S381>/SumD'
+   *  Constant: '<S227>/Constant4'
    */
-  rtb_Filter_b = rtb_Integrator_fe - rtb_Filter_b;
+  rtb_Filter_b = rtb_Integrator_fe * outerLoopParams.pitchYawGains[3];
 
   /* Product: '<S348>/Product1' incorporates:
    *  Constant: '<S227>/Constant4'
@@ -1829,8 +1866,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Sum: '<S395>/Sum'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_Sum2_p = ((rtb_Sum3 * 2.0 + rtDW->Integrator_DSTATE_l) + rtb_Filter_b) *
-    (real_T)rtDW->UnitDelay_DSTATE_n;
+  rtb_Product1_j = ((rtb_Sum3 * outerLoopParams.pitchYawGains[0] +
+                     rtDW->Integrator_DSTATE_l) + rtb_Filter_b) * (real_T)
+    rtDW->UnitDelay_DSTATE_n;
 
   /* Switch: '<S407>/Switch2' incorporates:
    *  Constant: '<S227>/Constant2'
@@ -1839,15 +1877,15 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S407>/UpperRelop'
    *  Switch: '<S407>/Switch'
    */
-  if (rtb_Sum2_p > 0.4) {
-    rtb_Switch2_d = 0.4;
-  } else if (rtb_Sum2_p < -0.4) {
+  if (rtb_Product1_j > outerLoopParams.upLimitPitchYawRate_rps) {
+    rtb_Switch2_d = outerLoopParams.upLimitPitchYawRate_rps;
+  } else if (rtb_Product1_j < outerLoopParams.loLimitPitchYawRate_rps) {
     /* Switch: '<S407>/Switch' incorporates:
      *  Constant: '<S227>/Constant3'
      */
-    rtb_Switch2_d = -0.4;
+    rtb_Switch2_d = outerLoopParams.loLimitPitchYawRate_rps;
   } else {
-    rtb_Switch2_d = rtb_Sum2_p;
+    rtb_Switch2_d = rtb_Product1_j;
   }
 
   /* End of Switch: '<S407>/Switch2' */
@@ -1857,14 +1895,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     rtDW->Delay_DSTATE_h = rtb_Switch2_d;
   }
 
-  /* Product: '<S405>/delta rise limit' incorporates:
-   *  Constant: '<S227>/Constant'
-   *  SampleTimeMath: '<S405>/sample time'
-   *
-   * About '<S405>/sample time':
-   *  y = K where K = ( w * Ts )
-   *   */
-  rtb_Sum1_j = 0.005;
+  /* Product: '<S405>/delta rise limit' */
+  rtb_Sum1_j = rtb_Sum_kk_idx_1;
 
   /* Sum: '<S405>/Difference Inputs1' incorporates:
    *  Delay: '<S405>/Delay'
@@ -1878,12 +1910,21 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Switch: '<S406>/Switch2' incorporates:
    *  RelationalOperator: '<S406>/LowerRelop1'
    */
-  if (!(rtb_Integrator_fe > 0.005)) {
+  if (!(rtb_Integrator_fe > rtb_Sum_kk_idx_1)) {
+    /* Product: '<S405>/delta fall limit' incorporates:
+     *  Constant: '<S227>/Constant1'
+     *  SampleTimeMath: '<S405>/sample time'
+     *
+     * About '<S405>/sample time':
+     *  y = K where K = ( w * Ts )
+     *   */
+    rtb_Integrator_i = 0.01 * outerLoopParams.loRateLimitPitchYawRate_rps2;
+
     /* Switch: '<S406>/Switch' incorporates:
      *  RelationalOperator: '<S406>/UpperRelop'
      */
-    if (rtb_Integrator_fe < -0.005) {
-      rtb_Sum1_j = -0.005;
+    if (rtb_Integrator_fe < rtb_Integrator_i) {
+      rtb_Sum1_j = rtb_Integrator_i;
     } else {
       rtb_Sum1_j = rtb_Integrator_fe;
     }
@@ -1905,7 +1946,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Sum: '<S8>/Sum1' incorporates:
    *  DiscreteTransferFcn: '<S428>/Gyro Filter'
    */
-  rtb_Sum1_j = rtb_Integrator_i - rtb_Cos_p;
+  rtb_Sum1_j = rtb_Integrator_i - rtb_Cos_l;
 
   /* DiscreteIntegrator: '<S193>/Integrator' */
   rtb_Integrator_fe = rtDW->Integrator_DSTATE_e;
@@ -1944,13 +1985,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S223>/UpperRelop'
    *  Switch: '<S223>/Switch'
    */
-  if (rtb_Divide_l > 45.0) {
-    rtb_Switch2_b = 45.0;
-  } else if (rtb_Divide_l < -45.0) {
+  if (rtb_Divide_l > innerLoopParams.upLimitPitchYaw_deg) {
+    rtb_Switch2_b = innerLoopParams.upLimitPitchYaw_deg;
+  } else if (rtb_Divide_l < innerLoopParams.loLimitPitchYaw_deg) {
     /* Switch: '<S223>/Switch' incorporates:
      *  Constant: '<S11>/Constant3'
      */
-    rtb_Switch2_b = -45.0;
+    rtb_Switch2_b = innerLoopParams.loLimitPitchYaw_deg;
   } else {
     rtb_Switch2_b = rtb_Divide_l;
   }
@@ -1962,14 +2003,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     rtDW->Delay_DSTATE_e = rtb_Switch2_b;
   }
 
-  /* Product: '<S221>/delta rise limit' incorporates:
-   *  Constant: '<S11>/Constant'
-   *  SampleTimeMath: '<S221>/sample time'
-   *
-   * About '<S221>/sample time':
-   *  y = K where K = ( w * Ts )
-   *   */
-  rtb_GainDynamicLookup_k = 1.8;
+  /* Product: '<S221>/delta rise limit' */
+  rtb_GainDynamicLookup_k = rtb_Sum_kk_idx_0;
 
   /* Sum: '<S221>/Difference Inputs1' incorporates:
    *  Delay: '<S221>/Delay'
@@ -1983,13 +2018,20 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Switch: '<S222>/Switch2' incorporates:
    *  RelationalOperator: '<S222>/LowerRelop1'
    */
-  if (!(rtb_Integrator_fe > 1.8)) {
+  if (!(rtb_Integrator_fe > rtb_GainDynamicLookup_k)) {
+    /* Product: '<S221>/delta fall limit' incorporates:
+     *  Constant: '<S11>/Constant1'
+     *  SampleTimeMath: '<S221>/sample time'
+     *
+     * About '<S221>/sample time':
+     *  y = K where K = ( w * Ts )
+     *   */
+    rtb_GainDynamicLookup_k = 0.01 * innerLoopParams.loRateLimitPitchYaw_dps;
+
     /* Switch: '<S222>/Switch' incorporates:
      *  RelationalOperator: '<S222>/UpperRelop'
      */
-    if (rtb_Integrator_fe < -1.8) {
-      rtb_GainDynamicLookup_k = -1.8;
-    } else {
+    if (!(rtb_Integrator_fe < rtb_GainDynamicLookup_k)) {
       rtb_GainDynamicLookup_k = rtb_Integrator_fe;
     }
 
@@ -2041,12 +2083,12 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Gain: '<S409>/Gain5'
    *  Product: '<S409>/Product'
    */
-  rtb_TmpSignalConversionAtSFunct[0] = (0.01 * rtb_MatrixMultiply1_idx_0 +
-    rtb_GainDynamicLookup_b) - 5.0E-5 * rtb_n_m;
-  rtb_TmpSignalConversionAtSFunct[1] = (0.01 * rtb_Cos + rtb_GainDynamicLookup_k)
-    - 5.0E-5 * rtb_Cos_a;
-  rtb_TmpSignalConversionAtSFunct[2] = (0.01 * rtb_MatrixMultiply1_idx_2 +
-    rtb_DProdOut_m) - 5.0E-5 * rtb_Cos_n2;
+  rtb_TmpSignalConversionAtSFunct[0] = (navControl.dt_s *
+    rtb_MatrixMultiply1_idx_0 + rtb_GainDynamicLookup_b) - 5.0E-5 * rtb_n_m;
+  rtb_TmpSignalConversionAtSFunct[1] = (navControl.dt_s *
+    rtb_MatrixMultiply1_idx_1 + rtb_GainDynamicLookup_k) - 5.0E-5 * rtb_Cos_k;
+  rtb_TmpSignalConversionAtSFunct[2] = (navControl.dt_s *
+    rtb_MatrixMultiply1_idx_2 + rtb_DProdOut_m) - 5.0E-5 * rtb_Cos_m;
 
   /* Gain: '<S474>/Gain1' incorporates:
    *  Inport: '<Root>/sensor_bus'
@@ -2062,16 +2104,17 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtb_GainDynamicLookup_b = 0.017453292519943295 * rtDW->UnitDelay_15_DSTATE[0];
 
   /* Trigonometry: '<S468>/Cos' */
-  rtb_Cos = cos(rtb_GainDynamicLookup_b);
+  rtb_MatrixMultiply1_idx_1 = cos(rtb_GainDynamicLookup_b);
 
   /* Sum: '<S468>/Sum2' incorporates:
    *  Constant: '<S468>/Constant2'
    *  UnitDelay generated from: '<S408>/Unit Delay'
    */
-  rtb_GainDynamicLookup_b = rtDW->UnitDelay_15_DSTATE[2] + 6.387738375061008E+6;
+  rtb_GainDynamicLookup_b = gpsConversion.N0_m + rtDW->UnitDelay_15_DSTATE[2];
 
   /* Product: '<S468>/Product1' */
-  rtb_Cos = rtb_DProdOut_m * rtb_Cos * rtb_GainDynamicLookup_b;
+  rtb_Cos_k = rtb_DProdOut_m * rtb_MatrixMultiply1_idx_1 *
+    rtb_GainDynamicLookup_b;
 
   /* Gain: '<S473>/Gain1' incorporates:
    *  Inport: '<Root>/sensor_bus'
@@ -2085,7 +2128,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  Constant: '<S468>/Constant'
    *  UnitDelay generated from: '<S408>/Unit Delay'
    */
-  rtb_GainDynamicLookup_b = rtDW->UnitDelay_15_DSTATE[2] + 6.391803464671835E+6;
+  rtb_GainDynamicLookup_b = gpsConversion.M0_m + rtDW->UnitDelay_15_DSTATE[2];
 
   /* Product: '<S468>/Product' */
   rtb_n_m = rtb_DProdOut_m * rtb_GainDynamicLookup_b;
@@ -2103,7 +2146,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S457>/Compare'
    *  Switch: '<S439>/Switch'
    */
-  if (rtb_Compare_p) {
+  if (rtb_LogicalOperator) {
     /* Outputs for IfAction SubSystem: '<S427>/Pos Complementary Filter w//GPS' incorporates:
      *  ActionPort: '<S440>/Action Port'
      */
@@ -2112,12 +2155,12 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      *  Gain: '<S440>/Gain1'
      *  UnaryMinus: '<S413>/Unary Minus'
      */
-    rtb_gyroFilt_rps[0] = 0.19999999999999996 * rtb_n_m + 0.8 *
+    rtb_gyroFilt_rps[0] = (1.0 - navComp.posGain) * rtb_n_m + navComp.posGain *
       rtb_TmpSignalConversionAtSFunct[0];
-    rtb_gyroFilt_rps[1] = 0.19999999999999996 * rtb_Cos + 0.8 *
+    rtb_gyroFilt_rps[1] = (1.0 - navComp.posGain) * rtb_Cos_k + navComp.posGain *
       rtb_TmpSignalConversionAtSFunct[1];
-    rtb_gyroFilt_rps[2] = 0.19999999999999996 * rtb_DProdOut_m + 0.8 *
-      rtb_TmpSignalConversionAtSFunct[2];
+    rtb_gyroFilt_rps[2] = (1.0 - navComp.posGain) * rtb_DProdOut_m +
+      navComp.posGain * rtb_TmpSignalConversionAtSFunct[2];
 
     /* End of Outputs for SubSystem: '<S427>/Pos Complementary Filter w//GPS' */
 
@@ -2131,11 +2174,11 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      *  Gain: '<S439>/Gain2'
      *  Sum: '<S439>/Sum1'
      */
-    rtb_gyroFilt_rps[0] = 0.8 * rtb_TmpSignalConversionAtSFunct[0];
-    rtb_gyroFilt_rps[1] = 0.8 * rtb_TmpSignalConversionAtSFunct[1];
-    rtb_gyroFilt_rps[2] = (0.19999999999999996 *
-      rtb_TmpSignalConversionAtSFunct[2] + 0.8 *
-      rtb_TmpSignalConversionAtSFunct[2]) * 0.8;
+    rtb_gyroFilt_rps[0] = navComp.posGain * rtb_TmpSignalConversionAtSFunct[0];
+    rtb_gyroFilt_rps[1] = navComp.posGain * rtb_TmpSignalConversionAtSFunct[1];
+    rtb_gyroFilt_rps[2] = ((1.0 - navComp.posGain) *
+      rtb_TmpSignalConversionAtSFunct[2] + navComp.posGain *
+      rtb_TmpSignalConversionAtSFunct[2]) * navComp.posGain;
   } else {
     /* Switch: '<S439>/Switch' incorporates:
      *  Gain: '<S439>/Gain'
@@ -2144,8 +2187,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      */
     rtb_gyroFilt_rps[0] = rtb_TmpSignalConversionAtSFunct[0];
     rtb_gyroFilt_rps[1] = rtb_TmpSignalConversionAtSFunct[1];
-    rtb_gyroFilt_rps[2] = 0.19999999999999996 * rtb_TmpSignalConversionAtSFunct
-      [2] + 0.8 * rtb_TmpSignalConversionAtSFunct[2];
+    rtb_gyroFilt_rps[2] = (1.0 - navComp.posGain) *
+      rtb_TmpSignalConversionAtSFunct[2] + navComp.posGain *
+      rtb_TmpSignalConversionAtSFunct[2];
 
     /* End of Outputs for SubSystem: '<S427>/Pos Complementary Filter no GPS' */
   }
@@ -2154,8 +2198,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
 
   /* DiscreteTransferFcn: '<S428>/Accel Filter' */
   rtb_n_m = rtb_accBdyEst_mps2[0] - 0.0 * rtDW->AccelFilter_states_k[0];
-  rtb_Cos_a = rtb_accBdyEst_mps2[1] - 0.0 * rtDW->AccelFilter_states_k[1];
-  rtb_Cos_n2 = rtb_accBdyEst_mps2[2] - 0.0 * rtDW->AccelFilter_states_k[2];
+  rtb_Cos_k = rtb_accBdyEst_mps2[1] - 0.0 * rtDW->AccelFilter_states_k[1];
+  rtb_Cos_m = rtb_accBdyEst_mps2[2] - 0.0 * rtDW->AccelFilter_states_k[2];
 
   /* RelationalOperator: '<S431>/Compare' incorporates:
    *  Constant: '<S431>/Constant'
@@ -2164,6 +2208,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
 
   /* Switch: '<S426>/Switch1' */
   if (rtb_Compare_p) {
+    /* Product: '<S433>/Matrix Multiply' incorporates:
+     *  Constant: '<S433>/Constant'
+     */
+    rtb_MatrixMultiply1_idx_1 = navControl.gravityNed_mps2[1];
+    rtb_MatrixMultiply1_idx_2 = navControl.gravityNed_mps2[0];
+    rtb_MatrixMultiply1_idx_0 = navControl.gravityNed_mps2[2];
+
     /* Switch: '<S426>/Switch1' incorporates:
      *  Constant: '<S433>/Constant'
      *  Delay generated from: '<S426>/Delay2'
@@ -2172,8 +2223,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
      *  Sum: '<S426>/Sum'
      */
     for (i = 0; i < 3; i++) {
-      Switch1[i] = ((rtb_C[i + 3] * 0.0 + rtb_C[i] * 0.0) + rtb_C[i + 6] * 9.81)
-        + rtDW->Delay2_3_DSTATE[i];
+      Switch1[i] = ((rtb_C[i + 3] * rtb_MatrixMultiply1_idx_1 + rtb_C[i] *
+                     rtb_MatrixMultiply1_idx_2) + rtb_C[i + 6] *
+                    rtb_MatrixMultiply1_idx_0) + rtDW->Delay2_3_DSTATE[i];
     }
   } else {
     /* Switch: '<S426>/Switch1' incorporates:
@@ -2186,67 +2238,76 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
 
   /* End of Switch: '<S426>/Switch1' */
 
-  /* DiscreteFir: '<S426>/Discrete FIR Filter1' */
-  rtb_Cos = Switch1[0] * 0.01;
-  for (i = rtDW->DiscreteFIRFilter1_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter1_states[i] * 0.01;
+  /* DiscreteFir: '<S426>/Discrete FIR Filter1' incorporates:
+   *  DiscreteFir: '<S426>/Discrete FIR Filter'
+   */
+  Switch3_idx_2 = 1.0 / navControl.biasWindowSamples;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_2 * Switch1[0];
+  for (i = rtDW->DiscreteFIRFilter1_circBuf; i < 999; i++) {
+    rtb_MatrixMultiply1_idx_1 += Switch3_idx_2 * rtDW->
+      DiscreteFIRFilter1_states[i];
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter1_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter1_states[i] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += Switch3_idx_2 * rtDW->
+      DiscreteFIRFilter1_states[i];
   }
 
-  rtb_MatrixMultiply1_idx_2 = rtb_Cos;
+  rtb_accelBias_mps2[0] = rtb_MatrixMultiply1_idx_1;
 
   /* Switch: '<S426>/Switch' */
   if (rtb_Compare_p) {
     /* Switch: '<S426>/Switch' incorporates:
      *  Delay generated from: '<S426>/Delay2'
      */
-    rtb_MatrixMultiply1_idx_0 = rtDW->Delay2_4_DSTATE[0];
+    rtb_MatrixMultiply1_idx_2 = rtDW->Delay2_4_DSTATE[0];
   } else {
     /* Switch: '<S426>/Switch' incorporates:
      *  UnitDelay: '<S426>/Unit Delay'
      */
-    rtb_MatrixMultiply1_idx_0 = rtDW->UnitDelay_DSTATE[0];
+    rtb_MatrixMultiply1_idx_2 = rtDW->UnitDelay_DSTATE[0];
   }
 
   /* DiscreteFir: '<S426>/Discrete FIR Filter1' */
-  rtb_Cos = Switch1[1] * 0.01;
-  for (i = rtDW->DiscreteFIRFilter1_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter1_states[i + 99] * 0.01;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_2 * Switch1[1];
+  for (i = rtDW->DiscreteFIRFilter1_circBuf; i < 999; i++) {
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter1_states[i + 999] *
+      Switch3_idx_2;
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter1_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter1_states[i + 99] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter1_states[i + 999] *
+      Switch3_idx_2;
   }
 
-  rtb_accelBias_mps2_idx_1 = rtb_Cos;
+  rtb_accelBias_mps2[1] = rtb_MatrixMultiply1_idx_1;
 
   /* Switch: '<S426>/Switch' */
   if (rtb_Compare_p) {
     /* Switch: '<S426>/Switch' incorporates:
      *  Delay generated from: '<S426>/Delay2'
      */
-    Switch_idx_1 = rtDW->Delay2_4_DSTATE[1];
+    rtb_MatrixMultiply1_idx_0 = rtDW->Delay2_4_DSTATE[1];
   } else {
     /* Switch: '<S426>/Switch' incorporates:
      *  UnitDelay: '<S426>/Unit Delay'
      */
-    Switch_idx_1 = rtDW->UnitDelay_DSTATE[1];
+    rtb_MatrixMultiply1_idx_0 = rtDW->UnitDelay_DSTATE[1];
   }
 
   /* DiscreteFir: '<S426>/Discrete FIR Filter1' */
-  rtb_Cos = Switch1[2] * 0.01;
-  for (i = rtDW->DiscreteFIRFilter1_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter1_states[i + 198] * 0.01;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_2 * Switch1[2];
+  for (i = rtDW->DiscreteFIRFilter1_circBuf; i < 999; i++) {
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter1_states[i + 1998] *
+      Switch3_idx_2;
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter1_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter1_states[i + 198] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter1_states[i + 1998] *
+      Switch3_idx_2;
   }
 
-  rtb_accelBias_mps2_idx_2 = rtb_Cos;
+  rtb_accelBias_mps2[2] = rtb_MatrixMultiply1_idx_1;
 
   /* Switch: '<S426>/Switch' */
   if (rtb_Compare_p) {
@@ -2261,20 +2322,27 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
     Switch_idx_2 = rtDW->UnitDelay_DSTATE[2];
   }
 
+  /* Logic: '<S426>/Logical Operator' incorporates:
+   *  Delay generated from: '<S426>/Delay1'
+   */
+  rtb_LogicalOperator_b = (rtb_Compare_p || rtDW->Delay1_6_DSTATE[0]);
+
   /* DiscreteFir: '<S426>/Discrete FIR Filter' */
-  rtb_Cos = rtb_MatrixMultiply1_idx_0 * 0.01;
-  for (i = rtDW->DiscreteFIRFilter_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter_states[i] * 0.01;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_2 * rtb_MatrixMultiply1_idx_2;
+  for (i = rtDW->DiscreteFIRFilter_circBuf; i < 999; i++) {
+    rtb_MatrixMultiply1_idx_1 += Switch3_idx_2 * rtDW->
+      DiscreteFIRFilter_states[i];
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter_states[i] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += Switch3_idx_2 * rtDW->
+      DiscreteFIRFilter_states[i];
   }
 
-  rtb_gyroBias_rps_idx_0 = rtb_Cos;
+  rtb_gyroBias_rps[0] = rtb_MatrixMultiply1_idx_1;
 
   /* Switch: '<S426>/Switch3' */
-  if (rtb_Compare_p) {
+  if (rtb_LogicalOperator_b) {
     /* Switch: '<S426>/Switch3' incorporates:
      *  Delay generated from: '<S426>/Delay2'
      */
@@ -2287,19 +2355,21 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   }
 
   /* DiscreteFir: '<S426>/Discrete FIR Filter' */
-  rtb_Cos = Switch_idx_1 * 0.01;
-  for (i = rtDW->DiscreteFIRFilter_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter_states[i + 99] * 0.01;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_2 * rtb_MatrixMultiply1_idx_0;
+  for (i = rtDW->DiscreteFIRFilter_circBuf; i < 999; i++) {
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter_states[i + 999] *
+      Switch3_idx_2;
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter_states[i + 99] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter_states[i + 999] *
+      Switch3_idx_2;
   }
 
-  rtb_gyroBias_rps_idx_1 = rtb_Cos;
+  rtb_gyroBias_rps[1] = rtb_MatrixMultiply1_idx_1;
 
   /* Switch: '<S426>/Switch3' */
-  if (rtb_Compare_p) {
+  if (rtb_LogicalOperator_b) {
     /* Switch: '<S426>/Switch3' incorporates:
      *  Delay generated from: '<S426>/Delay2'
      */
@@ -2312,19 +2382,21 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   }
 
   /* DiscreteFir: '<S426>/Discrete FIR Filter' */
-  rtb_Cos = Switch_idx_2 * 0.01;
-  for (i = rtDW->DiscreteFIRFilter_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter_states[i + 198] * 0.01;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_2 * Switch_idx_2;
+  for (i = rtDW->DiscreteFIRFilter_circBuf; i < 999; i++) {
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter_states[i + 1998] *
+      Switch3_idx_2;
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter_states[i + 198] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter_states[i + 1998] *
+      Switch3_idx_2;
   }
 
-  rtb_gyroBias_rps_idx_2 = rtb_Cos;
+  rtb_gyroBias_rps[2] = rtb_MatrixMultiply1_idx_1;
 
   /* Switch: '<S426>/Switch3' */
-  if (rtb_Compare_p) {
+  if (rtb_LogicalOperator_b) {
     /* Switch: '<S426>/Switch3' incorporates:
      *  Delay generated from: '<S426>/Delay2'
      */
@@ -2337,36 +2409,36 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   }
 
   /* DiscreteFir: '<S426>/Discrete FIR Filter3' */
-  rtb_Cos = Switch3_idx_0 * 0.01;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_0 * 0.01;
   for (i = rtDW->DiscreteFIRFilter3_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter3_states[i] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter3_states[i] * 0.01;
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter3_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter3_states[i] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter3_states[i] * 0.01;
   }
 
-  rtb_llaBias_na_idx_0 = rtb_Cos;
-  rtb_Cos = Switch3_idx_1 * 0.01;
+  rtb_llaBias_na_idx_0 = rtb_MatrixMultiply1_idx_1;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_1 * 0.01;
   for (i = rtDW->DiscreteFIRFilter3_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter3_states[i + 99] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter3_states[i + 99] * 0.01;
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter3_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter3_states[i + 99] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter3_states[i + 99] * 0.01;
   }
 
-  rtb_llaBias_na_idx_1 = rtb_Cos;
-  rtb_Cos = Switch3_idx_2 * 0.01;
+  rtb_llaBias_na_idx_1 = rtb_MatrixMultiply1_idx_1;
+  rtb_MatrixMultiply1_idx_1 = Switch3_idx_2 * 0.01;
   for (i = rtDW->DiscreteFIRFilter3_circBuf; i < 99; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter3_states[i + 198] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter3_states[i + 198] * 0.01;
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter3_circBuf; i++) {
-    rtb_Cos += rtDW->DiscreteFIRFilter3_states[i + 198] * 0.01;
+    rtb_MatrixMultiply1_idx_1 += rtDW->DiscreteFIRFilter3_states[i + 198] * 0.01;
   }
 
-  rtb_llaBias_na_idx_2 = rtb_Cos;
+  rtb_llaBias_na_idx_2 = rtb_MatrixMultiply1_idx_1;
 
   /* End of DiscreteFir: '<S426>/Discrete FIR Filter3' */
 
@@ -2382,8 +2454,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_DProdOut_m), rtCP__Constant5_Value, rtb_Sum_e,
-                       rtCP__Internalbreakpoints_Value, 2U);
+  LookUp_real_T_real_T( &(rtb_DProdOut_m), &innerLoopParams.fbkGainPitchYawI_na
+                       [0], rtb_Sum_e, &innerLoopParams.fbkGainBreakpoints_Pa[0],
+                       2U);
 
   /* S-Function (sfix_look1_dyn): '<S146>/Gain Dynamic Lookup' incorporates:
    *  Constant: '<S10>/Constant5'
@@ -2397,8 +2470,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_GainDynamicLookup_b), rtCP__Constant5_Value_m,
-                       rtb_Sum_e, rtCP__Internalbreakpoints_Val_f, 2U);
+  LookUp_real_T_real_T( &(rtb_GainDynamicLookup_b),
+                       &innerLoopParams.fbkGainRollI_na[0], rtb_Sum_e,
+                       &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* S-Function (sfix_look1_dyn): '<S216>/Gain Dynamic Lookup' incorporates:
    *  Constant: '<S11>/Constant5'
@@ -2412,8 +2486,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * Lookup Method: Linear_Endpoint
    *
    */
-  LookUp_real_T_real_T( &(rtb_GainDynamicLookup_k), rtCP__Constant5_Value_l,
-                       rtb_Sum_e, rtCP__Internalbreakpoints_Val_d, 2U);
+  LookUp_real_T_real_T( &(rtb_GainDynamicLookup_k),
+                       &innerLoopParams.fbkGainPitchYawI_na[0], rtb_Sum_e,
+                       &innerLoopParams.fbkGainBreakpoints_Pa[0], 2U);
 
   /* Switch: '<S466>/Switch' incorporates:
    *  Constant: '<S466>/Constant4'
@@ -2450,7 +2525,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    * About '<S220>/TSamp':
    *  y = u * K where K = 1 / ( w * Ts )
    *   */
-  rtb_Cos = rtb_Switch2_b * 100.0;
+  rtb_MatrixMultiply1_idx_1 = rtb_Switch2_b * 100.0;
 
   /* Sum: '<S220>/Diff' incorporates:
    *  UnitDelay: '<S220>/UD'
@@ -2463,7 +2538,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *
    *  Store in Global RAM
    */
-  rtb_Switch2_b = rtb_Cos - rtDW->UD_DSTATE_l;
+  rtb_Switch2_b = rtb_MatrixMultiply1_idx_1 - rtDW->UD_DSTATE_l;
 
   /* Logic: '<S156>/Logical Operator1' incorporates:
    *  Constant: '<S11>/Constant'
@@ -2471,7 +2546,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S156>/Relational Operator'
    *  RelationalOperator: '<S156>/Relational Operator1'
    */
-  rtb_LogicalOperator1_j = ((rtb_Switch2_b >= 180.0) || (rtb_Switch2_b <= -180.0));
+  rtb_LogicalOperator_b = ((innerLoopParams.upRateLimitPitchYaw_dps <=
+    rtb_Switch2_b) || (rtb_Switch2_b <= innerLoopParams.loRateLimitPitchYaw_dps));
 
   /* Logic: '<S157>/Logical Operator1' incorporates:
    *  Constant: '<S11>/Constant2'
@@ -2479,15 +2555,16 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S157>/Relational Operator'
    *  RelationalOperator: '<S157>/Relational Operator1'
    */
-  rtb_LogicalOperator_i = ((rtb_Divide_l >= 45.0) || (rtb_Divide_l <= -45.0));
+  rtb_LogicalOperator_l = ((innerLoopParams.upLimitPitchYaw_deg <= rtb_Divide_l)
+    || (rtb_Divide_l <= innerLoopParams.loLimitPitchYaw_deg));
 
   /* Product: '<S190>/IProd Out' incorporates:
    *  Logic: '<S11>/Logical Operator'
    *  Product: '<S153>/Product'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_GainDynamicLookup_k = (real_T)(!rtb_LogicalOperator_i &&
-    !rtb_LogicalOperator1_j) * rtb_GainDynamicLookup_k * (real_T)
+  rtb_GainDynamicLookup_k = (real_T)(!rtb_LogicalOperator_l &&
+    !rtb_LogicalOperator_b) * rtb_GainDynamicLookup_k * (real_T)
     rtDW->UnitDelay_DSTATE_n * rtb_Sum1_j;
 
   /* BusCreator generated from: '<Root>/controller_bus' */
@@ -2496,9 +2573,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtY_controller_bus_f->innerLoop_bus.yawInnerLoop_bus.controlMoment_Nm =
     rtb_Product1_p1;
   rtY_controller_bus_f->innerLoop_bus.yawInnerLoop_bus.rateLimted_b =
-    rtb_LogicalOperator1_j;
+    rtb_LogicalOperator_b;
   rtY_controller_bus_f->innerLoop_bus.yawInnerLoop_bus.saturated_b =
-    rtb_LogicalOperator_i;
+    rtb_LogicalOperator_l;
 
   /* SampleTimeMath: '<S79>/TSamp'
    *
@@ -2526,7 +2603,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S15>/Relational Operator'
    *  RelationalOperator: '<S15>/Relational Operator1'
    */
-  rtb_LogicalOperator1_b = ((rtb_Switch2_b >= 180.0) || (rtb_Switch2_b <= -180.0));
+  rtb_LogicalOperator1_f = ((innerLoopParams.upRateLimitPitchYaw_dps <=
+    rtb_Switch2_b) || (rtb_Switch2_b <= innerLoopParams.loRateLimitPitchYaw_dps));
 
   /* Logic: '<S16>/Logical Operator1' incorporates:
    *  Constant: '<S9>/Constant2'
@@ -2534,7 +2612,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S16>/Relational Operator'
    *  RelationalOperator: '<S16>/Relational Operator1'
    */
-  rtb_LogicalOperator_i = ((rtb_Divide >= 45.0) || (rtb_Divide <= -45.0));
+  rtb_LogicalOperator_l = ((innerLoopParams.upLimitPitchYaw_deg <= rtb_Divide) ||
+    (rtb_Divide <= innerLoopParams.loLimitPitchYaw_deg));
 
   /* BusCreator generated from: '<Root>/controller_bus' */
   rtY_controller_bus_f->innerLoop_bus.pitchInnerLoop_bus.control_deg =
@@ -2542,9 +2621,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtY_controller_bus_f->innerLoop_bus.pitchInnerLoop_bus.controlMoment_Nm =
     rtb_Product1_ad;
   rtY_controller_bus_f->innerLoop_bus.pitchInnerLoop_bus.rateLimted_b =
-    rtb_LogicalOperator1_b;
+    rtb_LogicalOperator1_f;
   rtY_controller_bus_f->innerLoop_bus.pitchInnerLoop_bus.saturated_b =
-    rtb_LogicalOperator_i;
+    rtb_LogicalOperator_l;
 
   /* SampleTimeMath: '<S149>/TSamp'
    *
@@ -2572,7 +2651,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S86>/Relational Operator'
    *  RelationalOperator: '<S86>/Relational Operator1'
    */
-  rtb_LogicalOperator1_j = ((rtb_Switch2_b >= 90.0) || (rtb_Switch2_b <= -90.0));
+  rtb_LogicalOperator_b = ((innerLoopParams.upRateLimitRoll_dps <= rtb_Switch2_b)
+    || (rtb_Switch2_b <= innerLoopParams.loRateLimitRoll_dps));
 
   /* Logic: '<S87>/Logical Operator1' incorporates:
    *  Constant: '<S10>/Constant2'
@@ -2580,7 +2660,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S87>/Relational Operator'
    *  RelationalOperator: '<S87>/Relational Operator1'
    */
-  rtb_LogicalOperator = ((rtb_Gain_a >= 5.0) || (rtb_Gain_a <= -5.0));
+  rtb_LogicalOperator_p = ((innerLoopParams.upLimitRoll_deg <= rtb_Gain_a) ||
+    (rtb_Gain_a <= innerLoopParams.loLimitRoll_deg));
 
   /* BusCreator generated from: '<Root>/controller_bus' */
   rtY_controller_bus_f->innerLoop_bus.rollInnerLoop_bus.control_deg =
@@ -2588,9 +2669,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtY_controller_bus_f->innerLoop_bus.rollInnerLoop_bus.controlMoment_Nm =
     rtb_Product1_o;
   rtY_controller_bus_f->innerLoop_bus.rollInnerLoop_bus.rateLimted_b =
-    rtb_LogicalOperator1_j;
+    rtb_LogicalOperator_b;
   rtY_controller_bus_f->innerLoop_bus.rollInnerLoop_bus.saturated_b =
-    rtb_LogicalOperator;
+    rtb_LogicalOperator_p;
 
   /* SampleTimeMath: '<S284>/TSamp'
    *
@@ -2618,7 +2699,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S229>/Relational Operator'
    *  RelationalOperator: '<S229>/Relational Operator1'
    */
-  rtb_LogicalOperator1 = ((rtb_Switch2_b >= 0.5) || (rtb_Switch2_b <= -0.5));
+  rtb_LogicalOperator1 = ((outerLoopParams.upRateLimitPitchYawRate_rps2 <=
+    rtb_Switch2_b) || (rtb_Switch2_b <=
+                       outerLoopParams.loRateLimitPitchYawRate_rps2));
 
   /* Logic: '<S230>/Logical Operator1' incorporates:
    *  Constant: '<S225>/Constant2'
@@ -2626,7 +2709,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S230>/Relational Operator'
    *  RelationalOperator: '<S230>/Relational Operator1'
    */
-  rtb_LogicalOperator_ni = ((rtb_Product1_j3 >= 0.4) || (rtb_Product1_j3 <= -0.4));
+  rtb_LogicalOperator_a = ((outerLoopParams.upLimitPitchYawRate_rps <=
+    rtb_Product1_j3) || (rtb_Product1_j3 <=
+    outerLoopParams.loLimitPitchYawRate_rps));
 
   /* BusCreator generated from: '<Root>/controller_bus' */
   rtY_controller_bus_f->outerLoop_bus.pitchOuterLoop_bus.rateCmd_rps =
@@ -2634,7 +2719,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtY_controller_bus_f->outerLoop_bus.pitchOuterLoop_bus.rateLimited_b =
     rtb_LogicalOperator1;
   rtY_controller_bus_f->outerLoop_bus.pitchOuterLoop_bus.saturated_b =
-    rtb_LogicalOperator_ni;
+    rtb_LogicalOperator_a;
 
   /* SampleTimeMath: '<S404>/TSamp'
    *
@@ -2662,7 +2747,9 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S349>/Relational Operator'
    *  RelationalOperator: '<S349>/Relational Operator1'
    */
-  rtb_LogicalOperator1_i = ((rtb_Switch2_b >= 0.5) || (rtb_Switch2_b <= -0.5));
+  rtb_LogicalOperator1_kg = ((outerLoopParams.upRateLimitPitchYawRate_rps2 <=
+    rtb_Switch2_b) || (rtb_Switch2_b <=
+                       outerLoopParams.loRateLimitPitchYawRate_rps2));
 
   /* Logic: '<S350>/Logical Operator1' incorporates:
    *  Constant: '<S227>/Constant2'
@@ -2670,15 +2757,17 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S350>/Relational Operator'
    *  RelationalOperator: '<S350>/Relational Operator1'
    */
-  rtb_LogicalOperator_a = ((rtb_Sum2_p >= 0.4) || (rtb_Sum2_p <= -0.4));
+  rtb_LogicalOperator_o = ((outerLoopParams.upLimitPitchYawRate_rps <=
+    rtb_Product1_j) || (rtb_Product1_j <=
+                        outerLoopParams.loLimitPitchYawRate_rps));
 
   /* BusCreator generated from: '<Root>/controller_bus' */
   rtY_controller_bus_f->outerLoop_bus.yawOuterLoop_bus.rateCmd_rps =
     rtb_Integrator_i;
   rtY_controller_bus_f->outerLoop_bus.yawOuterLoop_bus.rateLimited_b =
-    rtb_LogicalOperator1_i;
+    rtb_LogicalOperator1_kg;
   rtY_controller_bus_f->outerLoop_bus.yawOuterLoop_bus.saturated_b =
-    rtb_LogicalOperator_a;
+    rtb_LogicalOperator_o;
 
   /* SampleTimeMath: '<S344>/TSamp'
    *
@@ -2706,7 +2795,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S289>/Relational Operator'
    *  RelationalOperator: '<S289>/Relational Operator1'
    */
-  rtb_LogicalOperator1_a2 = ((rtb_Switch2_b >= 5.0) || (rtb_Switch2_b <= -5.0));
+  rtb_LogicalOperator1_f3 = ((outerLoopParams.upRateLimitRollRate_rps2 <=
+    rtb_Switch2_b) || (rtb_Switch2_b <= outerLoopParams.loRateLimitRollRate_rps2));
 
   /* Logic: '<S290>/Logical Operator1' incorporates:
    *  Constant: '<S226>/Constant2'
@@ -2714,15 +2804,16 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *  RelationalOperator: '<S290>/Relational Operator'
    *  RelationalOperator: '<S290>/Relational Operator1'
    */
-  rtb_LogicalOperator_j = ((rtb_Product1_e >= 2.0) || (rtb_Product1_e <= -2.0));
+  rtb_LogicalOperator_ff = ((outerLoopParams.upLimitRollRate_rps <=
+    rtb_Product1_e) || (rtb_Product1_e <= outerLoopParams.loLimitRollRate_rps));
 
   /* BusCreator generated from: '<Root>/controller_bus' */
   rtY_controller_bus_f->outerLoop_bus.rollOuterLoop_bus.rateCmd_rps =
     rtb_Integrator_b;
   rtY_controller_bus_f->outerLoop_bus.rollOuterLoop_bus.rateLimited_b =
-    rtb_LogicalOperator1_a2;
+    rtb_LogicalOperator1_f3;
   rtY_controller_bus_f->outerLoop_bus.rollOuterLoop_bus.saturated_b =
-    rtb_LogicalOperator_j;
+    rtb_LogicalOperator_ff;
 
   /* BusCreator generated from: '<Root>/controller_bus' incorporates:
    *  Outport: '<Root>/controller_bus'
@@ -2734,48 +2825,49 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
 
   /* Product: '<S323>/IProd Out' incorporates:
    *  Constant: '<S226>/Constant4'
-   *  Constant: '<S2>/Constant'
    *  Logic: '<S226>/Logical Operator'
    *  Product: '<S288>/Product'
-   *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
-   *  Sum: '<S224>/Sum2'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_Sum2_p = (real_T)(!rtb_LogicalOperator_j && !rtb_LogicalOperator1_a2) *
-    2.0 * (real_T)rtDW->UnitDelay_DSTATE_n * (0.0 - rtb_Switch_ft_idx_0);
+  rtb_Sum2_p *= (real_T)(!rtb_LogicalOperator_ff && !rtb_LogicalOperator1_f3) *
+    outerLoopParams.rollGains[1] * (real_T)rtDW->UnitDelay_DSTATE_n;
 
   /* Product: '<S383>/IProd Out' incorporates:
+   *  Constant: '<S227>/Constant4'
    *  Logic: '<S227>/Logical Operator'
    *  Product: '<S348>/Product'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_Product1_e = (real_T)(!rtb_LogicalOperator_a && !rtb_LogicalOperator1_i) *
-    (real_T)rtDW->UnitDelay_DSTATE_n * rtb_Sum3;
+  rtb_Product1_e = (real_T)(!rtb_LogicalOperator_o && !rtb_LogicalOperator1_kg) *
+    outerLoopParams.pitchYawGains[1] * (real_T)rtDW->UnitDelay_DSTATE_n *
+    rtb_Sum3;
 
   /* Product: '<S263>/IProd Out' incorporates:
+   *  Constant: '<S225>/Constant4'
    *  Logic: '<S225>/Logical Operator'
    *  Product: '<S228>/Product'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_Sum4_a *= (real_T)(!rtb_LogicalOperator_ni && !rtb_LogicalOperator1) *
-    (real_T)rtDW->UnitDelay_DSTATE_n;
+  rtb_Sum4_a *= (real_T)(!rtb_LogicalOperator_a && !rtb_LogicalOperator1) *
+    outerLoopParams.pitchYawGains[1] * (real_T)rtDW->UnitDelay_DSTATE_n;
 
   /* Product: '<S120>/IProd Out' incorporates:
    *  Logic: '<S10>/Logical Operator'
    *  Product: '<S83>/Product'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_Product2_l *= (real_T)(!rtb_LogicalOperator && !rtb_LogicalOperator1_j) *
+  rtb_Product2_l *= (real_T)(!rtb_LogicalOperator_p && !rtb_LogicalOperator_b) *
     rtb_GainDynamicLookup_b * (real_T)rtDW->UnitDelay_DSTATE_n;
 
   /* Product: '<S12>/Product' incorporates:
    *  Logic: '<S9>/Logical Operator'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  rtb_Switch2_b = (real_T)(!rtb_LogicalOperator_i && !rtb_LogicalOperator1_b) *
+  rtb_Switch2_b = (real_T)(!rtb_LogicalOperator_l && !rtb_LogicalOperator1_f) *
     rtb_DProdOut_m * (real_T)rtDW->UnitDelay_DSTATE_n;
 
   /* State Transition Table: '<S411>/State Transition Table' incorporates:
+   *  Constant: '<S411>/Constant'
    *  Quat2Angle: '<S429>/Quaternions to Rotation Angles'
    */
   if (rtDW->temporalCounter_i1 < MAX_uint32_T) {
@@ -2795,9 +2887,11 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
         rtDW->temporalCounter_i1 = 0U;
         rtDW->is_c4_autocodeModel = autocod_IN_PastLockoutThreshold;
       } else {
-        rtDW->lockoutThreshold_b = ((fabs(rtb_wBdyEst_rps[1]) > 1.0) || ((fabs
-          (rtb_wBdyEst_rps[2]) > 1.0) || ((fabs(rtb_Switch_ft_idx_1) > 1.0) ||
-          (fabs(rtb_Switch_ft_idx_2) > 1.0))));
+        rtDW->lockoutThreshold_b = ((fabs(rtb_wBdyEst_rps[1]) >
+          navStates.controlTresholdPitchYawRate_rps) || ((fabs(rtb_wBdyEst_rps[2])
+          > navStates.controlTresholdPitchYawRate_rps) || ((fabs
+          (rtb_Switch_ft_idx_1) > navStates.controlTresholdPitchYaw_rad) ||
+          (fabs(rtb_Switch_ft_idx_2) > navStates.controlTresholdPitchYaw_rad))));
       }
       break;
 
@@ -2807,7 +2901,8 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
         rtDW->temporalCounter_i1 = 0U;
         rtDW->is_c4_autocodeModel = autocodeM_IN_PastCoastThreshold;
       } else {
-        rtDW->coastThreshold_b = (rtb_accBdyEst_mps2[0] < 0.0);
+        rtDW->coastThreshold_b = ((navStates.coastThresholdAlt_m < 2000.0) &&
+          (rtb_accBdyEst_mps2[0] < navStates.coastThresholdxAcc_mps2));
       }
       break;
 
@@ -2866,7 +2961,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
           } while (exitg1 == 0);
         }
 
-        rtDW->boostThreshold_b = (rtb_Sum3 > 35.0);
+        rtDW->boostThreshold_b = (rtb_Sum3 > navStates.boostThreshold_mps2);
       }
       break;
 
@@ -2878,12 +2973,14 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
       if (!rtDW->coastThreshold_b) {
         rtDW->is_c4_autocodeModel = autocodeModel_IN_Boost;
         rtDW->flightMode_enum = BOOST;
-      } else if ((real_T)rtDW->temporalCounter_i1 * 0.01 > 0.1) {
+      } else if ((real_T)rtDW->temporalCounter_i1 * 0.01 > navStates.debounce_s)
+      {
         rtDW->is_c4_autocodeModel = autocodeModel_IN_Active;
         rtDW->flightMode_enum = ACTIVE;
         rtDW->lockoutThreshold_b = false;
       } else {
-        rtDW->coastThreshold_b = (rtb_accBdyEst_mps2[0] < 0.0);
+        rtDW->coastThreshold_b = ((navStates.coastThresholdAlt_m < 2000.0) &&
+          (rtb_accBdyEst_mps2[0] < navStates.coastThresholdxAcc_mps2));
       }
       break;
 
@@ -2892,13 +2989,16 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
       if (!rtDW->lockoutThreshold_b) {
         rtDW->is_c4_autocodeModel = autocodeModel_IN_Active;
         rtDW->flightMode_enum = ACTIVE;
-      } else if ((real_T)rtDW->temporalCounter_i1 * 0.01 > 0.1) {
+      } else if ((real_T)rtDW->temporalCounter_i1 * 0.01 > navStates.debounce_s)
+      {
         rtDW->is_c4_autocodeModel = autocodeModel_IN_Lockout;
         rtDW->flightMode_enum = LOCKOUT;
       } else {
-        rtDW->lockoutThreshold_b = ((fabs(rtb_wBdyEst_rps[1]) > 1.0) || ((fabs
-          (rtb_wBdyEst_rps[2]) > 1.0) || ((fabs(rtb_Switch_ft_idx_1) > 1.0) ||
-          (fabs(rtb_Switch_ft_idx_2) > 1.0))));
+        rtDW->lockoutThreshold_b = ((fabs(rtb_wBdyEst_rps[1]) >
+          navStates.controlTresholdPitchYawRate_rps) || ((fabs(rtb_wBdyEst_rps[2])
+          > navStates.controlTresholdPitchYawRate_rps) || ((fabs
+          (rtb_Switch_ft_idx_1) > navStates.controlTresholdPitchYaw_rad) ||
+          (fabs(rtb_Switch_ft_idx_2) > navStates.controlTresholdPitchYaw_rad))));
       }
       break;
     }
@@ -2920,13 +3020,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* End of Switch: '<S426>/Switch2' */
 
   /* DiscreteFir: '<S426>/Discrete FIR Filter2' */
-  rtb_Sum_kk_idx_3 = rtb_Sum3 * 0.01;
-  for (i = rtDW->DiscreteFIRFilter2_circBuf; i < 99; i++) {
-    rtb_Sum_kk_idx_3 += rtDW->DiscreteFIRFilter2_states[i] * 0.01;
+  rtb_Sum_kk_idx_3 = rtb_Sum3 * 0.1;
+  for (i = rtDW->DiscreteFIRFilter2_circBuf; i < 9; i++) {
+    rtb_Sum_kk_idx_3 += rtDW->DiscreteFIRFilter2_states[i] * 0.1;
   }
 
   for (i = 0; i < rtDW->DiscreteFIRFilter2_circBuf; i++) {
-    rtb_Sum_kk_idx_3 += rtDW->DiscreteFIRFilter2_states[i] * 0.01;
+    rtb_Sum_kk_idx_3 += rtDW->DiscreteFIRFilter2_states[i] * 0.1;
   }
 
   /* End of DiscreteFir: '<S426>/Discrete FIR Filter2' */
@@ -2942,27 +3042,27 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtY_navigation_bus_d->qEst_na[1] = rtDW->qEst_na[1];
   rtY_navigation_bus_d->qEst_na[2] = rtDW->qEst_na[2];
   rtY_navigation_bus_d->qEst_na[3] = rtDW->qEst_na[3];
-  rtY_navigation_bus_d->phiEst_rad = rtb_Switch_ft_idx_0;
+  rtY_navigation_bus_d->phiEst_rad = rtb_Switch_ft_idx_3;
   rtY_navigation_bus_d->thetaEst_rad = rtb_Switch_ft_idx_1;
   rtY_navigation_bus_d->psiEst_rad = rtb_Switch_ft_idx_2;
-  rtY_navigation_bus_d->pEst_rps = rtb_Cos_l;
-  rtY_navigation_bus_d->qEst_rps = rtb_Cos_m;
-  rtY_navigation_bus_d->rEst_rps = rtb_Cos_p;
+  rtY_navigation_bus_d->pEst_rps = rtb_Cos;
+  rtY_navigation_bus_d->qEst_rps = rtb_Cos_e;
+  rtY_navigation_bus_d->rEst_rps = rtb_Cos_l;
   rtY_navigation_bus_d->xAccEst_mps2 = 0.5 * rtb_n_m + 0.5 *
     rtDW->AccelFilter_states_k[0];
-  rtY_navigation_bus_d->yAccEst_mps2 = 0.5 * rtb_Cos_a + 0.5 *
+  rtY_navigation_bus_d->yAccEst_mps2 = 0.5 * rtb_Cos_k + 0.5 *
     rtDW->AccelFilter_states_k[1];
-  rtY_navigation_bus_d->zAccEst_mps2 = 0.5 * rtb_Cos_n2 + 0.5 *
+  rtY_navigation_bus_d->zAccEst_mps2 = 0.5 * rtb_Cos_m + 0.5 *
     rtDW->AccelFilter_states_k[2];
   rtY_navigation_bus_d->altitudeBias_m = rtb_Sum_kk_idx_3;
-  rtY_navigation_bus_d->accelBias_mps2[0] = rtb_MatrixMultiply1_idx_2;
-  rtY_navigation_bus_d->gyroBias_rps[0] = rtb_gyroBias_rps_idx_0;
+  rtY_navigation_bus_d->accelBias_mps2[0] = rtb_accelBias_mps2[0];
+  rtY_navigation_bus_d->gyroBias_rps[0] = rtb_gyroBias_rps[0];
   rtY_navigation_bus_d->llaBias_na[0] = rtb_llaBias_na_idx_0;
-  rtY_navigation_bus_d->accelBias_mps2[1] = rtb_accelBias_mps2_idx_1;
-  rtY_navigation_bus_d->gyroBias_rps[1] = rtb_gyroBias_rps_idx_1;
+  rtY_navigation_bus_d->accelBias_mps2[1] = rtb_accelBias_mps2[1];
+  rtY_navigation_bus_d->gyroBias_rps[1] = rtb_gyroBias_rps[1];
   rtY_navigation_bus_d->llaBias_na[1] = rtb_llaBias_na_idx_1;
-  rtY_navigation_bus_d->accelBias_mps2[2] = rtb_accelBias_mps2_idx_2;
-  rtY_navigation_bus_d->gyroBias_rps[2] = rtb_gyroBias_rps_idx_2;
+  rtY_navigation_bus_d->accelBias_mps2[2] = rtb_accelBias_mps2[2];
+  rtY_navigation_bus_d->gyroBias_rps[2] = rtb_gyroBias_rps[2];
   rtY_navigation_bus_d->llaBias_na[2] = rtb_llaBias_na_idx_2;
   rtY_navigation_bus_d->dynPressureEst_Pa = rtb_Sum_e;
   rtY_navigation_bus_d->xVelEstNed_mps = rtb_MathFunction_idx_0;
@@ -3005,81 +3105,36 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
 
   /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
   rtDW->UnitDelay_19_DSTATE = rtb_MathFunction_idx_2;
+  for (i = 0; i < 3; i++) {
+    /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
+    rtDW->UnitDelay_13_DSTATE[i] = rtb_gyroBias_rps[i];
 
-  /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
-  rtDW->UnitDelay_13_DSTATE[0] = rtb_gyroBias_rps_idx_0;
+    /* Update for DiscreteTransferFcn: '<S409>/Discrete Transfer Fcn1' */
+    uIdx = i * 3;
+    rtDW->DiscreteTransferFcn1_states[uIdx + 2] =
+      rtDW->DiscreteTransferFcn1_states[uIdx + 1];
+    rtDW->DiscreteTransferFcn1_states[uIdx + 1] =
+      rtDW->DiscreteTransferFcn1_states[uIdx];
+    rtDW->DiscreteTransferFcn1_states[uIdx] = DiscreteTransferFcn1_tmp[i];
 
-  /* Update for DiscreteTransferFcn: '<S409>/Discrete Transfer Fcn1' */
-  rtDW->DiscreteTransferFcn1_states[1] = rtDW->DiscreteTransferFcn1_states[0];
-  rtDW->DiscreteTransferFcn1_states[0] = DiscreteTransferFcn1_tmp[0];
+    /* Update for DiscreteTransferFcn: '<S428>/Gyro Filter' */
+    rtDW->GyroFilter_states[i] = GyroFilter_tmp[i];
 
-  /* Update for DiscreteTransferFcn: '<S428>/Gyro Filter' */
-  rtDW->GyroFilter_states[0] = rtb_Cos_e;
+    /* Update for UnitDelay: '<S477>/UD' incorporates:
+     *  Inport: '<Root>/sensor_bus'
+     *
+     * Block description for '<S477>/UD':
+     *
+     *  Store in Global RAM
+     */
+    rtDW->UD_DSTATE[i] = rtU_sensor_bus_e->gpsLLA_na[i];
 
-  /* Update for UnitDelay: '<S477>/UD' incorporates:
-   *  Inport: '<Root>/sensor_bus'
-   *
-   * Block description for '<S477>/UD':
-   *
-   *  Store in Global RAM
-   */
-  rtDW->UD_DSTATE[0] = rtU_sensor_bus_e->gpsLLA_na[0];
+    /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
+    rtDW->UnitDelay_12_DSTATE[i] = rtb_accelBias_mps2[i];
 
-  /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
-  rtDW->UnitDelay_12_DSTATE[0] = rtb_MatrixMultiply1_idx_2;
-
-  /* Update for DiscreteTransferFcn: '<S409>/Accel Filter' */
-  rtDW->AccelFilter_states[0] = AccelFilter_tmp[0];
-
-  /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
-  rtDW->UnitDelay_13_DSTATE[1] = rtb_gyroBias_rps_idx_1;
-
-  /* Update for DiscreteTransferFcn: '<S409>/Discrete Transfer Fcn1' */
-  rtDW->DiscreteTransferFcn1_states[3] = rtDW->DiscreteTransferFcn1_states[2];
-  rtDW->DiscreteTransferFcn1_states[2] = DiscreteTransferFcn1_tmp[1];
-
-  /* Update for DiscreteTransferFcn: '<S428>/Gyro Filter' */
-  rtDW->GyroFilter_states[1] = rtb_Cos_k;
-
-  /* Update for UnitDelay: '<S477>/UD' incorporates:
-   *  Inport: '<Root>/sensor_bus'
-   *
-   * Block description for '<S477>/UD':
-   *
-   *  Store in Global RAM
-   */
-  rtDW->UD_DSTATE[1] = rtU_sensor_bus_e->gpsLLA_na[1];
-
-  /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
-  rtDW->UnitDelay_12_DSTATE[1] = rtb_accelBias_mps2_idx_1;
-
-  /* Update for DiscreteTransferFcn: '<S409>/Accel Filter' */
-  rtDW->AccelFilter_states[1] = AccelFilter_tmp[1];
-
-  /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
-  rtDW->UnitDelay_13_DSTATE[2] = rtb_gyroBias_rps_idx_2;
-
-  /* Update for DiscreteTransferFcn: '<S409>/Discrete Transfer Fcn1' */
-  rtDW->DiscreteTransferFcn1_states[5] = rtDW->DiscreteTransferFcn1_states[4];
-  rtDW->DiscreteTransferFcn1_states[4] = DiscreteTransferFcn1_tmp[2];
-
-  /* Update for DiscreteTransferFcn: '<S428>/Gyro Filter' */
-  rtDW->GyroFilter_states[2] = rtb_Cos_cn;
-
-  /* Update for UnitDelay: '<S477>/UD' incorporates:
-   *  Inport: '<Root>/sensor_bus'
-   *
-   * Block description for '<S477>/UD':
-   *
-   *  Store in Global RAM
-   */
-  rtDW->UD_DSTATE[2] = rtU_sensor_bus_e->gpsLLA_na[2];
-
-  /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
-  rtDW->UnitDelay_12_DSTATE[2] = rtb_accelBias_mps2_idx_2;
-
-  /* Update for DiscreteTransferFcn: '<S409>/Accel Filter' */
-  rtDW->AccelFilter_states[2] = AccelFilter_tmp[2];
+    /* Update for DiscreteTransferFcn: '<S409>/Accel Filter' */
+    rtDW->AccelFilter_states[i] = AccelFilter_tmp[i];
+  }
 
   /* Update for DiscreteIntegrator: '<S123>/Integrator' */
   rtDW->Integrator_DSTATE_b += 0.01 * rtb_Product2_l;
@@ -3152,13 +3207,13 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtDW->UnitDelay_15_DSTATE[1] = rtb_llaBias_na_idx_1;
 
   /* Update for DiscreteTransferFcn: '<S428>/Accel Filter' */
-  rtDW->AccelFilter_states_k[1] = rtb_Cos_a;
+  rtDW->AccelFilter_states_k[1] = rtb_Cos_k;
 
   /* Update for UnitDelay generated from: '<S408>/Unit Delay' */
   rtDW->UnitDelay_15_DSTATE[2] = rtb_llaBias_na_idx_2;
 
   /* Update for DiscreteTransferFcn: '<S428>/Accel Filter' */
-  rtDW->AccelFilter_states_k[2] = rtb_Cos_n2;
+  rtDW->AccelFilter_states_k[2] = rtb_Cos_m;
 
   /* Update for Delay generated from: '<S426>/Delay2' incorporates:
    *  Inport: '<Root>/sensor_bus'
@@ -3179,7 +3234,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtDW->Delay2_3_DSTATE[1497] = rtU_sensor_bus_e->fBdyMeas_mps2[0];
 
   /* Update for UnitDelay: '<S426>/Unit Delay1' */
-  rtDW->UnitDelay1_DSTATE[0] = rtb_MatrixMultiply1_idx_2;
+  rtDW->UnitDelay1_DSTATE[0] = rtb_accelBias_mps2[0];
 
   /* Update for Delay generated from: '<S426>/Delay2' incorporates:
    *  Inport: '<Root>/sensor_bus'
@@ -3187,7 +3242,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtDW->Delay2_3_DSTATE[1498] = rtU_sensor_bus_e->fBdyMeas_mps2[1];
 
   /* Update for UnitDelay: '<S426>/Unit Delay1' */
-  rtDW->UnitDelay1_DSTATE[1] = rtb_accelBias_mps2_idx_1;
+  rtDW->UnitDelay1_DSTATE[1] = rtb_accelBias_mps2[1];
 
   /* Update for Delay generated from: '<S426>/Delay2' incorporates:
    *  Inport: '<Root>/sensor_bus'
@@ -3195,20 +3250,20 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtDW->Delay2_3_DSTATE[1499] = rtU_sensor_bus_e->fBdyMeas_mps2[2];
 
   /* Update for UnitDelay: '<S426>/Unit Delay1' */
-  rtDW->UnitDelay1_DSTATE[2] = rtb_accelBias_mps2_idx_2;
+  rtDW->UnitDelay1_DSTATE[2] = rtb_accelBias_mps2[2];
 
   /* Update for DiscreteFir: '<S426>/Discrete FIR Filter1' */
   /* Update circular buffer index */
   rtDW->DiscreteFIRFilter1_circBuf--;
   if (rtDW->DiscreteFIRFilter1_circBuf < 0) {
-    rtDW->DiscreteFIRFilter1_circBuf = 98;
+    rtDW->DiscreteFIRFilter1_circBuf = 998;
   }
 
   /* Update circular buffer */
   rtDW->DiscreteFIRFilter1_states[rtDW->DiscreteFIRFilter1_circBuf] = Switch1[0];
-  rtDW->DiscreteFIRFilter1_states[rtDW->DiscreteFIRFilter1_circBuf + 99] =
+  rtDW->DiscreteFIRFilter1_states[rtDW->DiscreteFIRFilter1_circBuf + 999] =
     Switch1[1];
-  rtDW->DiscreteFIRFilter1_states[rtDW->DiscreteFIRFilter1_circBuf + 198] =
+  rtDW->DiscreteFIRFilter1_states[rtDW->DiscreteFIRFilter1_circBuf + 1998] =
     Switch1[2];
 
   /* End of Update for DiscreteFir: '<S426>/Discrete FIR Filter1' */
@@ -3226,7 +3281,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtDW->Delay2_4_DSTATE[1497] = rtU_sensor_bus_e->wBdyMeas_rps[0];
 
   /* Update for UnitDelay: '<S426>/Unit Delay' */
-  rtDW->UnitDelay_DSTATE[0] = rtb_gyroBias_rps_idx_0;
+  rtDW->UnitDelay_DSTATE[0] = rtb_gyroBias_rps[0];
 
   /* Update for Delay generated from: '<S426>/Delay2' incorporates:
    *  Inport: '<Root>/sensor_bus'
@@ -3234,7 +3289,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtDW->Delay2_4_DSTATE[1498] = rtU_sensor_bus_e->wBdyMeas_rps[1];
 
   /* Update for UnitDelay: '<S426>/Unit Delay' */
-  rtDW->UnitDelay_DSTATE[1] = rtb_gyroBias_rps_idx_1;
+  rtDW->UnitDelay_DSTATE[1] = rtb_gyroBias_rps[1];
 
   /* Update for Delay generated from: '<S426>/Delay2' incorporates:
    *  Inport: '<Root>/sensor_bus'
@@ -3242,54 +3297,48 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   rtDW->Delay2_4_DSTATE[1499] = rtU_sensor_bus_e->wBdyMeas_rps[2];
 
   /* Update for UnitDelay: '<S426>/Unit Delay' */
-  rtDW->UnitDelay_DSTATE[2] = rtb_gyroBias_rps_idx_2;
+  rtDW->UnitDelay_DSTATE[2] = rtb_gyroBias_rps[2];
 
   /* Update for DiscreteFir: '<S426>/Discrete FIR Filter' */
   /* Update circular buffer index */
   rtDW->DiscreteFIRFilter_circBuf--;
   if (rtDW->DiscreteFIRFilter_circBuf < 0) {
-    rtDW->DiscreteFIRFilter_circBuf = 98;
+    rtDW->DiscreteFIRFilter_circBuf = 998;
   }
 
   /* Update circular buffer */
   rtDW->DiscreteFIRFilter_states[rtDW->DiscreteFIRFilter_circBuf] =
+    rtb_MatrixMultiply1_idx_2;
+  rtDW->DiscreteFIRFilter_states[rtDW->DiscreteFIRFilter_circBuf + 999] =
     rtb_MatrixMultiply1_idx_0;
-  rtDW->DiscreteFIRFilter_states[rtDW->DiscreteFIRFilter_circBuf + 99] =
-    Switch_idx_1;
-  rtDW->DiscreteFIRFilter_states[rtDW->DiscreteFIRFilter_circBuf + 198] =
+  rtDW->DiscreteFIRFilter_states[rtDW->DiscreteFIRFilter_circBuf + 1998] =
     Switch_idx_2;
 
   /* End of Update for DiscreteFir: '<S426>/Discrete FIR Filter' */
-
-  /* Update for Delay generated from: '<S426>/Delay2' incorporates:
-   *  Inport: '<Root>/sensor_bus'
-   */
   for (i = 0; i < 499; i++) {
+    /* Update for Delay generated from: '<S426>/Delay2' */
     uIdx = (i + 1) * 3;
     rtDW->Delay2_8_DSTATE[i * 3] = rtDW->Delay2_8_DSTATE[uIdx];
     rtDW->Delay2_8_DSTATE[i * 3 + 1] = rtDW->Delay2_8_DSTATE[uIdx + 1];
     rtDW->Delay2_8_DSTATE[i * 3 + 2] = rtDW->Delay2_8_DSTATE[uIdx + 2];
+
+    /* Update for Delay generated from: '<S426>/Delay1' */
+    rtDW->Delay1_6_DSTATE[i] = rtDW->Delay1_6_DSTATE[i + 1];
   }
 
+  /* Update for Delay generated from: '<S426>/Delay2' incorporates:
+   *  Inport: '<Root>/sensor_bus'
+   */
   rtDW->Delay2_8_DSTATE[1497] = rtU_sensor_bus_e->gpsLLA_na[0];
+  rtDW->Delay2_8_DSTATE[1498] = rtU_sensor_bus_e->gpsLLA_na[1];
+  rtDW->Delay2_8_DSTATE[1499] = rtU_sensor_bus_e->gpsLLA_na[2];
+
+  /* Update for Delay generated from: '<S426>/Delay1' */
+  rtDW->Delay1_6_DSTATE[499] = rtb_LogicalOperator;
 
   /* Update for UnitDelay: '<S426>/Unit Delay3' */
   rtDW->UnitDelay3_DSTATE[0] = rtb_llaBias_na_idx_0;
-
-  /* Update for Delay generated from: '<S426>/Delay2' incorporates:
-   *  Inport: '<Root>/sensor_bus'
-   */
-  rtDW->Delay2_8_DSTATE[1498] = rtU_sensor_bus_e->gpsLLA_na[1];
-
-  /* Update for UnitDelay: '<S426>/Unit Delay3' */
   rtDW->UnitDelay3_DSTATE[1] = rtb_llaBias_na_idx_1;
-
-  /* Update for Delay generated from: '<S426>/Delay2' incorporates:
-   *  Inport: '<Root>/sensor_bus'
-   */
-  rtDW->Delay2_8_DSTATE[1499] = rtU_sensor_bus_e->gpsLLA_na[2];
-
-  /* Update for UnitDelay: '<S426>/Unit Delay3' */
   rtDW->UnitDelay3_DSTATE[2] = rtb_llaBias_na_idx_2;
 
   /* Update for DiscreteFir: '<S426>/Discrete FIR Filter3' */
@@ -3315,7 +3364,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
    *
    *  Store in Global RAM
    */
-  rtDW->UD_DSTATE_l = rtb_Cos;
+  rtDW->UD_DSTATE_l = rtb_MatrixMultiply1_idx_1;
 
   /* Update for UnitDelay: '<S79>/UD'
    *
@@ -3364,7 +3413,7 @@ void autocodeModel_step(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* Update circular buffer index */
   rtDW->DiscreteFIRFilter2_circBuf--;
   if (rtDW->DiscreteFIRFilter2_circBuf < 0) {
-    rtDW->DiscreteFIRFilter2_circBuf = 98;
+    rtDW->DiscreteFIRFilter2_circBuf = 8;
   }
 
   /* Update circular buffer */
@@ -3413,10 +3462,10 @@ void autocodeModel_initialize(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   }
 
   /* InitializeConditions for UnitDelay generated from: '<S408>/Unit Delay' */
-  rtDW->UnitDelay_2_DSTATE[0] = 0.707106781187;
-  rtDW->UnitDelay_2_DSTATE[1] = 0.0;
-  rtDW->UnitDelay_2_DSTATE[2] = 0.707106781187;
-  rtDW->UnitDelay_2_DSTATE[3] = 0.0;
+  rtDW->UnitDelay_2_DSTATE[0] = navControl.navIC_bus.qEst_na[0];
+  rtDW->UnitDelay_2_DSTATE[1] = navControl.navIC_bus.qEst_na[1];
+  rtDW->UnitDelay_2_DSTATE[2] = navControl.navIC_bus.qEst_na[2];
+  rtDW->UnitDelay_2_DSTATE[3] = navControl.navIC_bus.qEst_na[3];
 
   /* InitializeConditions for Delay: '<S345>/Delay' */
   rtDW->icLoad = true;
@@ -3442,21 +3491,19 @@ void autocodeModel_initialize(RT_MODEL *const rtM, sensor_bus *rtU_sensor_bus_e,
   /* InitializeConditions for DiscreteFir: '<S426>/Discrete FIR Filter' */
   rtDW->DiscreteFIRFilter_circBuf = 0;
 
-  /* InitializeConditions for DiscreteFir: '<S426>/Discrete FIR Filter3' */
-  rtDW->DiscreteFIRFilter3_circBuf = 0;
-
   /* InitializeConditions for DiscreteFir: '<S426>/Discrete FIR Filter1' */
-  memset(&rtDW->DiscreteFIRFilter1_states[0], 0, 297U * sizeof(real_T));
+  memset(&rtDW->DiscreteFIRFilter1_states[0], 0, 2997U * sizeof(real_T));
 
   /* InitializeConditions for DiscreteFir: '<S426>/Discrete FIR Filter' */
-  memset(&rtDW->DiscreteFIRFilter_states[0], 0, 297U * sizeof(real_T));
+  memset(&rtDW->DiscreteFIRFilter_states[0], 0, 2997U * sizeof(real_T));
 
   /* InitializeConditions for DiscreteFir: '<S426>/Discrete FIR Filter3' */
+  rtDW->DiscreteFIRFilter3_circBuf = 0;
   memset(&rtDW->DiscreteFIRFilter3_states[0], 0, 297U * sizeof(real_T));
 
   /* InitializeConditions for DiscreteFir: '<S426>/Discrete FIR Filter2' */
   rtDW->DiscreteFIRFilter2_circBuf = 0;
-  memset(&rtDW->DiscreteFIRFilter2_states[0], 0, 99U * sizeof(real_T));
+  memset(&rtDW->DiscreteFIRFilter2_states[0], 0, 9U * sizeof(real_T));
 
   /* SystemInitialize for Merge: '<S427>/Merge' */
   rtDW->qEst_na[0] = 0.0;

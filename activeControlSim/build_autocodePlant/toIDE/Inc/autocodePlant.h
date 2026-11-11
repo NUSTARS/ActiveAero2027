@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Nov  4 17:25:23 2026
+ * C/C++ source code generated on : Tue Nov 10 19:36:56 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -33,6 +33,9 @@
 #include "rtGetInf.h"
 #include "rtGetNaN.h"
 #include "rt_defines.h"
+
+/* Includes for objects with custom storage classes */
+#include "autocodePlantParams_calibration.h"
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus
@@ -69,33 +72,68 @@
 
 /* Block signals (default storage) */
 typedef struct {
-  real_T biasnoise[3];                 /* '<S170>/bias + noise' */
-  real_T Delay;                        /* '<S6>/Delay' */
+  real_T UnitConversion;               /* '<S119>/Unit Conversion' */
+  real_T sigma_wg;                     /* '<S138>/sigma_wg ' */
   real_T Product[4];                   /* '<S130>/Product' */
+  real_T UnitConversion_e;             /* '<S123>/Unit Conversion' */
+  real_T Subtract1[3];                 /* '<S9>/Subtract1' */
+  real_T Subtract1_m[3];               /* '<S10>/Subtract1' */
+  real_T Windspeedatreferenceheight[3];
+                                   /* '<S118>/Wind speed at reference height' */
+  real_T Sum;                          /* '<S53>/Sum' */
+  real_T Sum_c;                        /* '<S54>/Sum' */
+  real_T Sum_b;                        /* '<S55>/Sum' */
+  real_T Sum_m;                        /* '<S47>/Sum' */
+  real_T Sum_b1;                       /* '<S48>/Sum' */
+  real_T Sum_k;                        /* '<S49>/Sum' */
+  real_T Sum2[3];                      /* '<S10>/Sum2' */
   real_T Backlash[4];                  /* '<S7>/Backlash' */
-  real_T Sum[3];                       /* '<S162>/Sum' */
-  real_T fBdy_mps2[3];                 /* '<S170>/fBdy_mps2' */
-  real_T Output[3];                    /* '<S190>/Output' */
+  real_T Sum_bx;                       /* '<S33>/Sum' */
+  real_T Sum_l;                        /* '<S34>/Sum' */
+  real_T Sum_cx;                       /* '<S35>/Sum' */
+  real_T Sum_f;                        /* '<S27>/Sum' */
+  real_T Sum_i;                        /* '<S28>/Sum' */
+  real_T Sum_e;                        /* '<S29>/Sum' */
+  real_T Sum2_i[3];                    /* '<S9>/Sum2' */
+  real_T Subtract1_k[3];               /* '<S11>/Subtract1' */
+  real_T Sum_a;                        /* '<S73>/Sum' */
+  real_T Sum_ia;                       /* '<S74>/Sum' */
+  real_T Sum_bt;                       /* '<S75>/Sum' */
+  real_T Sum_o;                        /* '<S67>/Sum' */
+  real_T Sum_er;                       /* '<S68>/Sum' */
+  real_T Sum_g;                        /* '<S69>/Sum' */
+  real_T Sum2_iw[3];                   /* '<S11>/Sum2' */
+  real_T Subtract1_j[3];               /* '<S12>/Subtract1' */
+  real_T Sum_d;                        /* '<S93>/Sum' */
+  real_T Sum_o3;                       /* '<S94>/Sum' */
+  real_T Sum_j;                        /* '<S95>/Sum' */
+  real_T Sum_dm;                       /* '<S87>/Sum' */
+  real_T Sum_b4;                       /* '<S88>/Sum' */
+  real_T Sum_ln;                       /* '<S89>/Sum' */
+  real_T Sum2_a[3];                    /* '<S12>/Sum2' */
   real_T Switch;                       /* '<S209>/Switch' */
   real_T Merge;                        /* '<S211>/Merge' */
   real_T Switch_l;                     /* '<S208>/Switch' */
   real_T olat;                         /* '<S221>/olat' */
   real_T Gain;                         /* '<S189>/Gain' */
   real_T oalt;                         /* '<S221>/oalt' */
-  real_T Output_g;                     /* '<S185>/Output' */
   real_T Product_h[3];                 /* '<S162>/Product' */
-  real_T Output_o[3];                  /* '<S176>/Output' */
-  real_T Output_n;                     /* '<S184>/Output' */
-  real_T Output_e[3];                  /* '<S186>/Output' */
+  real_T Delay;                        /* '<S6>/Delay' */
+  real_T Sum_ah[3];                    /* '<S162>/Sum' */
+  real_T fBdy_mps2[3];                 /* '<S170>/fBdy_mps2' */
   real_T DiscreteTransferFcn;          /* '<S174>/Discrete Transfer Fcn' */
   real_T DiscreteTransferFcn1;         /* '<S174>/Discrete Transfer Fcn1' */
-  real_T DiscreteTransferFcn2_b;       /* '<S174>/Discrete Transfer Fcn2' */
+  real_T DiscreteTransferFcn2;         /* '<S174>/Discrete Transfer Fcn2' */
   real_T DiscreteTransferFcn3;         /* '<S174>/Discrete Transfer Fcn3' */
   real_T DiscreteTransferFcn4;         /* '<S174>/Discrete Transfer Fcn4' */
   real_T DiscreteTransferFcn5;         /* '<S174>/Discrete Transfer Fcn5' */
   real_T FlatEarthtoLLA_o1[2];         /* '<S174>/Flat Earth to LLA' */
-  real_T RateTransition[6];            /* '<S174>/Rate Transition' */
   real_T ZeroOrderHold[6];             /* '<S174>/Zero-Order Hold' */
+  real_T Output_g;                     /* '<S185>/Output' */
+  real_T Output_o[3];                  /* '<S176>/Output' */
+  real_T Output_e[3];                  /* '<S186>/Output' */
+  real_T Output_n;                     /* '<S184>/Output' */
+  real_T RateTransition[6];            /* '<S174>/Rate Transition' */
   real_T OutportBufferForcp13[13];
   real_T OutportBufferForsp13[13];
   real_T Assignment[11];               /* '<S266>/Assignment' */
@@ -130,32 +168,35 @@ typedef struct {
   real_T w_g[2];                       /* '<S133>/w' */
   real_T w_j5[2];                      /* '<S132>/w' */
   real_T UnaryMinus[2];                /* '<S132>/Unary Minus' */
+  real_T w4;                           /* '<S131>/w4' */
+  real_T u16;                          /* '<S131>/u^1//6' */
   real_T w_p[2];                       /* '<S131>/w' */
   real_T sigma_w[2];                   /* '<S131>/sigma_w' */
-  boolean_T RelationalOperator_f;      /* '<S174>/Relational Operator' */
+  boolean_T RelationalOperator;        /* '<S174>/Relational Operator' */
+  boolean_T RateTransition1;           /* '<S174>/Rate Transition1' */
 } B_autocodePlant_T;
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
-  real_T DiscreteTransferFcn_states;   /* '<S172>/Discrete Transfer Fcn' */
-  real_T DiscreteTransferFcn1_states;  /* '<S172>/Discrete Transfer Fcn1' */
-  real_T DiscreteTransferFcn2_states;  /* '<S172>/Discrete Transfer Fcn2' */
-  real_T DiscreteTransferFcn2_states_k;/* '<S170>/Discrete Transfer Fcn2' */
-  real_T DiscreteTransferFcn1_states_a;/* '<S170>/Discrete Transfer Fcn1' */
+  real_T Delay_DSTATE[90];             /* '<S174>/Delay' */
+  real_T UnitDelay_DSTATE[6];          /* '<S174>/Unit Delay' */
+  real_T UnitDelay_DSTATE_h[4];        /* '<S7>/Unit Delay' */
+  real_T Delay_DSTATE_h[2000];         /* '<S6>/Delay' */
+  real_T DiscreteTransferFcn2_states;  /* '<S170>/Discrete Transfer Fcn2' */
+  real_T DiscreteTransferFcn1_states;  /* '<S170>/Discrete Transfer Fcn1' */
   real_T DiscreteTransferFcn3_states;  /* '<S170>/Discrete Transfer Fcn3' */
-  real_T Delay_DSTATE[1200];           /* '<S6>/Delay' */
-  real_T UnitDelay_DSTATE[4];          /* '<S7>/Unit Delay' */
   real_T UnitDelay_DSTATE_c[3];        /* '<S172>/Unit Delay' */
-  real_T DiscreteTransferFcn2_states_h;/* '<S171>/Discrete Transfer Fcn2' */
-  real_T Delay_DSTATE_o[90];           /* '<S174>/Delay' */
-  real_T UnitDelay_DSTATE_a[6];        /* '<S174>/Unit Delay' */
-  real_T UnitDelay_DSTATE_i;           /* '<S169>/Unit Delay' */
+  real_T DiscreteTransferFcn_states;   /* '<S172>/Discrete Transfer Fcn' */
+  real_T DiscreteTransferFcn1_states_b;/* '<S172>/Discrete Transfer Fcn1' */
+  real_T DiscreteTransferFcn2_states_g;/* '<S172>/Discrete Transfer Fcn2' */
   real_T DiscreteTransferFcn_states_k; /* '<S174>/Discrete Transfer Fcn' */
-  real_T DiscreteTransferFcn1_states_b;/* '<S174>/Discrete Transfer Fcn1' */
+  real_T DiscreteTransferFcn1_states_bi;/* '<S174>/Discrete Transfer Fcn1' */
   real_T DiscreteTransferFcn2_states_d;/* '<S174>/Discrete Transfer Fcn2' */
   real_T DiscreteTransferFcn3_states_g;/* '<S174>/Discrete Transfer Fcn3' */
   real_T DiscreteTransferFcn4_states;  /* '<S174>/Discrete Transfer Fcn4' */
   real_T DiscreteTransferFcn5_states;  /* '<S174>/Discrete Transfer Fcn5' */
+  real_T DiscreteTransferFcn2_states_h;/* '<S171>/Discrete Transfer Fcn2' */
+  real_T UnitDelay_DSTATE_i;           /* '<S169>/Unit Delay' */
   real_T UnitDelay1_DSTATE[2];         /* '<S266>/Unit Delay1' */
   real_T UnitDelay2_DSTATE[4];         /* '<S217>/Unit Delay2' */
   real_T UnitDelay_DSTATE_e[169];      /* '<S228>/Unit Delay' */
@@ -163,56 +204,56 @@ typedef struct {
   real_T UnitDelay_DSTATE_o[169];      /* '<S227>/Unit Delay' */
   real_T UnitDelay1_DSTATE_c[169];     /* '<S227>/Unit Delay1' */
   real_T UnitDelay1_DSTATE_b[13];      /* '<S229>/Unit Delay1' */
-  real_T NextOutput;                   /* '<S177>/White Noise' */
-  real_T NextOutput_d[4];              /* '<S130>/White Noise' */
+  real_T NextOutput[4];                /* '<S130>/White Noise' */
+  real_T UniformRandomNumber_NextOutput;/* '<S174>/Uniform Random Number' */
   real_T PrevY[4];                     /* '<S7>/Backlash' */
-  real_T NextOutput_i;                 /* '<S187>/White Noise' */
-  real_T NextOutput_b;                 /* '<S190>/White Noise' */
   real_T otime_PreviousInput;          /* '<S223>/otime' */
   real_T olon_PreviousInput;           /* '<S222>/olon' */
   real_T olat_PreviousInput;           /* '<S221>/olat' */
   real_T oalt_PreviousInput;           /* '<S221>/oalt' */
-  real_T NextOutput_e;                 /* '<S185>/White Noise' */
-  real_T UniformRandomNumber_NextOutput;/* '<S174>/Uniform Random Number' */
-  real_T NextOutput_k;                 /* '<S176>/White Noise' */
-  real_T NextOutput_m;                 /* '<S184>/White Noise' */
-  real_T NextOutput_a;                 /* '<S186>/White Noise' */
-  real_T NextOutput_kf;                /* '<S274>/White Noise' */
-  real_T NextOutput_n;                 /* '<S275>/White Noise' */
+  real_T NextOutput_f;                 /* '<S177>/White Noise' */
+  real_T NextOutput_b;                 /* '<S190>/White Noise' */
+  real_T NextOutput_i;                 /* '<S187>/White Noise' */
   real_T NextOutput_h;                 /* '<S276>/White Noise' */
-  real_T NextOutput_md;                /* '<S277>/White Noise' */
-  real_T NextOutput_av;                /* '<S278>/White Noise' */
-  real_T NextOutput_p;                 /* '<S279>/White Noise' */
   real_T DiscreteTransferFcn_tmp;      /* '<S174>/Discrete Transfer Fcn' */
+  real_T NextOutput_m;                 /* '<S277>/White Noise' */
   real_T DiscreteTransferFcn1_tmp;     /* '<S174>/Discrete Transfer Fcn1' */
+  real_T NextOutput_a;                 /* '<S278>/White Noise' */
   real_T DiscreteTransferFcn2_tmp;     /* '<S174>/Discrete Transfer Fcn2' */
+  real_T NextOutput_k;                 /* '<S274>/White Noise' */
   real_T DiscreteTransferFcn3_tmp;     /* '<S174>/Discrete Transfer Fcn3' */
+  real_T NextOutput_n;                 /* '<S275>/White Noise' */
   real_T DiscreteTransferFcn4_tmp;     /* '<S174>/Discrete Transfer Fcn4' */
+  real_T NextOutput_p;                 /* '<S279>/White Noise' */
   real_T DiscreteTransferFcn5_tmp;     /* '<S174>/Discrete Transfer Fcn5' */
+  real_T NextOutput_e;                 /* '<S185>/White Noise' */
+  real_T NextOutput_kd;                /* '<S176>/White Noise' */
+  real_T NextOutput_ae;                /* '<S186>/White Noise' */
+  real_T NextOutput_mv;                /* '<S184>/White Noise' */
   real_T RateTransition_Buffer0[6];    /* '<S174>/Rate Transition' */
   uint32_T PreLookUpIndexSearchprobofexcee;
                         /* '<S137>/PreLook-Up Index Search  (prob of exceed)' */
-  uint32_T RandSeed;                   /* '<S177>/White Noise' */
   uint32_T PreLookUpIndexSearchaltitude_DW;
                               /* '<S137>/PreLook-Up Index Search  (altitude)' */
-  uint32_T RandSeed_i[4];              /* '<S130>/White Noise' */
-  uint32_T RandSeed_l;                 /* '<S187>/White Noise' */
-  uint32_T RandSeed_a;                 /* '<S190>/White Noise' */
-  uint32_T RandSeed_b;                 /* '<S185>/White Noise' */
+  uint32_T RandSeed[4];                /* '<S130>/White Noise' */
   uint32_T RandSeed_j;                 /* '<S174>/Uniform Random Number' */
-  uint32_T RandSeed_p;                 /* '<S176>/White Noise' */
-  uint32_T RandSeed_pb;                /* '<S184>/White Noise' */
-  uint32_T RandSeed_pa;                /* '<S186>/White Noise' */
-  uint32_T RandSeed_h;                 /* '<S274>/White Noise' */
-  uint32_T RandSeed_bu;                /* '<S275>/White Noise' */
+  uint32_T RandSeed_e;                 /* '<S177>/White Noise' */
+  uint32_T RandSeed_a;                 /* '<S190>/White Noise' */
+  uint32_T RandSeed_l;                 /* '<S187>/White Noise' */
   uint32_T RandSeed_c;                 /* '<S276>/White Noise' */
   uint32_T RandSeed_m;                 /* '<S277>/White Noise' */
-  uint32_T RandSeed_e;                 /* '<S278>/White Noise' */
+  uint32_T RandSeed_e0;                /* '<S278>/White Noise' */
+  uint32_T RandSeed_h;                 /* '<S274>/White Noise' */
+  uint32_T RandSeed_b;                 /* '<S275>/White Noise' */
   uint32_T RandSeed_eu;                /* '<S279>/White Noise' */
+  uint32_T RandSeed_bf;                /* '<S185>/White Noise' */
+  uint32_T RandSeed_p;                 /* '<S176>/White Noise' */
+  uint32_T RandSeed_pa;                /* '<S186>/White Noise' */
+  uint32_T RandSeed_pb;                /* '<S184>/White Noise' */
   int8_T ifHeightMaxlowaltitudeelseifHei;
-  /* '<S125>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
-  int8_T ifHeightMaxlowaltitudeelseifH_f;
   /* '<S126>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
+  int8_T ifHeightMaxlowaltitudeelseifH_m;
+  /* '<S125>/if Height < Max low altitude  elseif Height > Min isotropic altitude ' */
   int8_T If_ActiveSubsystem;           /* '<S211>/If' */
   boolean_T RateTransition1_Buffer0;   /* '<S174>/Rate Transition1' */
   boolean_T Convertfromgeodetictosphericalc;
@@ -270,495 +311,7 @@ typedef struct {
 
 /* Invariant block signals (default storage) */
 typedef struct {
-  const real_T Product6[3];            /* '<S9>/Product6' */
-  const real_T RotationAnglestoQuaternions[4];
-                                     /* '<S9>/Rotation Angles to Quaternions' */
-  const real_T Product;                /* '<S31>/Product' */
-  const real_T Product1;               /* '<S31>/Product1' */
-  const real_T Product2;               /* '<S31>/Product2' */
-  const real_T Product3;               /* '<S31>/Product3' */
-  const real_T Sum;                    /* '<S31>/Sum' */
-  const real_T sqrt_b;                 /* '<S30>/sqrt' */
-  const real_T Product_p;              /* '<S26>/Product' */
-  const real_T Product1_j;             /* '<S26>/Product1' */
-  const real_T Product2_h;             /* '<S26>/Product2' */
-  const real_T Product3_a;             /* '<S26>/Product3' */
-  const real_T Product_n;              /* '<S27>/Product' */
-  const real_T Product1_k;             /* '<S27>/Product1' */
-  const real_T Sum1;                   /* '<S27>/Sum1' */
-  const real_T Gain;                   /* '<S27>/Gain' */
-  const real_T Product2_b;             /* '<S27>/Product2' */
-  const real_T Product3_k;             /* '<S27>/Product3' */
-  const real_T Sum2;                   /* '<S27>/Sum2' */
-  const real_T Gain1;                  /* '<S27>/Gain1' */
-  const real_T Product6_n;             /* '<S27>/Product6' */
-  const real_T Product7;               /* '<S27>/Product7' */
-  const real_T Sum3;                   /* '<S27>/Sum3' */
-  const real_T Gain2;                  /* '<S27>/Gain2' */
-  const real_T Product4;               /* '<S27>/Product4' */
-  const real_T Product5;               /* '<S27>/Product5' */
-  const real_T Product8;               /* '<S27>/Product8' */
-  const real_T Sum_f;                  /* '<S27>/Sum' */
-  const real_T Product_e;              /* '<S28>/Product' */
-  const real_T Product1_n;             /* '<S28>/Product1' */
-  const real_T Sum1_l;                 /* '<S28>/Sum1' */
-  const real_T Gain_i;                 /* '<S28>/Gain' */
-  const real_T Product2_g;             /* '<S28>/Product2' */
-  const real_T Product3_h;             /* '<S28>/Product3' */
-  const real_T Sum2_e;                 /* '<S28>/Sum2' */
-  const real_T Gain1_j;                /* '<S28>/Gain1' */
-  const real_T Product6_g;             /* '<S28>/Product6' */
-  const real_T Product7_f;             /* '<S28>/Product7' */
-  const real_T Sum3_o;                 /* '<S28>/Sum3' */
-  const real_T Gain2_p;                /* '<S28>/Gain2' */
-  const real_T Product4_n;             /* '<S28>/Product4' */
-  const real_T Product5_m;             /* '<S28>/Product5' */
-  const real_T Product8_k;             /* '<S28>/Product8' */
-  const real_T Sum_i;                  /* '<S28>/Sum' */
-  const real_T Product_c;              /* '<S29>/Product' */
-  const real_T Product1_h;             /* '<S29>/Product1' */
-  const real_T Sum1_g;                 /* '<S29>/Sum1' */
-  const real_T Gain_b;                 /* '<S29>/Gain' */
-  const real_T Product2_l;             /* '<S29>/Product2' */
-  const real_T Product3_kq;            /* '<S29>/Product3' */
-  const real_T Sum2_m;                 /* '<S29>/Sum2' */
-  const real_T Gain1_n;                /* '<S29>/Gain1' */
-  const real_T Product6_l;             /* '<S29>/Product6' */
-  const real_T Product7_g;             /* '<S29>/Product7' */
-  const real_T Sum3_d;                 /* '<S29>/Sum3' */
-  const real_T Gain2_b;                /* '<S29>/Gain2' */
-  const real_T Product4_j;             /* '<S29>/Product4' */
-  const real_T Product5_c;             /* '<S29>/Product5' */
-  const real_T Product8_a;             /* '<S29>/Product8' */
-  const real_T Sum_e;                  /* '<S29>/Sum' */
-  const real_T Product_j;              /* '<S37>/Product' */
-  const real_T Product1_i;             /* '<S37>/Product1' */
-  const real_T Product2_m;             /* '<S37>/Product2' */
-  const real_T Product3_m;             /* '<S37>/Product3' */
-  const real_T Sum_i4;                 /* '<S37>/Sum' */
-  const real_T sqrt_k;                 /* '<S36>/sqrt' */
-  const real_T Product_eo;             /* '<S32>/Product' */
-  const real_T Product1_iu;            /* '<S32>/Product1' */
-  const real_T Product2_a;             /* '<S32>/Product2' */
-  const real_T Product3_f;             /* '<S32>/Product3' */
-  const real_T Product_a;              /* '<S33>/Product' */
-  const real_T Product1_e;             /* '<S33>/Product1' */
-  const real_T Sum1_p;                 /* '<S33>/Sum1' */
-  const real_T Gain_p;                 /* '<S33>/Gain' */
-  const real_T Product2_i;             /* '<S33>/Product2' */
-  const real_T Product3_kx;            /* '<S33>/Product3' */
-  const real_T Sum2_d;                 /* '<S33>/Sum2' */
-  const real_T Gain1_o;                /* '<S33>/Gain1' */
-  const real_T Product6_c;             /* '<S33>/Product6' */
-  const real_T Product7_f5;            /* '<S33>/Product7' */
-  const real_T Sum3_b;                 /* '<S33>/Sum3' */
-  const real_T Gain2_po;               /* '<S33>/Gain2' */
-  const real_T Product4_e;             /* '<S33>/Product4' */
-  const real_T Product5_b;             /* '<S33>/Product5' */
-  const real_T Product8_m;             /* '<S33>/Product8' */
-  const real_T Sum_b;                  /* '<S33>/Sum' */
-  const real_T Product_nc;             /* '<S34>/Product' */
-  const real_T Product1_ne;            /* '<S34>/Product1' */
-  const real_T Sum1_pw;                /* '<S34>/Sum1' */
-  const real_T Gain_ip;                /* '<S34>/Gain' */
-  const real_T Product2_j;             /* '<S34>/Product2' */
-  const real_T Product3_mj;            /* '<S34>/Product3' */
-  const real_T Sum2_p;                 /* '<S34>/Sum2' */
-  const real_T Gain1_d;                /* '<S34>/Gain1' */
-  const real_T Product6_f;             /* '<S34>/Product6' */
-  const real_T Product7_p;             /* '<S34>/Product7' */
-  const real_T Sum3_j;                 /* '<S34>/Sum3' */
-  const real_T Gain2_k;                /* '<S34>/Gain2' */
-  const real_T Product4_p;             /* '<S34>/Product4' */
-  const real_T Product5_i;             /* '<S34>/Product5' */
-  const real_T Product8_a4;            /* '<S34>/Product8' */
-  const real_T Sum_l;                  /* '<S34>/Sum' */
-  const real_T Product_l;              /* '<S35>/Product' */
-  const real_T Product1_f;             /* '<S35>/Product1' */
-  const real_T Sum1_b;                 /* '<S35>/Sum1' */
-  const real_T Gain_f;                 /* '<S35>/Gain' */
-  const real_T Product2_gv;            /* '<S35>/Product2' */
-  const real_T Product3_fg;            /* '<S35>/Product3' */
-  const real_T Sum2_k;                 /* '<S35>/Sum2' */
-  const real_T Gain1_np;               /* '<S35>/Gain1' */
-  const real_T Product6_fr;            /* '<S35>/Product6' */
-  const real_T Product7_fy;            /* '<S35>/Product7' */
-  const real_T Sum3_i;                 /* '<S35>/Sum3' */
-  const real_T Gain2_o;                /* '<S35>/Gain2' */
-  const real_T Product4_e2;            /* '<S35>/Product4' */
-  const real_T Product5_b0;            /* '<S35>/Product5' */
-  const real_T Product8_a3;            /* '<S35>/Product8' */
-  const real_T Sum_c;                  /* '<S35>/Sum' */
-  const real_T Subtract1[3];           /* '<S9>/Subtract1' */
-  const real_T Sum2_i[3];              /* '<S9>/Sum2' */
-  const real_T Product6_m[3];          /* '<S10>/Product6' */
-  const real_T RotationAnglestoQuaternio_p[4];
-                                    /* '<S10>/Rotation Angles to Quaternions' */
-  const real_T Product_ji;             /* '<S51>/Product' */
-  const real_T Product1_es;            /* '<S51>/Product1' */
-  const real_T Product2_in;            /* '<S51>/Product2' */
-  const real_T Product3_i;             /* '<S51>/Product3' */
-  const real_T Sum_iy;                 /* '<S51>/Sum' */
-  const real_T sqrt_i;                 /* '<S50>/sqrt' */
-  const real_T Product_g;              /* '<S46>/Product' */
-  const real_T Product1_d;             /* '<S46>/Product1' */
-  const real_T Product2_my;            /* '<S46>/Product2' */
-  const real_T Product3_ac;            /* '<S46>/Product3' */
-  const real_T Product_k;              /* '<S47>/Product' */
-  const real_T Product1_h3;            /* '<S47>/Product1' */
-  const real_T Sum1_by;                /* '<S47>/Sum1' */
-  const real_T Gain_d;                 /* '<S47>/Gain' */
-  const real_T Product2_it;            /* '<S47>/Product2' */
-  const real_T Product3_as;            /* '<S47>/Product3' */
-  const real_T Sum2_c;                 /* '<S47>/Sum2' */
-  const real_T Gain1_n0;               /* '<S47>/Gain1' */
-  const real_T Product6_a;             /* '<S47>/Product6' */
-  const real_T Product7_fk;            /* '<S47>/Product7' */
-  const real_T Sum3_f;                 /* '<S47>/Sum3' */
-  const real_T Gain2_a;                /* '<S47>/Gain2' */
-  const real_T Product4_g;             /* '<S47>/Product4' */
-  const real_T Product5_mk;            /* '<S47>/Product5' */
-  const real_T Product8_e;             /* '<S47>/Product8' */
-  const real_T Sum_m;                  /* '<S47>/Sum' */
-  const real_T Product_kq;             /* '<S48>/Product' */
-  const real_T Product1_c;             /* '<S48>/Product1' */
-  const real_T Sum1_li;                /* '<S48>/Sum1' */
-  const real_T Gain_e;                 /* '<S48>/Gain' */
-  const real_T Product2_d;             /* '<S48>/Product2' */
-  const real_T Product3_g;             /* '<S48>/Product3' */
-  const real_T Sum2_n;                 /* '<S48>/Sum2' */
-  const real_T Gain1_npp;              /* '<S48>/Gain1' */
-  const real_T Product6_h;             /* '<S48>/Product6' */
-  const real_T Product7_gx;            /* '<S48>/Product7' */
-  const real_T Sum3_be;                /* '<S48>/Sum3' */
-  const real_T Gain2_c;                /* '<S48>/Gain2' */
-  const real_T Product4_f;             /* '<S48>/Product4' */
-  const real_T Product5_l;             /* '<S48>/Product5' */
-  const real_T Product8_m4;            /* '<S48>/Product8' */
-  const real_T Sum_b1;                 /* '<S48>/Sum' */
-  const real_T Product_ac;             /* '<S49>/Product' */
-  const real_T Product1_hd;            /* '<S49>/Product1' */
-  const real_T Sum1_n;                 /* '<S49>/Sum1' */
-  const real_T Gain_a;                 /* '<S49>/Gain' */
-  const real_T Product2_lr;            /* '<S49>/Product2' */
-  const real_T Product3_hc;            /* '<S49>/Product3' */
-  const real_T Sum2_pw;                /* '<S49>/Sum2' */
-  const real_T Gain1_p;                /* '<S49>/Gain1' */
-  const real_T Product6_d;             /* '<S49>/Product6' */
-  const real_T Product7_h;             /* '<S49>/Product7' */
-  const real_T Sum3_n;                 /* '<S49>/Sum3' */
-  const real_T Gain2_ps;               /* '<S49>/Gain2' */
-  const real_T Product4_k;             /* '<S49>/Product4' */
-  const real_T Product5_e;             /* '<S49>/Product5' */
-  const real_T Product8_m5;            /* '<S49>/Product8' */
-  const real_T Sum_k;                  /* '<S49>/Sum' */
-  const real_T Product_h;              /* '<S57>/Product' */
-  const real_T Product1_cm;            /* '<S57>/Product1' */
-  const real_T Product2_n;             /* '<S57>/Product2' */
-  const real_T Product3_gd;            /* '<S57>/Product3' */
-  const real_T Sum_h;                  /* '<S57>/Sum' */
-  const real_T sqrt_l;                 /* '<S56>/sqrt' */
-  const real_T Product_i;              /* '<S52>/Product' */
-  const real_T Product1_l;             /* '<S52>/Product1' */
-  const real_T Product2_gk;            /* '<S52>/Product2' */
-  const real_T Product3_o;             /* '<S52>/Product3' */
-  const real_T Product_ga;             /* '<S53>/Product' */
-  const real_T Product1_p;             /* '<S53>/Product1' */
-  const real_T Sum1_a;                 /* '<S53>/Sum1' */
-  const real_T Gain_k;                 /* '<S53>/Gain' */
-  const real_T Product2_e;             /* '<S53>/Product2' */
-  const real_T Product3_j;             /* '<S53>/Product3' */
-  const real_T Sum2_o;                 /* '<S53>/Sum2' */
-  const real_T Gain1_k;                /* '<S53>/Gain1' */
-  const real_T Product6_gg;            /* '<S53>/Product6' */
-  const real_T Product7_n;             /* '<S53>/Product7' */
-  const real_T Sum3_b0;                /* '<S53>/Sum3' */
-  const real_T Gain2_cm;               /* '<S53>/Gain2' */
-  const real_T Product4_gs;            /* '<S53>/Product4' */
-  const real_T Product5_lz;            /* '<S53>/Product5' */
-  const real_T Product8_g;             /* '<S53>/Product8' */
-  const real_T Sum_k3;                 /* '<S53>/Sum' */
-  const real_T Product_gu;             /* '<S54>/Product' */
-  const real_T Product1_g;             /* '<S54>/Product1' */
-  const real_T Sum1_j;                 /* '<S54>/Sum1' */
-  const real_T Gain_o;                 /* '<S54>/Gain' */
-  const real_T Product2_b3;            /* '<S54>/Product2' */
-  const real_T Product3_af;            /* '<S54>/Product3' */
-  const real_T Sum2_kc;                /* '<S54>/Sum2' */
-  const real_T Gain1_h;                /* '<S54>/Gain1' */
-  const real_T Product6_i;             /* '<S54>/Product6' */
-  const real_T Product7_h0;            /* '<S54>/Product7' */
-  const real_T Sum3_a;                 /* '<S54>/Sum3' */
-  const real_T Gain2_pr;               /* '<S54>/Gain2' */
-  const real_T Product4_ks;            /* '<S54>/Product4' */
-  const real_T Product5_c3;            /* '<S54>/Product5' */
-  const real_T Product8_p;             /* '<S54>/Product8' */
-  const real_T Sum_cv;                 /* '<S54>/Sum' */
-  const real_T Product_aa;             /* '<S55>/Product' */
-  const real_T Product1_o;             /* '<S55>/Product1' */
-  const real_T Sum1_h;                 /* '<S55>/Sum1' */
-  const real_T Gain_of;                /* '<S55>/Gain' */
-  const real_T Product2_dy;            /* '<S55>/Product2' */
-  const real_T Product3_ja;            /* '<S55>/Product3' */
-  const real_T Sum2_el;                /* '<S55>/Sum2' */
-  const real_T Gain1_i;                /* '<S55>/Gain1' */
-  const real_T Product6_fm;            /* '<S55>/Product6' */
-  const real_T Product7_m;             /* '<S55>/Product7' */
-  const real_T Sum3_jk;                /* '<S55>/Sum3' */
-  const real_T Gain2_d;                /* '<S55>/Gain2' */
-  const real_T Product4_o;             /* '<S55>/Product4' */
-  const real_T Product5_h;             /* '<S55>/Product5' */
-  const real_T Product8_l;             /* '<S55>/Product8' */
-  const real_T Sum_b1v;                /* '<S55>/Sum' */
-  const real_T Subtract1_m[3];         /* '<S10>/Subtract1' */
-  const real_T Sum2_l[3];              /* '<S10>/Sum2' */
-  const real_T Product6_c1[3];         /* '<S11>/Product6' */
-  const real_T RotationAnglestoQuaternio_o[4];
-                                    /* '<S11>/Rotation Angles to Quaternions' */
-  const real_T Product_p4;             /* '<S71>/Product' */
-  const real_T Product1_gn;            /* '<S71>/Product1' */
-  const real_T Product2_c;             /* '<S71>/Product2' */
-  const real_T Product3_it;            /* '<S71>/Product3' */
-  const real_T Sum_ed;                 /* '<S71>/Sum' */
-  const real_T sqrt_a;                 /* '<S70>/sqrt' */
-  const real_T Product_hg;             /* '<S66>/Product' */
-  const real_T Product1_cf;            /* '<S66>/Product1' */
-  const real_T Product2_m0;            /* '<S66>/Product2' */
-  const real_T Product3_m4;            /* '<S66>/Product3' */
-  const real_T Product_ea;             /* '<S67>/Product' */
-  const real_T Product1_ia;            /* '<S67>/Product1' */
-  const real_T Sum1_aa;                /* '<S67>/Sum1' */
-  const real_T Gain_eb;                /* '<S67>/Gain' */
-  const real_T Product2_n0;            /* '<S67>/Product2' */
-  const real_T Product3_or;            /* '<S67>/Product3' */
-  const real_T Sum2_kn;                /* '<S67>/Sum2' */
-  const real_T Gain1_b;                /* '<S67>/Gain1' */
-  const real_T Product6_if;            /* '<S67>/Product6' */
-  const real_T Product7_b;             /* '<S67>/Product7' */
-  const real_T Sum3_l;                 /* '<S67>/Sum3' */
-  const real_T Gain2_h;                /* '<S67>/Gain2' */
-  const real_T Product4_pe;            /* '<S67>/Product4' */
-  const real_T Product5_mh;            /* '<S67>/Product5' */
-  const real_T Product8_et;            /* '<S67>/Product8' */
-  const real_T Sum_o;                  /* '<S67>/Sum' */
-  const real_T Product_o;              /* '<S68>/Product' */
-  const real_T Product1_l2;            /* '<S68>/Product1' */
-  const real_T Sum1_hw;                /* '<S68>/Sum1' */
-  const real_T Gain_j;                 /* '<S68>/Gain' */
-  const real_T Product2_jc;            /* '<S68>/Product2' */
-  const real_T Product3_b;             /* '<S68>/Product3' */
-  const real_T Sum2_ei;                /* '<S68>/Sum2' */
-  const real_T Gain1_c;                /* '<S68>/Gain1' */
-  const real_T Product6_md;            /* '<S68>/Product6' */
-  const real_T Product7_m1;            /* '<S68>/Product7' */
-  const real_T Sum3_p;                 /* '<S68>/Sum3' */
-  const real_T Gain2_e;                /* '<S68>/Gain2' */
-  const real_T Product4_i;             /* '<S68>/Product4' */
-  const real_T Product5_n;             /* '<S68>/Product5' */
-  const real_T Product8_lf;            /* '<S68>/Product8' */
-  const real_T Sum_er;                 /* '<S68>/Sum' */
-  const real_T Product_b;              /* '<S69>/Product' */
-  const real_T Product1_jg;            /* '<S69>/Product1' */
-  const real_T Sum1_ni;                /* '<S69>/Sum1' */
-  const real_T Gain_h;                 /* '<S69>/Gain' */
-  const real_T Product2_o;             /* '<S69>/Product2' */
-  const real_T Product3_p;             /* '<S69>/Product3' */
-  const real_T Sum2_np;                /* '<S69>/Sum2' */
-  const real_T Gain1_d3;               /* '<S69>/Gain1' */
-  const real_T Product6_ik;            /* '<S69>/Product6' */
-  const real_T Product7_pd;            /* '<S69>/Product7' */
-  const real_T Sum3_jg;                /* '<S69>/Sum3' */
-  const real_T Gain2_eg;               /* '<S69>/Gain2' */
-  const real_T Product4_l;             /* '<S69>/Product4' */
-  const real_T Product5_cm;            /* '<S69>/Product5' */
-  const real_T Product8_e2;            /* '<S69>/Product8' */
-  const real_T Sum_g;                  /* '<S69>/Sum' */
-  const real_T Product_au;             /* '<S77>/Product' */
-  const real_T Product1_ho;            /* '<S77>/Product1' */
-  const real_T Product2_db;            /* '<S77>/Product2' */
-  const real_T Product3_f4;            /* '<S77>/Product3' */
-  const real_T Sum_ou;                 /* '<S77>/Sum' */
-  const real_T sqrt_c;                 /* '<S76>/sqrt' */
-  const real_T Product_jk;             /* '<S72>/Product' */
-  const real_T Product1_lz;            /* '<S72>/Product1' */
-  const real_T Product2_ej;            /* '<S72>/Product2' */
-  const real_T Product3_kd;            /* '<S72>/Product3' */
-  const real_T Product_pn;             /* '<S73>/Product' */
-  const real_T Product1_hg;            /* '<S73>/Product1' */
-  const real_T Sum1_hp;                /* '<S73>/Sum1' */
-  const real_T Gain_ju;                /* '<S73>/Gain' */
-  const real_T Product2_lf;            /* '<S73>/Product2' */
-  const real_T Product3_ok;            /* '<S73>/Product3' */
-  const real_T Sum2_g;                 /* '<S73>/Sum2' */
-  const real_T Gain1_bw;               /* '<S73>/Gain1' */
-  const real_T Product6_p;             /* '<S73>/Product6' */
-  const real_T Product7_fi;            /* '<S73>/Product7' */
-  const real_T Sum3_a4;                /* '<S73>/Sum3' */
-  const real_T Gain2_g;                /* '<S73>/Gain2' */
-  const real_T Product4_pk;            /* '<S73>/Product4' */
-  const real_T Product5_cq;            /* '<S73>/Product5' */
-  const real_T Product8_i;             /* '<S73>/Product8' */
-  const real_T Sum_a;                  /* '<S73>/Sum' */
-  const real_T Product_f;              /* '<S74>/Product' */
-  const real_T Product1_m;             /* '<S74>/Product1' */
-  const real_T Sum1_jr;                /* '<S74>/Sum1' */
-  const real_T Gain_f1;                /* '<S74>/Gain' */
-  const real_T Product2_mf;            /* '<S74>/Product2' */
-  const real_T Product3_hu;            /* '<S74>/Product3' */
-  const real_T Sum2_dz;                /* '<S74>/Sum2' */
-  const real_T Gain1_nr;               /* '<S74>/Gain1' */
-  const real_T Product6_g5;            /* '<S74>/Product6' */
-  const real_T Product7_d;             /* '<S74>/Product7' */
-  const real_T Sum3_fs;                /* '<S74>/Sum3' */
-  const real_T Gain2_o0;               /* '<S74>/Gain2' */
-  const real_T Product4_d;             /* '<S74>/Product4' */
-  const real_T Product5_k;             /* '<S74>/Product5' */
-  const real_T Product8_pt;            /* '<S74>/Product8' */
-  const real_T Sum_ia;                 /* '<S74>/Sum' */
-  const real_T Product_p4q;            /* '<S75>/Product' */
-  const real_T Product1_a;             /* '<S75>/Product1' */
-  const real_T Sum1_a5;                /* '<S75>/Sum1' */
-  const real_T Gain_kb;                /* '<S75>/Gain' */
-  const real_T Product2_p;             /* '<S75>/Product2' */
-  const real_T Product3_e;             /* '<S75>/Product3' */
-  const real_T Sum2_j;                 /* '<S75>/Sum2' */
-  const real_T Gain1_nt;               /* '<S75>/Gain1' */
-  const real_T Product6_o;             /* '<S75>/Product6' */
-  const real_T Product7_gc;            /* '<S75>/Product7' */
-  const real_T Sum3_n2;                /* '<S75>/Sum3' */
-  const real_T Gain2_j;                /* '<S75>/Gain2' */
-  const real_T Product4_b;             /* '<S75>/Product4' */
-  const real_T Product5_d;             /* '<S75>/Product5' */
-  const real_T Product8_c;             /* '<S75>/Product8' */
-  const real_T Sum_bt;                 /* '<S75>/Sum' */
-  const real_T Subtract1_k[3];         /* '<S11>/Subtract1' */
-  const real_T Sum2_iw[3];             /* '<S11>/Sum2' */
-  const real_T Product6_ok[3];         /* '<S12>/Product6' */
-  const real_T RotationAnglestoQuaternio_g[4];
-                                    /* '<S12>/Rotation Angles to Quaternions' */
-  const real_T Product_k2;             /* '<S91>/Product' */
-  const real_T Product1_dq;            /* '<S91>/Product1' */
-  const real_T Product2_e5;            /* '<S91>/Product2' */
-  const real_T Product3_h5;            /* '<S91>/Product3' */
-  const real_T Sum_b3;                 /* '<S91>/Sum' */
-  const real_T sqrt_e;                 /* '<S90>/sqrt' */
-  const real_T Product_jz;             /* '<S86>/Product' */
-  const real_T Product1_e3;            /* '<S86>/Product1' */
-  const real_T Product2_hp;            /* '<S86>/Product2' */
-  const real_T Product3_ix;            /* '<S86>/Product3' */
-  const real_T Product_m;              /* '<S87>/Product' */
-  const real_T Product1_ay;            /* '<S87>/Product1' */
-  const real_T Sum1_g5;                /* '<S87>/Sum1' */
-  const real_T Gain_fg;                /* '<S87>/Gain' */
-  const real_T Product2_pv;            /* '<S87>/Product2' */
-  const real_T Product3_n;             /* '<S87>/Product3' */
-  const real_T Sum2_b;                 /* '<S87>/Sum2' */
-  const real_T Gain1_e;                /* '<S87>/Gain1' */
-  const real_T Product6_dg;            /* '<S87>/Product6' */
-  const real_T Product7_dv;            /* '<S87>/Product7' */
-  const real_T Sum3_c;                 /* '<S87>/Sum3' */
-  const real_T Gain2_ol;               /* '<S87>/Gain2' */
-  const real_T Product4_gu;            /* '<S87>/Product4' */
-  const real_T Product5_lb;            /* '<S87>/Product5' */
-  const real_T Product8_h;             /* '<S87>/Product8' */
-  const real_T Sum_d;                  /* '<S87>/Sum' */
-  const real_T Product_el;             /* '<S88>/Product' */
-  const real_T Product1_lk;            /* '<S88>/Product1' */
-  const real_T Sum1_f;                 /* '<S88>/Sum1' */
-  const real_T Gain_p0;                /* '<S88>/Gain' */
-  const real_T Product2_br;            /* '<S88>/Product2' */
-  const real_T Product3_hx;            /* '<S88>/Product3' */
-  const real_T Sum2_a;                 /* '<S88>/Sum2' */
-  const real_T Gain1_ns;               /* '<S88>/Gain1' */
-  const real_T Product6_hn;            /* '<S88>/Product6' */
-  const real_T Product7_ph;            /* '<S88>/Product7' */
-  const real_T Sum3_ly;                /* '<S88>/Sum3' */
-  const real_T Gain2_bm;               /* '<S88>/Gain2' */
-  const real_T Product4_dp;            /* '<S88>/Product4' */
-  const real_T Product5_ep;            /* '<S88>/Product5' */
-  const real_T Product8_mj;            /* '<S88>/Product8' */
-  const real_T Sum_b4;                 /* '<S88>/Sum' */
-  const real_T Product_fg;             /* '<S89>/Product' */
-  const real_T Product1_f0;            /* '<S89>/Product1' */
-  const real_T Sum1_b3;                /* '<S89>/Sum1' */
-  const real_T Gain_d3;                /* '<S89>/Gain' */
-  const real_T Product2_e4;            /* '<S89>/Product2' */
-  const real_T Product3_fe;            /* '<S89>/Product3' */
-  const real_T Sum2_om;                /* '<S89>/Sum2' */
-  const real_T Gain1_m;                /* '<S89>/Gain1' */
-  const real_T Product6_nr;            /* '<S89>/Product6' */
-  const real_T Product7_a;             /* '<S89>/Product7' */
-  const real_T Sum3_ob;                /* '<S89>/Sum3' */
-  const real_T Gain2_ky;               /* '<S89>/Gain2' */
-  const real_T Product4_kc;            /* '<S89>/Product4' */
-  const real_T Product5_i4;            /* '<S89>/Product5' */
-  const real_T Product8_f;             /* '<S89>/Product8' */
-  const real_T Sum_ln;                 /* '<S89>/Sum' */
-  const real_T Product_my;             /* '<S97>/Product' */
-  const real_T Product1_id;            /* '<S97>/Product1' */
-  const real_T Product2_l4;            /* '<S97>/Product2' */
-  const real_T Product3_k4;            /* '<S97>/Product3' */
-  const real_T Sum_fj;                 /* '<S97>/Sum' */
-  const real_T sqrt_j;                 /* '<S96>/sqrt' */
-  const real_T Product_ez;             /* '<S92>/Product' */
-  const real_T Product1_b;             /* '<S92>/Product1' */
-  const real_T Product2_f;             /* '<S92>/Product2' */
-  const real_T Product3_ec;            /* '<S92>/Product3' */
-  const real_T Product_lg;             /* '<S93>/Product' */
-  const real_T Product1_bj;            /* '<S93>/Product1' */
-  const real_T Sum1_m;                 /* '<S93>/Sum1' */
-  const real_T Gain_c;                 /* '<S93>/Gain' */
-  const real_T Product2_p5;            /* '<S93>/Product2' */
-  const real_T Product3_fd;            /* '<S93>/Product3' */
-  const real_T Sum2_g0;                /* '<S93>/Sum2' */
-  const real_T Gain1_f;                /* '<S93>/Gain1' */
-  const real_T Product6_l0;            /* '<S93>/Product6' */
-  const real_T Product7_a2;            /* '<S93>/Product7' */
-  const real_T Sum3_dk;                /* '<S93>/Sum3' */
-  const real_T Gain2_l;                /* '<S93>/Gain2' */
-  const real_T Product4_pp;            /* '<S93>/Product4' */
-  const real_T Product5_kd;            /* '<S93>/Product5' */
-  const real_T Product8_ik;            /* '<S93>/Product8' */
-  const real_T Sum_dx;                 /* '<S93>/Sum' */
-  const real_T Product_fc;             /* '<S94>/Product' */
-  const real_T Product1_eg;            /* '<S94>/Product1' */
-  const real_T Sum1_c;                 /* '<S94>/Sum1' */
-  const real_T Gain_ofb;               /* '<S94>/Gain' */
-  const real_T Product2_itz;           /* '<S94>/Product2' */
-  const real_T Product3_d;             /* '<S94>/Product3' */
-  const real_T Sum2_cq;                /* '<S94>/Sum2' */
-  const real_T Gain1_h5;               /* '<S94>/Gain1' */
-  const real_T Product6_id;            /* '<S94>/Product6' */
-  const real_T Product7_fm;            /* '<S94>/Product7' */
-  const real_T Sum3_g;                 /* '<S94>/Sum3' */
-  const real_T Gain2_jt;               /* '<S94>/Gain2' */
-  const real_T Product4_bz;            /* '<S94>/Product4' */
-  const real_T Product5_nd;            /* '<S94>/Product5' */
-  const real_T Product8_fh;            /* '<S94>/Product8' */
-  const real_T Sum_o3;                 /* '<S94>/Sum' */
-  const real_T Product_os;             /* '<S95>/Product' */
-  const real_T Product1_a2;            /* '<S95>/Product1' */
-  const real_T Sum1_jru;               /* '<S95>/Sum1' */
-  const real_T Gain_j3;                /* '<S95>/Gain' */
-  const real_T Product2_dv;            /* '<S95>/Product2' */
-  const real_T Product3_ks;            /* '<S95>/Product3' */
-  const real_T Sum2_ay;                /* '<S95>/Sum2' */
-  const real_T Gain1_ia;               /* '<S95>/Gain1' */
-  const real_T Product6_lv;            /* '<S95>/Product6' */
-  const real_T Product7_bx;            /* '<S95>/Product7' */
-  const real_T Sum3_jt;                /* '<S95>/Sum3' */
-  const real_T Gain2_i;                /* '<S95>/Gain2' */
-  const real_T Product4_go;            /* '<S95>/Product4' */
-  const real_T Product5_a;             /* '<S95>/Product5' */
-  const real_T Product8_kf;            /* '<S95>/Product8' */
-  const real_T Sum_j;                  /* '<S95>/Sum' */
-  const real_T Subtract1_j[3];         /* '<S12>/Subtract1' */
-  const real_T Sum2_ayz[3];            /* '<S12>/Sum2' */
-  const real_T UnitConversion;         /* '<S119>/Unit Conversion' */
-  const real_T UnitConversion_g;       /* '<S129>/Unit Conversion' */
-  const real_T sigma_wg;               /* '<S138>/sigma_wg ' */
-  const real_T UnitConversion_e;       /* '<S123>/Unit Conversion' */
-  const real_T UnitConversion_k;       /* '<S157>/Unit Conversion' */
+  const real_T UnitConversion;         /* '<S157>/Unit Conversion' */
   const real_T PreLookUpIndexSearchprobofe;
                         /* '<S137>/PreLook-Up Index Search  (prob of exceed)' */
   const real_T constBlockForifHeightMaxlow;
@@ -768,17 +321,11 @@ typedef struct {
   const real_T Sqrt[4];                /* '<S130>/Sqrt' */
   const real_T Sqrt1;                  /* '<S130>/Sqrt1' */
   const real_T Divide[4];              /* '<S130>/Divide' */
-  const real_T UnitConversion_m;       /* '<S158>/Unit Conversion' */
-  const real_T Wy;                     /* '<S118>/SinCos' */
-  const real_T Wx;                     /* '<S118>/SinCos' */
-  const real_T Windspeedatreferenceheight[3];
-                                   /* '<S118>/Wind speed at reference height' */
   const real_T lnref_heightz0;         /* '<S118>/ln(ref_height//z0)' */
-  const real_T Product_an;             /* '<S164>/Product' */
+  const real_T Product;                /* '<S164>/Product' */
   const real_T Switch;                 /* '<S164>/Switch' */
-  const real_T Product_mh[9];          /* '<S167>/Product' */
+  const real_T Product_m[9];           /* '<S167>/Product' */
   const real_T dIdt[9];                /* '<S167>/Add' */
-  const real_T Sum_dd;                 /* '<S206>/Sum' */
   const real_T a2;                     /* '<S218>/a2' */
   const real_T b2;                     /* '<S218>/b2' */
   const real_T c2;                     /* '<S261>/Sum1' */
@@ -786,16 +333,11 @@ typedef struct {
   const real_T b4;                     /* '<S263>/b4' */
   const real_T c4;                     /* '<S263>/Sum9' */
   const real_T c2_l;                   /* '<S264>/Sum1' */
-  const real_T Sum_p;                  /* '<S147>/Sum' */
-  const real_T Sum_is;                 /* '<S139>/Sum' */
+  const real_T Sum;                    /* '<S147>/Sum' */
+  const real_T Sum_i;                  /* '<S139>/Sum' */
   const real_T sqrt_g;                 /* '<S136>/sqrt' */
-  const real_T w4;                     /* '<S131>/w4' */
-  const real_T u16;                    /* '<S131>/u^1//6' */
   const uint32_T PreLookUpIndexSearchprobo_j;
                         /* '<S137>/PreLook-Up Index Search  (prob of exceed)' */
-  const boolean_T min_relop;           /* '<S201>/min_relop' */
-  const boolean_T max_relop;           /* '<S201>/max_relop' */
-  const boolean_T conjunction;         /* '<S201>/conjunction' */
 } ConstB_autocodePlant_T;
 
 #ifndef ODE4_INTG

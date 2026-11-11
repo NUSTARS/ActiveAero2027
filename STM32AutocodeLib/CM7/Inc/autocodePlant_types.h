@@ -9,7 +9,7 @@
  *
  * Model version                  : 1.7
  * Simulink Coder version         : 26.1 (R2026a) 20-Nov-2025
- * C/C++ source code generated on : Wed Nov  4 17:25:23 2026
+ * C/C++ source code generated on : Tue Nov 10 19:36:56 2026
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex-M7 (MPS2)
@@ -19,6 +19,7 @@
 
 #ifndef autocodePlant_types_h_
 #define autocodePlant_types_h_
+#include "autocodePlantParams_calibration_types.h"
 #include "rtwtypes.h"
 #ifndef DEFINED_TYPEDEF_FOR_body_bus_
 #define DEFINED_TYPEDEF_FOR_body_bus_
