@@ -35,7 +35,7 @@ N.navStates.controlTresholdPitchYaw_rad = 1.0;
 N.navStates.controlTresholdPitchYawRate_rps = 1.0;
 
 N.navComp.attitudeGain = 0.995;
-N.navComp.velGain = 0.4;
-N.navComp.posGain = 0.4;
+N.navComp.velGain = 0.95;
+N.navComp.posGain = 0.95;
 
 end

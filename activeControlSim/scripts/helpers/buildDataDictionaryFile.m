@@ -66,8 +66,24 @@ for i = 1:numel(fn)
         entry = getEntry(designData, fn{i});
         prm = getValue(entry);
         if isa(prm, 'Simulink.Parameter')
-            if ~isequal(prm.Value, newValue)
-                prm.Value = newValue;
+            changed = ~isequal(prm.Value, newValue);
+            % buildModels.m (configureDictionaryExports) types struct
+            % parameters as 'Bus: cal_<dict>_<name>' and adds those bus
+            % entries to the dictionary. They aren't in P, so the stale
+            % pass above just deleted them -- drop any DataType that now
+            % points at a bus no longer defined here. buildModels.m
+            % re-creates the bus and re-applies the type after this runs.
+            busName = regexp(prm.DataType, '^Bus:\s*(\S+)$', 'tokens', 'once');
+            if ~isempty(busName) && ~isfield(P, busName{1})
+                if isstruct(newValue)
+                    prm.DataType = 'struct';
+                else
+                    prm.DataType = 'auto';
+                end
+                changed = true;
+            end
+            prm.Value = newValue;
+            if changed
                 setValue(entry, prm);
                 nUpdated = nUpdated + 1;
             end
