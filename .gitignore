@@ -74,6 +74,7 @@ dkms.conf
 autosave/
 
 # Simulink cache / code generation
+/activeControlSim/build_autocode*/
 slprj/
 sccprj/
 *_ert_rtw/

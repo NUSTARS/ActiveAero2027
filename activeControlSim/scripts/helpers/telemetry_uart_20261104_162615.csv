@@ -1,0 +1,1 @@
+packet_counter,timestamp_us_delta,nav_flightMode_enum,nav_phiEst_rad,nav_thetaEst_rad,nav_psiEst_rad,nav_xVelEstNed_mps,nav_yVelEstNed_mps,nav_zVelEstNed_mps,nav_xPosEst_m,nav_yPosEst_m,nav_zPosEst_m,ecc_corrected_bits

@@ -1,0 +1,3 @@
+[submodule "STM32AutocodeLib"]
+	path = STM32AutocodeLib
+	url = https://github.com/NUSTARS/activeAeroAutocodeLib.git
