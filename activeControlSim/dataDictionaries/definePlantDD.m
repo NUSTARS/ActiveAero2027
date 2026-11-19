@@ -39,7 +39,7 @@ P.envParams.date_y = decyear('01-September-2026','dd-mmm-yyyy'); % [y] year + fr
 P.windParams.useWindShear_b = false;
 P.windParams.useWindTurbulence_b = false;
 P.windParams.constantNed_mps = [0; 0; 0];
-P.windParams.lowAltWindSpeed_mps = 0;
+P.windParams.lowAltWindSpeed_mps = 5;
 P.windParams.lowAltWindDir_deg = 180; % CW from north
 
 % Motor Parameters
@@ -51,7 +51,7 @@ P.motorParams.thrustScaling_na = 1.0;
 
 
 %% Aero Lookup Tables
-P.aeroParams.aeroFileName = 'aeroTables.mat';
+P.aeroParams.aeroFileName = 'dataDictionaries/aeroTables.mat';
 % Multipliers on the tables loaded in derivePlantDD (disperse these, not
 % the tables -- derivePlantDD reloads the tables from aeroFileName)
 P.aeroParams.finStaticScale_na = 1.0;

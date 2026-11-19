@@ -78,7 +78,7 @@
 
 % =============================================================== CONFIG
 resultsDir  = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'results');
-matFiles    = {'simResults'};   % {} = use `out` already in the workspace; bare names resolve against resultsDir, .mat optional
+matFiles    = {'simResults', 'simResultsReg'};   % {} = use `out` already in the workspace; bare names resolve against resultsDir, .mat optional
 numFrames   = 5;
 bodyScale   = [];
 forwardAxis = [1;0;0];

@@ -8,7 +8,7 @@ withFinsPath = 'atlas-fins-ras.CSV'; % airframe with fins
 
 % --- Grid sample points for output tables ---
 machSamples    = linspace(0.1, 1, 10);   % Mach numbers to interpolate at
-alphaSamples   = [0 2 4];                % angles of attack (deg) to interpolate at
+alphaSamples   = [-4 -2 0 2 4];          % angles of attack (deg) to interpolate at, must stay ascending
 controlPoints  = [-4 -2 0 2 4];          % control input angles (deg), must stay ascending
 controlFactor  = 0.1;                    % scales control input's effect on Ca/Cn
 
@@ -20,12 +20,23 @@ withFinsData = readtable(withFinsPath);
 posControl = controlPoints(controlPoints >= 0);
 negControl = controlPoints(controlPoints < 0);
 
+% Same idea for alpha: RAS data only covers alpha >= 0, so negative alphas are
+% queried at |alpha| and mirrored -- Cn odd (sign flips with alpha), Ca and Cp
+% even. With the control term added independently of alpha (below), this
+% gives Cn(-a,d) = -Cn(a,-d) and Ca(-a,d) = Ca(a,-d), i.e. a fin seeing flow
+% from the other side behaves like its mirror image. sign(0) = 0 also pins
+% Cn at alpha = 0 to exactly zero, as symmetry requires.
+alphaMagnitude = abs(alphaSamples);
+alphaSign      = sign(alphaSamples);
+
 % --- Base airframe coefficients (no fins), at the alpha/Mach sample grid ---
-CpBase = interpGrid(noFinsData.Alpha, noFinsData.Mach, noFinsData.CP, alphaSamples, machSamples);
-CpFull = interpGrid(withFinsData.Alpha, withFinsData.Mach, withFinsData.CP, alphaSamples, machSamples);
+CpBase = interpGrid(noFinsData.Alpha, noFinsData.Mach, noFinsData.CP, alphaMagnitude, machSamples);
+CpFull = interpGrid(withFinsData.Alpha, withFinsData.Mach, withFinsData.CP, alphaMagnitude, machSamples);
 
 % --- Fin contribution to Ca/Cn at zero control input ---
-[CaFin, CnFin, CaBase, CnBase] = findFinForce(alphaSamples, machSamples, noFinsData, withFinsData);
+[CaFin, CnFin, CaBase, CnBase] = findFinForce(alphaMagnitude, machSamples, noFinsData, withFinsData);
+CnFin  = CnFin  .* alphaSign;   % [Mach x Alpha] .* [1 x Alpha]
+CnBase = CnBase .* alphaSign;
 
 % --- Fin contribution due to control input, split by sign ---
 % Positive control inputs queried directly; negative control inputs queried by
@@ -60,7 +71,11 @@ aeroTables.CnFull   = CnFin + CnBase;
 aeroTables.CaFull   = CaFin + CaBase;
 aeroTables.CpFull   = CpFull;
 
-save('activecontrolSim/dataDictionaries/aeroTables.mat', "aeroTables")
+% Resolve from this script's location (activeControlSim/scripts) so it works
+% regardless of MATLAB's current folder.
+outFile = fullfile(fileparts(fileparts(mfilename('fullpath'))), 'dataDictionaries', 'aeroTables.mat');
+save(outFile, "aeroTables")
+fprintf('Saved %s\n', outFile);
 
 
 % ------------------------------------------------------------------
