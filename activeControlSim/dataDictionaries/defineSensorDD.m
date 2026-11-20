@@ -11,6 +11,7 @@ S.sensorParams.imuPosBdy_m = [0, 0, 0];
 
 % Sampling Rate
 accRate_Hz = 100;
+S.sensorParams.accSampleTime_s = 1 / accRate_Hz;
 
 % scale factor and coupling matrix measuring the components of the body
 % specific force along other axes
@@ -32,6 +33,9 @@ accSigmaBiasTurnOn_mg = [2.0, 2.0, 2.0];
 %% Processing (nothing to change here)
 
 % Bias
+accK = [7.0144e-9, 6.6878e-9, 2.6823e-9];
+S.sensorParams.accRWNoisePower = 2*pi^2 * accK * S.sensorParams.accSampleTime_s^2;
+
 accSigmaBiasTurnOn_mps2 = accSigmaBiasTurnOn_mg * 0.00981;
 S.sensorParams.accTurnOnBias_mps2 = accSigmaBiasTurnOn_mps2 * randn(1, 1);
 
@@ -44,7 +48,6 @@ S.sensorParams.accWhiteNoiseStrengths = [1.7478e-06, 1.1224e-06, 8.1680e-07];
 
 % Misc
 S.sensorParams.accScaleCoupling_na = eye(3) + accScaleCoupling_na;
-S.sensorParams.accSampleTime_s = 1 / accRate_Hz;
 
 %% Gyroscope %%
 
