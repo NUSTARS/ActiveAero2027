@@ -3,17 +3,18 @@
 % for interpolated use in flight simulation.
 % ------------------------------------------------------------------
 
-noFinsPath   = 'atlas-nofins-ras.CSV';   % airframe without fins
-withFinsPath = 'atlas-fins-ras.CSV'; % airframe with fins
+noFinsPath   = 'stardust-nofins-11-19.CSV';   % airframe without fins
+withFinsPath = 'stardust-11-19.CSV'; % airframe with fins
+tabsPath = 'datcom.out'; % datcom data for tabs
 
 % --- Grid sample points for output tables ---
-machSamples    = linspace(0.1, 1, 10);   % Mach numbers to interpolate at
-alphaSamples   = [0 2 4];                % angles of attack (deg) to interpolate at
-controlPoints  = [-4 -2 0 2 4];          % control input angles (deg), must stay ascending
-controlFactor  = 0.1;                    % scales control input's effect on Ca/Cn
-
 noFinsData   = readtable(noFinsPath);
 withFinsData = readtable(withFinsPath);
+[flapData, cdiData] = parseDatcomOut(tabsPath);
+
+machPoints = sort(unique([-withFinsData.Mach withFinsData.Mach]));
+aoaPoints = sort(unique([-withFinsData.Alpha withFinsData.Alpha]));
+controlPoints = sort(unique([-flapData.Delta flapData.Delta]));
 
 % Split control input samples so negative angles can be evaluated using the
 % positive-side data and sign flipped (Cn is odd, Ca is even about alpha/control = 0)

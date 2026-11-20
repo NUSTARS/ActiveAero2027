@@ -5,16 +5,15 @@
 
 noFinsPath   = 'atlas-nofins-ras.CSV';   % airframe without fins
 withFinsPath = 'atlas-fins-ras.CSV'; % airframe with fins
-datcomPath = 'pitch-tabs.CSV'
 
 % --- Grid sample points for output tables ---
 machSamples    = linspace(0.1, 1, 10);   % Mach numbers to interpolate at
 alphaSamples   = [0 2 4];                % angles of attack (deg) to interpolate at
-controlPoints  = -45:5:45;             % control input angles (deg), must stay ascending
+controlPoints  = [-4 -2 0 2 4];          % control input angles (deg), must stay ascending
+controlFactor  = 0.1;                    % scales control input's effect on Ca/Cn
 
 noFinsData   = readtable(noFinsPath);
 withFinsData = readtable(withFinsPath);
-datcomData = reatable(datcomPath);
 
 % Split control input samples so negative angles can be evaluated using the
 % positive-side data and sign flipped (Cn is odd, Ca is even about alpha/control = 0)
@@ -36,9 +35,9 @@ CpFull = interpGrid(withFinsData.Alpha, withFinsData.Mach, withFinsData.CP, alph
 
 % --- Assemble Cn: baseline fin force + control input contribution ---
 CnFinControl = repmat(CnFin, [1 1 numel(controlPoints)]);   % broadcast baseline across all control inputs
-cnControl = [-1*negCnControl, posCnControl];  % Cn is odd -> negate negative-side values
+cnControl = controlFactor * [-1*negCnControl, posCnControl];  % Cn is odd -> negate negative-side values
 cnControl = repmat(cnControl, [1 1 numel(alphaSamples)]);
-cnControl = permute(cnControl, [1 3 2]);                     % align dims to [Mach x Alpha x ControlInput]
+cnControl = permute(cnControl, [1 3 2]);                      % align dims to [Mach x Alpha x ControlInput]
 CnFinControl = CnFinControl + cnControl;
 
 % --- Assemble Ca: baseline fin force + control input contribution ---
@@ -57,9 +56,6 @@ aeroTables.CaBase         = CaBase;
 aeroTables.CnBase         = CnBase;
 aeroTables.CnFinControl   = CnFinControl;
 aeroTables.CaFinControl   = CaFinControl;
-aeroTables.CnFull   = CnFin + CnBase;
-aeroTables.CaFull   = CaFin + CaBase;
-aeroTables.CpFull   = CpFull;
 
 save('activecontrolSim/dataDictionaries/aeroTables.mat', "aeroTables")
 
